@@ -917,6 +917,7 @@ async function doSignIn(e){
     localStorage.setItem('qe_token', data.token);
     localStorage.setItem('qe_user', JSON.stringify(data.user));
     state.user = data.user;
+    state.libGrade = parseInt(data.user.grade) || 8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
   } catch(err){
@@ -941,6 +942,7 @@ async function doSignUp(e){
     localStorage.setItem('qe_token', data.token);
     localStorage.setItem('qe_user', JSON.stringify(data.user));
     state.user = data.user;
+    state.libGrade = parseInt(data.user.grade) || 8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
   } catch(err){

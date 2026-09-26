@@ -506,7 +506,7 @@ const API = 'http://localhost:4000'; // Change to your deployed server URL after
 /* ─────────── state ─────────── */
 const state = {
   view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,
-  libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');return u&&u.grade?parseInt(u.grade)||8:8;}catch(e){return 8;}})(),
+  libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
   quiz:{i:0,picked:null,answers:[],done:false},
   auth:{screen:"signin", error:"", loading:false},  /* signin | signup | app */
   user: JSON.parse(localStorage.getItem('qe_user')||'null'),
@@ -917,7 +917,7 @@ async function doSignIn(e){
     localStorage.setItem('qe_token', data.token);
     localStorage.setItem('qe_user', JSON.stringify(data.user));
     state.user = data.user;
-    state.libGrade = parseInt(data.user.grade) || 8;
+    const _gm1=String(data.user.grade).match(/\d+/); state.libGrade=_gm1?parseInt(_gm1[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
   } catch(err){
@@ -942,7 +942,7 @@ async function doSignUp(e){
     localStorage.setItem('qe_token', data.token);
     localStorage.setItem('qe_user', JSON.stringify(data.user));
     state.user = data.user;
-    state.libGrade = parseInt(data.user.grade) || 8;
+    const _gm2=String(data.user.grade).match(/\d+/); state.libGrade=_gm2?parseInt(_gm2[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
   } catch(err){

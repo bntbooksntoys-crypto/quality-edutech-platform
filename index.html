@@ -680,9 +680,8 @@ function learnView(){
       ? '<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">'+btn(c.d?t.resume:t.start,c.d?'ghost':'solid','play','style="width:100%"')+'</a>'
       : btn(c.d?t.resume:t.start,c.d?'ghost':'solid',c.d?'play':'arrow','style="width:100%"'))+'</div></div>',
     c.yt?'p0':'p20')).join('');
-  const allGrades=[1,2,3,4,5,6,7,8,9,10,11,12];
-  const gradeBooks=LIBRARY.filter(b=>b.gr===state.libGrade);
-  const gradeTabs=allGrades.map(g=>'<button onclick="setLibGrade('+g+')" style="padding:6px 13px;border-radius:99px;border:1.5px solid '+(g===state.libGrade?'var(--teal)':'var(--line)')+';background:'+(g===state.libGrade?'var(--teal)':'transparent')+';color:'+(g===state.libGrade?'#fff':'var(--slate)')+';font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">Gr '+g+'</button>').join('');
+  const userGrade=state.libGrade;
+  const gradeBooks=LIBRARY.filter(b=>b.gr===userGrade);
   const books=gradeBooks.map(b=>{
     const col=SC(b.sub);
     const medBadge='<span style="font-size:10px;background:'+col+'22;color:'+col+';border-radius:99px;padding:2px 7px;font-weight:600">'+b.med+'</span>';
@@ -698,12 +697,10 @@ function learnView(){
   }).join('');
   return '<div class="wrap" style="margin-bottom:20px">'+chips+'</div><div class="cards3">'+cards+'</div>'+
     card('<div class="between" style="flex-wrap:wrap">'+
-      '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">NCERT Textbooks — Complete Catalog</h3>'+
-      '<p class="muted">'+LIBRARY.length+' official NCERT titles · Grades 1–12 · Choose a grade to browse</p></div>'+
+      '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">NCERT Textbooks — Grade '+userGrade+'</h3>'+
+      '<p class="muted">'+gradeBooks.length+' official NCERT titles for your grade</p></div>'+
       btn(state.libOpen?'Hide library':'Browse library','ghost','book','onclick="toggleLib()"')+'</div>'+
-      (state.libOpen?'<div style="overflow-x:auto;padding-bottom:4px"><div style="display:flex;gap:6px;padding:14px 0;width:max-content">'+gradeTabs+'</div></div>'+
-       '<p class="muted" style="margin-top:0;margin-bottom:14px">'+gradeBooks.length+' books for Grade '+state.libGrade+'</p>'+
-       '<div class="libgrid">'+books+'</div>':''),'p20 mt20');
+      (state.libOpen?'<div class="libgrid mt20">'+books+'</div>':''),'p20 mt20');
 }
 
 function liveView(){

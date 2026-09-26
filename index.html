@@ -303,29 +303,170 @@ const COURSES = [
   {sub:"Robotics",t:"Sensors and Simple Circuits",g:"Grade 8",l:8,d:0,mode:"Kit + simulation",by:"A. Balaji",yt:"cqJpoJjRQ_E"},
   {sub:"Social Studies",t:"Resources and Development",g:"Grade 8",l:11,d:7,mode:"Video + maps",by:"P. Anitha",yt:"osBVRfvkmAU"},
 ];
+/* subject → colour mapping */
+const SUBJ_COLOR={
+  "English":"var(--marigold)","Hindi":"var(--vermilion)","Sanskrit":"#8A5A44",
+  "Maths":"var(--teal)","Science":"#2E6E7E","Social Science":"#3E6259",
+  "Social Science - History":"#3E6259","Social Science - Geography":"#3E6259",
+  "Social Science - Political Science":"#3E6259","Social Science - Economics":"#946A3B",
+  "Physics":"#1A5276","Chemistry":"#1B4F72","Biology":"#1E8449",
+  "History":"#6E2F1A","Geography":"#1A5276","Political Science":"#4A235A",
+  "Economics":"#946A3B","Accountancy":"#7D6608","Business Studies":"#7D6608",
+  "Sociology":"#6C3483","Psychology":"#1A5276","Computer Science":"#2E6E7E",
+  "Informatics Practices":"#2E6E7E","Arts":"#B5762C","Physical Education":"#196F3D",
+  "Vocational":"#626567","EVS (The World Around Us)":"#196F3D",
+};
+function SC(sub){return SUBJ_COLOR[sub]||"var(--slate)";}
+
 const LIBRARY = [
-  {t:"Mathematics",sub:"NCERT · Maths · Grade 8",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/hemh1ps.pdf"},
-  {t:"Science",sub:"NCERT · Science · Grade 8",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/hesc1ps.pdf"},
-  {t:"Honeydew",sub:"NCERT · English · Grade 8",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/hehl1ps.pdf"},
-  {t:"It So Happened",sub:"NCERT · English Supp. · Grade 8",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/hehb1ps.pdf"},
-  {t:"Vasant",sub:"NCERT · Hindi · Grade 8",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/hhvs1ps.pdf"},
-  {t:"Durva",sub:"NCERT · Hindi Supp. · Grade 8",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/hhdv1ps.pdf"},
-  {t:"Bharat Ki Khoj",sub:"NCERT · Hindi Reader · Grade 8",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/hhbk1ps.pdf"},
-  {t:"Resources & Development",sub:"NCERT · Geography · Grade 8",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/hess2ps.pdf"},
-  {t:"Our Pasts – III",sub:"NCERT · History · Grade 8",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/hess1ps.pdf"},
-  {t:"Social & Political Life III",sub:"NCERT · Civics · Grade 8",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/hess3ps.pdf"},
-  {t:"Ruchira",sub:"NCERT · Sanskrit · Grade 8",g:"#8A5A44",pdf:"https://ncert.nic.in/textbook/pdf/hruc1ps.pdf"},
-  {t:"Maths Exemplar",sub:"NCERT · Exemplar · Grade 8",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/hemep1ps.pdf"},
-  {t:"Mathematics",sub:"NCERT · Maths · Grade 9",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/iemh1ps.pdf"},
-  {t:"Science",sub:"NCERT · Science · Grade 9",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/iesc1ps.pdf"},
-  {t:"Mathematics",sub:"NCERT · Maths · Grade 10",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/jemh1ps.pdf"},
-  {t:"Science",sub:"NCERT · Science · Grade 10",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/jesc1ps.pdf"},
-  {t:"Beehive",sub:"NCERT · English · Grade 9",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/iehl1ps.pdf"},
-  {t:"Moments",sub:"NCERT · English Supp. · Grade 9",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/iehb1ps.pdf"},
-  {t:"Kshitij",sub:"NCERT · Hindi · Grade 9",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/ihkv1ps.pdf"},
-  {t:"Democratic Politics",sub:"NCERT · Civics · Grade 9",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/iess3ps.pdf"},
-  {t:"India & Contemporary World",sub:"NCERT · History · Grade 9",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/iess1ps.pdf"},
-  {t:"Economics",sub:"NCERT · Economics · Grade 9",g:"#946A3B",pdf:"https://ncert.nic.in/textbook/pdf/iess4ps.pdf"},
+  /* ── Grade 1 ── */
+  {gr:1,t:"Mridang",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/aemr1dd.zip",read:"https://ncert.nic.in/textbook.php?aemr1=0-9"},
+  {gr:1,t:"Joyful Mathematics",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/aejm1dd.zip",read:"https://ncert.nic.in/textbook.php?aejm1=0-13"},
+  {gr:1,t:"Anandmay Ganit",sub:"Maths",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ahjm1dd.zip",read:"https://ncert.nic.in/textbook.php?ahjm1=0-13"},
+  {gr:1,t:"Sarangi",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ahsr1dd.zip",read:"https://ncert.nic.in/textbook.php?ahsr1=0-19"},
+  /* ── Grade 2 ── */
+  {gr:2,t:"Mridang",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/bemr1dd.zip",read:"https://ncert.nic.in/textbook.php?bemr1=0-13"},
+  {gr:2,t:"Joyful Mathematics",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/bejm1dd.zip",read:"https://ncert.nic.in/textbook.php?bejm1=0-11"},
+  {gr:2,t:"Anandmay Ganit",sub:"Maths",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/bhjm1dd.zip",read:"https://ncert.nic.in/textbook.php?bhjm1=0-11"},
+  {gr:2,t:"Sarangi",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/bhsr1dd.zip",read:"https://ncert.nic.in/textbook.php?bhsr1=0-26"},
+  /* ── Grade 3 ── */
+  {gr:3,t:"Santoor",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/cesa1dd.zip",read:"https://ncert.nic.in/textbook.php?cesa1=0-12"},
+  {gr:3,t:"Maths Mela",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/cemm1dd.zip",read:"https://ncert.nic.in/textbook.php?cemm1=0-14"},
+  {gr:3,t:"Ganit Mela",sub:"Maths",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/chmm1dd.zip",read:"https://ncert.nic.in/textbook.php?chmm1=0-14"},
+  {gr:3,t:"Veena",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/chve1dd.zip",read:"https://ncert.nic.in/textbook.php?chve1=0-18"},
+  {gr:3,t:"Our Wondrous World",sub:"EVS (The World Around Us)",med:"English",zip:"https://ncert.nic.in/textbook/pdf/ceev1dd.zip",read:"https://ncert.nic.in/textbook.php?ceev1=0-12"},
+  {gr:3,t:"Hamara Adbhut Sansar",sub:"EVS (The World Around Us)",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/chev1dd.zip",read:"https://ncert.nic.in/textbook.php?chev1=0-12"},
+  {gr:3,t:"Bansuri",sub:"Arts",med:"English",zip:"https://ncert.nic.in/textbook/pdf/cebu1dd.zip",read:"https://ncert.nic.in/textbook.php?cebu1=0-20"},
+  {gr:3,t:"Khel Yoga",sub:"Physical Education",med:"English",zip:"https://ncert.nic.in/textbook/pdf/ceky1dd.zip",read:"https://ncert.nic.in/textbook.php?ceky1=0-7"},
+  /* ── Grade 4 ── */
+  {gr:4,t:"Santoor",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/desa1dd.zip",read:"https://ncert.nic.in/textbook.php?desa1=0-12"},
+  {gr:4,t:"Maths Mela",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/demm1dd.zip",read:"https://ncert.nic.in/textbook.php?demm1=0-14"},
+  {gr:4,t:"Ganit Mela",sub:"Maths",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/dhmm1dd.zip",read:"https://ncert.nic.in/textbook.php?dhmm1=0-14"},
+  {gr:4,t:"Veena",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/dhve1dd.zip",read:"https://ncert.nic.in/textbook.php?dhve1=0-13"},
+  {gr:4,t:"Our Wondrous World",sub:"EVS (The World Around Us)",med:"English",zip:"https://ncert.nic.in/textbook/pdf/deev1dd.zip",read:"https://ncert.nic.in/textbook.php?deev1=0-10"},
+  {gr:4,t:"Hamara Adbhut Sansar",sub:"EVS (The World Around Us)",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/dhev1dd.zip",read:"https://ncert.nic.in/textbook.php?dhev1=0-10"},
+  {gr:4,t:"Bansuri",sub:"Arts",med:"English",zip:"https://ncert.nic.in/textbook/pdf/debu1dd.zip",read:"https://ncert.nic.in/textbook.php?debu1=0-18"},
+  {gr:4,t:"Khel Yoga",sub:"Physical Education",med:"English",zip:"https://ncert.nic.in/textbook/pdf/deky1dd.zip",read:"https://ncert.nic.in/textbook.php?deky1=0-7"},
+  /* ── Grade 5 ── */
+  {gr:5,t:"Santoor",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/eesa1dd.zip",read:"https://ncert.nic.in/textbook.php?eesa1=0-10"},
+  {gr:5,t:"Maths Mela",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/eemm1dd.zip",read:"https://ncert.nic.in/textbook.php?eemm1=0-15"},
+  {gr:5,t:"Ganit Mela",sub:"Maths",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ehmm1dd.zip",read:"https://ncert.nic.in/textbook.php?ehmm1=0-15"},
+  {gr:5,t:"Veena",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ehve1dd.zip",read:"https://ncert.nic.in/textbook.php?ehve1=0-12"},
+  {gr:5,t:"Our Wondrous World",sub:"EVS (The World Around Us)",med:"English",zip:"https://ncert.nic.in/textbook/pdf/eeev1dd.zip",read:"https://ncert.nic.in/textbook.php?eeev1=0-10"},
+  {gr:5,t:"Hamara Adbhut Sansar",sub:"EVS (The World Around Us)",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ehev1dd.zip",read:"https://ncert.nic.in/textbook.php?ehev1=0-10"},
+  {gr:5,t:"Bansuri",sub:"Arts",med:"English",zip:"https://ncert.nic.in/textbook/pdf/eebu1dd.zip",read:"https://ncert.nic.in/textbook.php?eebu1=0-19"},
+  {gr:5,t:"Khel Yoga",sub:"Physical Education",med:"English",zip:"https://ncert.nic.in/textbook/pdf/eeky1dd.zip",read:"https://ncert.nic.in/textbook.php?eeky1=0-7"},
+  /* ── Grade 6 ── */
+  {gr:6,t:"Poorvi",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/fepr1dd.zip",read:"https://ncert.nic.in/textbook.php?fepr1=0-5"},
+  {gr:6,t:"Malhar",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/fhml1dd.zip",read:"https://ncert.nic.in/textbook.php?fhml1=0-13"},
+  {gr:6,t:"Ganita Prakash",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/fegp1dd.zip",read:"https://ncert.nic.in/textbook.php?fegp1=0-10"},
+  {gr:6,t:"Ganita Prakash (Hindi)",sub:"Maths",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/fhgp1dd.zip",read:"https://ncert.nic.in/textbook.php?fhgp1=0-10"},
+  {gr:6,t:"Curiosity",sub:"Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/fecu1dd.zip",read:"https://ncert.nic.in/textbook.php?fecu1=0-12"},
+  {gr:6,t:"Jigyasa",sub:"Science",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/fhcu1dd.zip",read:"https://ncert.nic.in/textbook.php?fhcu1=0-12"},
+  {gr:6,t:"Exploring Society",sub:"Social Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/fees1dd.zip",read:"https://ncert.nic.in/textbook.php?fees1=0-14"},
+  {gr:6,t:"Samaj ka Adhyayan",sub:"Social Science",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/fhes1dd.zip",read:"https://ncert.nic.in/textbook.php?fhes1=0-14"},
+  {gr:6,t:"Deepakam",sub:"Sanskrit",med:"Sanskrit",zip:"https://ncert.nic.in/textbook/pdf/fsde1dd.zip",read:"https://ncert.nic.in/textbook.php?fsde1=0-15"},
+  {gr:6,t:"Kriti",sub:"Arts",med:"English",zip:"https://ncert.nic.in/textbook/pdf/fekr1dd.zip",read:"https://ncert.nic.in/textbook.php?fekr1=0-22"},
+  {gr:6,t:"Khel Yatra",sub:"Physical Education",med:"English",zip:"https://ncert.nic.in/textbook/pdf/feky1dd.zip",read:"https://ncert.nic.in/textbook.php?feky1=0-5"},
+  {gr:6,t:"Kaushal Bodh",sub:"Vocational",med:"English",zip:"https://ncert.nic.in/textbook/pdf/fekb1dd.zip",read:"https://ncert.nic.in/textbook.php?fekb1=0-6"},
+  /* ── Grade 7 ── */
+  {gr:7,t:"Poorvi",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gepr1dd.zip",read:"https://ncert.nic.in/textbook.php?gepr1=0-5"},
+  {gr:7,t:"Malhar",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ghml1dd.zip",read:"https://ncert.nic.in/textbook.php?ghml1=0-10"},
+  {gr:7,t:"Ganita Prakash Part 1",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gegp1dd.zip",read:"https://ncert.nic.in/textbook.php?gegp1=0-8"},
+  {gr:7,t:"Ganita Prakash Part 2",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gegp2dd.zip",read:"https://ncert.nic.in/textbook.php?gegp2=0-7"},
+  {gr:7,t:"Curiosity",sub:"Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gecu1dd.zip",read:"https://ncert.nic.in/textbook.php?gecu1=0-12"},
+  {gr:7,t:"Jigyasa",sub:"Science",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ghcu1dd.zip",read:"https://ncert.nic.in/textbook.php?ghcu1=0-12"},
+  {gr:7,t:"Exploring Society Part 1",sub:"Social Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gees1dd.zip",read:"https://ncert.nic.in/textbook.php?gees1=0-12"},
+  {gr:7,t:"Exploring Society Part 2",sub:"Social Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gees2dd.zip",read:"https://ncert.nic.in/textbook.php?gees2=0-8"},
+  {gr:7,t:"Deepakam",sub:"Sanskrit",med:"Sanskrit",zip:"https://ncert.nic.in/textbook/pdf/gsde1dd.zip",read:"https://ncert.nic.in/textbook.php?gsde1=0-15"},
+  {gr:7,t:"Kriti",sub:"Arts",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gekr1dd.zip",read:"https://ncert.nic.in/textbook.php?gekr1=0-20"},
+  {gr:7,t:"Khel Yatra",sub:"Physical Education",med:"English",zip:"https://ncert.nic.in/textbook/pdf/geky1dd.zip",read:"https://ncert.nic.in/textbook.php?geky1=0-6"},
+  {gr:7,t:"Kaushal Bodh",sub:"Vocational",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gekb1dd.zip",read:"https://ncert.nic.in/textbook.php?gekb1=0-7"},
+  /* ── Grade 8 ── */
+  {gr:8,t:"Poorvi",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hepr1dd.zip",read:"https://ncert.nic.in/textbook.php?hepr1=0-5"},
+  {gr:8,t:"Malhar",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/hhml1dd.zip",read:"https://ncert.nic.in/textbook.php?hhml1=0-10"},
+  {gr:8,t:"Ganita Prakash Part 1",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hegp1dd.zip",read:"https://ncert.nic.in/textbook.php?hegp1=0-7"},
+  {gr:8,t:"Ganita Prakash Part 2",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hegp2dd.zip",read:"https://ncert.nic.in/textbook.php?hegp2=0-7"},
+  {gr:8,t:"Curiosity",sub:"Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hecu1dd.zip",read:"https://ncert.nic.in/textbook.php?hecu1=0-13"},
+  {gr:8,t:"Jigyasa",sub:"Science",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/hhcu1dd.zip",read:"https://ncert.nic.in/textbook.php?hhcu1=0-13"},
+  {gr:8,t:"Exploring Society Part 1",sub:"Social Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hees1dd.zip",read:"https://ncert.nic.in/textbook.php?hees1=0-7"},
+  {gr:8,t:"Exploring Society Part 2",sub:"Social Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hees2dd.zip",read:"https://ncert.nic.in/textbook.php?hees2=0-8"},
+  {gr:8,t:"Deepakam",sub:"Sanskrit",med:"Sanskrit",zip:"https://ncert.nic.in/textbook/pdf/hsde1dd.zip",read:"https://ncert.nic.in/textbook.php?hsde1=0-17"},
+  {gr:8,t:"Kriti",sub:"Arts",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hekr1dd.zip",read:"https://ncert.nic.in/textbook.php?hekr1=0-19"},
+  {gr:8,t:"Khel Yatra",sub:"Physical Education",med:"English",zip:"https://ncert.nic.in/textbook/pdf/heky1dd.zip",read:"https://ncert.nic.in/textbook.php?heky1=0-6"},
+  {gr:8,t:"Kaushal Bodh",sub:"Vocational",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hekb1dd.zip",read:"https://ncert.nic.in/textbook.php?hekb1=0-8"},
+  /* ── Grade 9 ── */
+  {gr:9,t:"Ganita Manjari Part 1",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/iemh1dd.zip",read:"https://ncert.nic.in/textbook.php?iemh1=0-8"},
+  {gr:9,t:"Exploration",sub:"Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/iesc1dd.zip",read:"https://ncert.nic.in/textbook.php?iesc1=0-13"},
+  {gr:9,t:"Understanding Society Part 1",sub:"Social Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/iest1dd.zip",read:"https://ncert.nic.in/textbook.php?iest1=0-9"},
+  {gr:9,t:"Kaveri",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/iebe1dd.zip",read:"https://ncert.nic.in/textbook.php?iebe1=0-8"},
+  {gr:9,t:"Ganga",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/ihga1dd.zip",read:"https://ncert.nic.in/textbook.php?ihga1=0-12"},
+  {gr:9,t:"Sharada",sub:"Sanskrit",med:"Sanskrit",zip:"https://ncert.nic.in/textbook/pdf/ihsh1dd.zip",read:"https://ncert.nic.in/textbook.php?ihsh1=0-16"},
+  /* ── Grade 10 ── */
+  {gr:10,t:"Mathematics",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jemh1dd.zip",read:"https://ncert.nic.in/textbook.php?jemh1=0-14"},
+  {gr:10,t:"Ganit",sub:"Maths",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/jhmh1dd.zip",read:"https://ncert.nic.in/textbook.php?jhmh1=0-14"},
+  {gr:10,t:"Science",sub:"Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jesc1dd.zip",read:"https://ncert.nic.in/textbook.php?jesc1=0-13"},
+  {gr:10,t:"Vigyan",sub:"Science",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/jhsc1dd.zip",read:"https://ncert.nic.in/textbook.php?jhsc1=0-13"},
+  {gr:10,t:"India & Contemporary World II",sub:"Social Science - History",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jess3dd.zip",read:"https://ncert.nic.in/textbook.php?jess3=0-5"},
+  {gr:10,t:"Contemporary India II",sub:"Social Science - Geography",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jess1dd.zip",read:"https://ncert.nic.in/textbook.php?jess1=0-7"},
+  {gr:10,t:"Democratic Politics II",sub:"Social Science - Political Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jess4dd.zip",read:"https://ncert.nic.in/textbook.php?jess4=0-5"},
+  {gr:10,t:"Understanding Economic Development",sub:"Social Science - Economics",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jess2dd.zip",read:"https://ncert.nic.in/textbook.php?jess2=0-5"},
+  {gr:10,t:"First Flight",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jeff1dd.zip",read:"https://ncert.nic.in/textbook.php?jeff1=0-9"},
+  {gr:10,t:"Footprints without Feet",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/jefp1dd.zip",read:"https://ncert.nic.in/textbook.php?jefp1=0-9"},
+  {gr:10,t:"Kshitij 2",sub:"Hindi A",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/jhks1dd.zip",read:"https://ncert.nic.in/textbook.php?jhks1=0-13"},
+  {gr:10,t:"Kritika 2",sub:"Hindi A",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/jhkr1dd.zip",read:"https://ncert.nic.in/textbook.php?jhkr1=0-3"},
+  {gr:10,t:"Sparsh 2",sub:"Hindi B",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/jhsp1dd.zip",read:"https://ncert.nic.in/textbook.php?jhsp1=0-14"},
+  {gr:10,t:"Shemushi 2",sub:"Sanskrit",med:"Sanskrit",zip:"https://ncert.nic.in/textbook/pdf/jhsk1dd.zip",read:"https://ncert.nic.in/textbook.php?jhsk1=0-12"},
+  /* ── Grade 11 ── */
+  {gr:11,t:"Physics Part I",sub:"Physics",med:"English",zip:"https://ncert.nic.in/textbook/pdf/keph1dd.zip",read:"https://ncert.nic.in/textbook.php?keph1=0-7"},
+  {gr:11,t:"Physics Part II",sub:"Physics",med:"English",zip:"https://ncert.nic.in/textbook/pdf/keph2dd.zip",read:"https://ncert.nic.in/textbook.php?keph2=0-7"},
+  {gr:11,t:"Chemistry Part I",sub:"Chemistry",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kech1dd.zip",read:"https://ncert.nic.in/textbook.php?kech1=0-6"},
+  {gr:11,t:"Chemistry Part II",sub:"Chemistry",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kech2dd.zip",read:"https://ncert.nic.in/textbook.php?kech2=0-3"},
+  {gr:11,t:"Biology",sub:"Biology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kebo1dd.zip",read:"https://ncert.nic.in/textbook.php?kebo1=0-19"},
+  {gr:11,t:"Mathematics",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kemh1dd.zip",read:"https://ncert.nic.in/textbook.php?kemh1=0-14"},
+  {gr:11,t:"Financial Accounting Part I",sub:"Accountancy",med:"English",zip:"https://ncert.nic.in/textbook/pdf/keac1dd.zip",read:"https://ncert.nic.in/textbook.php?keac1=0-7"},
+  {gr:11,t:"Financial Accounting Part II",sub:"Accountancy",med:"English",zip:"https://ncert.nic.in/textbook/pdf/keac2dd.zip",read:"https://ncert.nic.in/textbook.php?keac2=0-2"},
+  {gr:11,t:"Business Studies",sub:"Business Studies",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kebs1dd.zip",read:"https://ncert.nic.in/textbook.php?kebs1=0-11"},
+  {gr:11,t:"Statistics for Economics",sub:"Economics",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kest1dd.zip",read:"https://ncert.nic.in/textbook.php?kest1=0-8"},
+  {gr:11,t:"Themes in World History",sub:"History",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kehs1dd.zip",read:"https://ncert.nic.in/textbook.php?kehs1=0-7"},
+  {gr:11,t:"Fundamentals of Physical Geography",sub:"Geography",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kegy2dd.zip",read:"https://ncert.nic.in/textbook.php?kegy2=0-14"},
+  {gr:11,t:"India: Physical Environment",sub:"Geography",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kegy1dd.zip",read:"https://ncert.nic.in/textbook.php?kegy1=0-6"},
+  {gr:11,t:"Political Theory",sub:"Political Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/keps1dd.zip",read:"https://ncert.nic.in/textbook.php?keps1=0-8"},
+  {gr:11,t:"Indian Constitution at Work",sub:"Political Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/keps2dd.zip",read:"https://ncert.nic.in/textbook.php?keps2=0-10"},
+  {gr:11,t:"Introducing Sociology",sub:"Sociology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kesy1dd.zip",read:"https://ncert.nic.in/textbook.php?kesy1=0-5"},
+  {gr:11,t:"Understanding Society",sub:"Sociology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kesy2dd.zip",read:"https://ncert.nic.in/textbook.php?kesy2=0-5"},
+  {gr:11,t:"Introduction to Psychology",sub:"Psychology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kepy1dd.zip",read:"https://ncert.nic.in/textbook.php?kepy1=0-8"},
+  {gr:11,t:"Computer Science",sub:"Computer Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kecs1dd.zip",read:"https://ncert.nic.in/textbook.php?kecs1=0-11"},
+  {gr:11,t:"Informatics Practices",sub:"Informatics Practices",med:"English",zip:"https://ncert.nic.in/textbook/pdf/keip1dd.zip",read:"https://ncert.nic.in/textbook.php?keip1=0-8"},
+  {gr:11,t:"Hornbill",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kehb1dd.zip",read:"https://ncert.nic.in/textbook.php?kehb1=0-14"},
+  {gr:11,t:"Snapshots",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/kesp1dd.zip",read:"https://ncert.nic.in/textbook.php?kesp1=0-5"},
+  /* ── Grade 12 ── */
+  {gr:12,t:"Physics Part I",sub:"Physics",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leph1dd.zip",read:"https://ncert.nic.in/textbook.php?leph1=0-8"},
+  {gr:12,t:"Physics Part II",sub:"Physics",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leph2dd.zip",read:"https://ncert.nic.in/textbook.php?leph2=0-6"},
+  {gr:12,t:"Chemistry Part I",sub:"Chemistry",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lech1dd.zip",read:"https://ncert.nic.in/textbook.php?lech1=0-5"},
+  {gr:12,t:"Chemistry Part II",sub:"Chemistry",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lech2dd.zip",read:"https://ncert.nic.in/textbook.php?lech2=0-5"},
+  {gr:12,t:"Biology",sub:"Biology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lebo1dd.zip",read:"https://ncert.nic.in/textbook.php?lebo1=0-13"},
+  {gr:12,t:"Mathematics Part I",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lemh1dd.zip",read:"https://ncert.nic.in/textbook.php?lemh1=0-6"},
+  {gr:12,t:"Mathematics Part II",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lemh2dd.zip",read:"https://ncert.nic.in/textbook.php?lemh2=0-7"},
+  {gr:12,t:"Accountancy Part I",sub:"Accountancy",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leac1dd.zip",read:"https://ncert.nic.in/textbook.php?leac1=0-4"},
+  {gr:12,t:"Accountancy Part II",sub:"Accountancy",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leac2dd.zip",read:"https://ncert.nic.in/textbook.php?leac2=0-6"},
+  {gr:12,t:"Business Studies Part I",sub:"Business Studies",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lebs1dd.zip",read:"https://ncert.nic.in/textbook.php?lebs1=0-8"},
+  {gr:12,t:"Business Studies Part II",sub:"Business Studies",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lebs2dd.zip",read:"https://ncert.nic.in/textbook.php?lebs2=0-3"},
+  {gr:12,t:"Introductory Macroeconomics",sub:"Economics",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leec1dd.zip",read:"https://ncert.nic.in/textbook.php?leec1=0-6"},
+  {gr:12,t:"Themes in Indian History Part I",sub:"History",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lehs1dd.zip",read:"https://ncert.nic.in/textbook.php?lehs1=0-4"},
+  {gr:12,t:"Themes in Indian History Part II",sub:"History",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lehs2dd.zip",read:"https://ncert.nic.in/textbook.php?lehs2=0-4"},
+  {gr:12,t:"Themes in Indian History Part III",sub:"History",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lehs3dd.zip",read:"https://ncert.nic.in/textbook.php?lehs3=0-4"},
+  {gr:12,t:"Fundamentals of Human Geography",sub:"Geography",med:"English",zip:"https://ncert.nic.in/textbook/pdf/legy1dd.zip",read:"https://ncert.nic.in/textbook.php?legy1=0-8"},
+  {gr:12,t:"India: People and Economy",sub:"Geography",med:"English",zip:"https://ncert.nic.in/textbook/pdf/legy2dd.zip",read:"https://ncert.nic.in/textbook.php?legy2=0-9"},
+  {gr:12,t:"Contemporary World Politics",sub:"Political Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leps1dd.zip",read:"https://ncert.nic.in/textbook.php?leps1=0-7"},
+  {gr:12,t:"Politics in India since Independence",sub:"Political Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leps2dd.zip",read:"https://ncert.nic.in/textbook.php?leps2=0-8"},
+  {gr:12,t:"Indian Society",sub:"Sociology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lesy1dd.zip",read:"https://ncert.nic.in/textbook.php?lesy1=0-7"},
+  {gr:12,t:"Social Change and Development in India",sub:"Sociology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lesy2dd.zip",read:"https://ncert.nic.in/textbook.php?lesy2=0-8"},
+  {gr:12,t:"Psychology",sub:"Psychology",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lepy1dd.zip",read:"https://ncert.nic.in/textbook.php?lepy1=0-7"},
+  {gr:12,t:"Computer Science",sub:"Computer Science",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lecs1dd.zip",read:"https://ncert.nic.in/textbook.php?lecs1=0-13"},
+  {gr:12,t:"Informatics Practices",sub:"Informatics Practices",med:"English",zip:"https://ncert.nic.in/textbook/pdf/leip1dd.zip",read:"https://ncert.nic.in/textbook.php?leip1=0-7"},
+  {gr:12,t:"Flamingo",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/lefl1dd.zip",read:"https://ncert.nic.in/textbook.php?lefl1=0-13"},
+  {gr:12,t:"Vistas",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/levt1dd.zip",read:"https://ncert.nic.in/textbook.php?levt1=0-6"},
 ];
 const QUIZ = [
   {sub:"Mathematics",q:"Solve for x:  3x + 7 = 25",o:["x = 4","x = 6","x = 9","x = 11"],a:1,
@@ -365,6 +506,7 @@ const API = 'http://localhost:4000'; // Change to your deployed server URL after
 /* ─────────── state ─────────── */
 const state = {
   view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,
+  libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');return u&&u.grade?parseInt(u.grade)||8:8;}catch(e){return 8;}})(),
   quiz:{i:0,picked:null,answers:[],done:false},
   auth:{screen:"signin", error:"", loading:false},  /* signin | signup | app */
   user: JSON.parse(localStorage.getItem('qe_user')||'null'),
@@ -538,15 +680,30 @@ function learnView(){
       ? '<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">'+btn(c.d?t.resume:t.start,c.d?'ghost':'solid','play','style="width:100%"')+'</a>'
       : btn(c.d?t.resume:t.start,c.d?'ghost':'solid',c.d?'play':'arrow','style="width:100%"'))+'</div></div>',
     c.yt?'p0':'p20')).join('');
-  const books=LIBRARY.map(b=>'<div class="libbook"><div class="libcover" style="background:linear-gradient(160deg,'+b.g+',rgba(0,0,0,.25))">'+b.t+'</div>'+
-    '<div><div style="font-size:13px;font-weight:600;line-height:1.3">'+b.t+'</div><div class="small">'+b.sub+'</div></div>'+
-    '<a href="'+b.pdf+'" download target="_blank" rel="noopener" style="text-decoration:none">'+btn('⬇ Download PDF','ghost','book','style="width:100%"')+'</a></div>').join('');
+  const allGrades=[1,2,3,4,5,6,7,8,9,10,11,12];
+  const gradeBooks=LIBRARY.filter(b=>b.gr===state.libGrade);
+  const gradeTabs=allGrades.map(g=>'<button onclick="setLibGrade('+g+')" style="padding:6px 13px;border-radius:99px;border:1.5px solid '+(g===state.libGrade?'var(--teal)':'var(--line)')+';background:'+(g===state.libGrade?'var(--teal)':'transparent')+';color:'+(g===state.libGrade?'#fff':'var(--slate)')+';font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">Gr '+g+'</button>').join('');
+  const books=gradeBooks.map(b=>{
+    const col=SC(b.sub);
+    const medBadge='<span style="font-size:10px;background:'+col+'22;color:'+col+';border-radius:99px;padding:2px 7px;font-weight:600">'+b.med+'</span>';
+    const subBadge='<span style="font-size:10px;background:var(--canvas);border:1px solid var(--line);border-radius:99px;padding:2px 7px;color:'+col+';font-weight:600">'+b.sub+'</span>';
+    return '<div class="libbook">'+
+      '<div class="libcover" style="background:linear-gradient(160deg,'+col+',rgba(0,0,0,.40));min-height:100px"><div style="font-size:12px;line-height:1.3">'+b.t+'</div></div>'+
+      '<div><div style="font-size:13px;font-weight:600;line-height:1.3;margin-bottom:4px">'+b.t+'</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">'+subBadge+medBadge+'</div></div>'+
+      '<div style="display:flex;gap:6px;margin-top:auto">'+
+        '<a href="'+b.read+'" target="_blank" rel="noopener" style="text-decoration:none;flex:1">'+btn('📖 Read','ghost','','style="width:100%;font-size:12px;padding:7px 8px"')+'</a>'+
+        '<a href="'+b.zip+'" target="_blank" rel="noopener" style="text-decoration:none;flex:1">'+btn('⬇ ZIP','ghost','','style="width:100%;font-size:12px;padding:7px 8px"')+'</a>'+
+      '</div></div>';
+  }).join('');
   return '<div class="wrap" style="margin-bottom:20px">'+chips+'</div><div class="cards3">'+cards+'</div>'+
     card('<div class="between" style="flex-wrap:wrap">'+
-      '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">NCERT textbooks, supplementary readers and reference books</h3>'+
-      '<p class="muted">'+LIBRARY.length+' titles for Grade 8, plus general reference reading · NCERT titles open the official NCERT e-book portal</p></div>'+
-      btn(state.libOpen?'Hide library':'Open library','ghost','book','onclick="toggleLib()"')+'</div>'+
-      (state.libOpen?'<div class="libgrid mt20">'+books+'</div>':''),'p20 mt20');
+      '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">NCERT Textbooks — Complete Catalog</h3>'+
+      '<p class="muted">'+LIBRARY.length+' official NCERT titles · Grades 1–12 · Choose a grade to browse</p></div>'+
+      btn(state.libOpen?'Hide library':'Browse library','ghost','book','onclick="toggleLib()"')+'</div>'+
+      (state.libOpen?'<div style="overflow-x:auto;padding-bottom:4px"><div style="display:flex;gap:6px;padding:14px 0;width:max-content">'+gradeTabs+'</div></div>'+
+       '<p class="muted" style="margin-top:0;margin-bottom:14px">'+gradeBooks.length+' books for Grade '+state.libGrade+'</p>'+
+       '<div class="libgrid">'+books+'</div>':''),'p20 mt20');
 }
 
 function liveView(){
@@ -808,6 +965,7 @@ function setLang(l){state.lang=l;render();}
 function setFilter(f){state.filter=f;render();}
 function toggleNav(){state.navOpen=!state.navOpen;render();}
 function toggleLib(){state.libOpen=!state.libOpen;render();}
+function setLibGrade(g){state.libGrade=g;render();}
 function pick(n){if(state.quiz.answers.length===state.quiz.i+1)return;state.quiz.picked=n;render();}
 function checkQ(){const q=state.quiz;if(q.picked===null)return;q.answers.push(q.picked===QUIZ[q.i].a);render();}
 function nextQ(){const q=state.quiz;q.picked=null;if(q.i+1<QUIZ.length)q.i++;else q.done=true;render();}

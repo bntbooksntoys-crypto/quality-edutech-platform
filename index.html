@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Quality Education — EdTech Platform</title>
 <style>
-
-
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root{
@@ -63,8 +61,50 @@ main{padding:24px}
 .pagehead{margin-bottom:20px}
 .pagehead h2{font-family:var(--display);font-size:30px;font-weight:800;letter-spacing:-.02em;margin-top:4px}
 
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
-.p20{padding:20px}.p24{padding:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.p20{padding:20px}.p24{padding:24px}.p0{padding:0}
+.ytthumb{position:relative;width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;cursor:pointer}
+.ytthumb::after{content:"";position:absolute;inset:0;background:rgba(17,33,45,.15);transition:background .18s ease}
+.ytthumb:hover::after{background:rgba(17,33,45,.32)}
+.ytplay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:99px;background:rgba(255,255,255,.94);color:var(--ink);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.vmodal{position:fixed;inset:0;background:rgba(17,33,45,.72);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.vmodal-box{background:#000;border-radius:14px;overflow:hidden;width:100%;max-width:860px}
+.vmodal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--ink)}
+.vmodal-head h4{color:#fff;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vmodal-close{color:#fff;background:rgba(255,255,255,.12);border-radius:8px;padding:6px 10px}
+.vmodal iframe{width:100%;aspect-ratio:16/9;display:block;border:none}
+/* ── auth ── */
+.auth-bg{min-height:100vh;background:var(--ink);display:flex;align-items:center;justify-content:center;padding:24px;
+  background-image:radial-gradient(ellipse at 20% 50%,rgba(14,124,107,.18) 0%,transparent 60%),
+                   radial-gradient(ellipse at 80% 20%,rgba(245,165,36,.10) 0%,transparent 55%)}
+.auth-box{background:var(--card);border-radius:20px;padding:40px;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(0,0,0,.35)}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.auth-brand-name{font-family:var(--display);font-size:16px;font-weight:800;color:var(--ink)}
+.auth-brand-sub{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--mute)}
+.auth-brand .brand-mark{width:42px;height:42px;border-radius:12px;background:var(--marigold);display:grid;place-items:center;color:var(--ink);flex-shrink:0}
+.auth-title{font-family:var(--display);font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.auth-sub{font-size:14px;color:var(--slate);margin-top:6px;margin-bottom:24px}
+.auth-error{background:var(--redSoft);border:1px solid var(--vermilion);color:var(--vermilion);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.auth-field{display:flex;flex-direction:column;gap:5px;flex:1}
+.auth-field label{font-size:12px;font-weight:600;color:var(--slate);letter-spacing:.02em}
+.auth-field input,.auth-field select{border:1.5px solid var(--line);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--ink);background:var(--canvas);outline:none;transition:border-color .18s}
+.auth-field input:focus,.auth-field select:focus{border-color:var(--teal);background:#fff}
+.auth-row{display:flex;gap:12px}
+.auth-btn{margin-top:4px;background:var(--teal);color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:600;font-family:var(--display);cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .18s,transform .18s}
+.auth-btn:hover{background:#0a6458;transform:translateY(-1px)}
+.auth-btn:active{transform:none}
+.auth-switch{text-align:center;font-size:13px;color:var(--slate);margin-top:20px}
+.auth-switch a{color:var(--teal);font-weight:600;text-decoration:none}
+.auth-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:99px;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.auth-avatar{width:36px;height:36px;border-radius:99px;background:var(--marigold);color:var(--ink);font-family:var(--display);font-weight:800;font-size:16px;display:grid;place-items:center;margin-bottom:6px}
+/* ── end auth ── */
+.libbook{background:var(--canvas);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.libcover{width:100%;aspect-ratio:3/4;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--display);font-weight:800;text-align:center;padding:10px;font-size:13px;line-height:1.25}
+.libgrid{display:grid;gap:14px;grid-template-columns:repeat(6,1fr)}
+@media (max-width:1080px){.libgrid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:620px){.libgrid{grid-template-columns:repeat(2,1fr)}}
 .grid{display:grid;gap:20px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:2fr 1fr}
@@ -154,6 +194,33 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
   .cards3,.cards4{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── auth screen ── */
+.auth-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--canvas);padding:20px}
+.auth-box{background:var(--card);border:1px solid var(--line);border-radius:24px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 8px 40px rgba(17,33,45,.10)}
+.auth-hero{background:var(--ink);padding:32px 32px 28px;text-align:center}
+.auth-logo{width:52px;height:52px;border-radius:14px;background:var(--marigold);display:inline-flex;align-items:center;justify-content:center;color:var(--ink);margin-bottom:16px}
+.auth-hero h2{font-family:var(--display);font-size:22px;font-weight:800;color:#fff;margin-bottom:4px}
+.auth-hero p{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:#7D94A0;text-transform:uppercase}
+.auth-body{padding:28px 32px 32px}
+.auth-tabs{display:flex;background:var(--canvas);border-radius:12px;padding:3px;margin-bottom:24px}
+.auth-tabs button{flex:1;padding:8px;border-radius:9px;font-size:13px;font-weight:500;color:var(--slate);transition:background .18s,color .18s}
+.auth-tabs button.on{background:var(--ink);color:#fff}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:12px;font-weight:600;color:var(--slate);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.field input,.field select{border:1.5px solid var(--line);border-radius:10px;padding:11px 14px;font-size:14px;font-family:var(--body);color:var(--ink);background:var(--card);transition:border-color .18s;outline:none;width:100%}
+.field input:focus,.field select:focus{border-color:var(--teal)}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6B78' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.auth-err{background:var(--redSoft);border:1px solid #f5c6c4;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--vermilion);margin-bottom:16px;display:none}
+.auth-err.show{display:block}
+.auth-btn{width:100%;padding:13px;border-radius:12px;background:var(--teal);color:#fff;font-size:15px;font-weight:600;font-family:var(--body);cursor:pointer;border:none;transition:background .18s,transform .18s;margin-top:4px}
+.auth-btn:hover{background:#0a6558;transform:translateY(-1px)}
+.auth-btn:active{transform:none}
+.auth-switch{text-align:center;margin-top:18px;font-size:13px;color:var(--slate)}
+.auth-switch button{color:var(--teal);font-weight:600;background:none;border:none;cursor:pointer;font:inherit}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--mute);font-size:12px;font-family:var(--mono)}
+.auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--line)}
 </style>
 </head>
 <body>
@@ -194,7 +261,7 @@ const I = {
 /* ─────────── content ─────────── */
 const STR = {
   en:{home:"Today",learn:"Learn",live:"Live classes",assess:"Assessments",progress:"Progress",awards:"Achievements",
-      search:"Search lessons, chapters, teachers",greet:"Hello , Good morning",cont:"Continue learning",join:"Join now",
+      search:"Search lessons, chapters, teachers",greet:"Good morning",cont:"Continue learning",join:"Join now",
       day:"Your day",mastery:"Subject mastery",streak:"day streak",all:"View all",start:"Start",resume:"Resume",viewas:"View as"},
   ta:{home:"இன்று",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"மதிப்பீடு",progress:"முன்னேற்றம்",awards:"சாதனைகள்",
       search:"பாடங்கள், அத்தியாயங்களைத் தேடுங்கள்",greet:"காலை வணக்கம்",cont:"தொடர்ந்து கற்க",join:"இணைக",
@@ -229,12 +296,36 @@ const SUBJECTS = [
   {n:"Life Skills",m:68,c:9,d:6,h:"var(--marigold)"},
 ];
 const COURSES = [
-  {sub:"Mathematics",t:"Linear Equations in One Variable",g:"Grade 8",l:9,d:6,mode:"Video + practice",by:"S. Rajkumar"},
-  {sub:"Science",t:"Life Processes: Photosynthesis",g:"Grade 8",l:7,d:3,mode:"Virtual lab",by:"Meera Nair"},
-  {sub:"Coding",t:"Python Foundations: Loops & Logic",g:"Grade 8",l:12,d:8,mode:"Project-based",by:"A. Balaji"},
-  {sub:"Financial Literacy",t:"Money, Savings and Simple Interest",g:"Grade 8",l:6,d:1,mode:"Interactive",by:"K. Devi"},
-  {sub:"Robotics",t:"Sensors and Simple Circuits",g:"Grade 8",l:8,d:0,mode:"Kit + simulation",by:"A. Balaji"},
-  {sub:"Social Studies",t:"Resources and Development",g:"Grade 8",l:11,d:7,mode:"Video + maps",by:"P. Anitha"},
+  {sub:"Mathematics",t:"Linear Equations in One Variable",g:"Grade 8",l:9,d:6,mode:"Video + practice",by:"S. Rajkumar",yt:"NybHckSEQBI"},
+  {sub:"Science",t:"Life Processes: Photosynthesis",g:"Grade 8",l:7,d:3,mode:"Virtual lab",by:"Meera Nair",yt:"UPBMG5EYydo"},
+  {sub:"Coding",t:"Python Foundations: Loops & Logic",g:"Grade 8",l:12,d:8,mode:"Project-based",by:"A. Balaji",yt:"94UHCEmprCY"},
+  {sub:"Financial Literacy",t:"Money, Savings and Simple Interest",g:"Grade 8",l:6,d:1,mode:"Interactive",by:"K. Devi",yt:"Rmol9IzSDXk"},
+  {sub:"Robotics",t:"Sensors and Simple Circuits",g:"Grade 8",l:8,d:0,mode:"Kit + simulation",by:"A. Balaji",yt:"cqJpoJjRQ_E"},
+  {sub:"Social Studies",t:"Resources and Development",g:"Grade 8",l:11,d:7,mode:"Video + maps",by:"P. Anitha",yt:"osBVRfvkmAU"},
+];
+const LIBRARY = [
+  {t:"Mathematics",sub:"NCERT · Maths · Grade 8",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/hemh1ps.pdf"},
+  {t:"Science",sub:"NCERT · Science · Grade 8",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/hesc1ps.pdf"},
+  {t:"Honeydew",sub:"NCERT · English · Grade 8",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/hehl1ps.pdf"},
+  {t:"It So Happened",sub:"NCERT · English Supp. · Grade 8",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/hehb1ps.pdf"},
+  {t:"Vasant",sub:"NCERT · Hindi · Grade 8",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/hhvs1ps.pdf"},
+  {t:"Durva",sub:"NCERT · Hindi Supp. · Grade 8",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/hhdv1ps.pdf"},
+  {t:"Bharat Ki Khoj",sub:"NCERT · Hindi Reader · Grade 8",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/hhbk1ps.pdf"},
+  {t:"Resources & Development",sub:"NCERT · Geography · Grade 8",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/hess2ps.pdf"},
+  {t:"Our Pasts – III",sub:"NCERT · History · Grade 8",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/hess1ps.pdf"},
+  {t:"Social & Political Life III",sub:"NCERT · Civics · Grade 8",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/hess3ps.pdf"},
+  {t:"Ruchira",sub:"NCERT · Sanskrit · Grade 8",g:"#8A5A44",pdf:"https://ncert.nic.in/textbook/pdf/hruc1ps.pdf"},
+  {t:"Maths Exemplar",sub:"NCERT · Exemplar · Grade 8",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/hemep1ps.pdf"},
+  {t:"Mathematics",sub:"NCERT · Maths · Grade 9",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/iemh1ps.pdf"},
+  {t:"Science",sub:"NCERT · Science · Grade 9",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/iesc1ps.pdf"},
+  {t:"Mathematics",sub:"NCERT · Maths · Grade 10",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/jemh1ps.pdf"},
+  {t:"Science",sub:"NCERT · Science · Grade 10",g:"var(--teal)",pdf:"https://ncert.nic.in/textbook/pdf/jesc1ps.pdf"},
+  {t:"Beehive",sub:"NCERT · English · Grade 9",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/iehl1ps.pdf"},
+  {t:"Moments",sub:"NCERT · English Supp. · Grade 9",g:"var(--marigold)",pdf:"https://ncert.nic.in/textbook/pdf/iehb1ps.pdf"},
+  {t:"Kshitij",sub:"NCERT · Hindi · Grade 9",g:"var(--vermilion)",pdf:"https://ncert.nic.in/textbook/pdf/ihkv1ps.pdf"},
+  {t:"Democratic Politics",sub:"NCERT · Civics · Grade 9",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/iess3ps.pdf"},
+  {t:"India & Contemporary World",sub:"NCERT · History · Grade 9",g:"#3E6259",pdf:"https://ncert.nic.in/textbook/pdf/iess1ps.pdf"},
+  {t:"Economics",sub:"NCERT · Economics · Grade 9",g:"#946A3B",pdf:"https://ncert.nic.in/textbook/pdf/iess4ps.pdf"},
 ];
 const QUIZ = [
   {sub:"Mathematics",q:"Solve for x:  3x + 7 = 25",o:["x = 4","x = 6","x = 9","x = 11"],a:1,
@@ -268,9 +359,16 @@ const ROLES = [
   {id:"admin",label:"Administrator",who:"Principal's office",meta:"Kongu Vidyalaya"},
 ];
 
+/* ─────────── config ─────────── */
+const API = 'http://localhost:4000'; // Change to your deployed server URL after hosting
+
 /* ─────────── state ─────────── */
-const state = {view:"home",role:"student",lang:"en",navOpen:false,filter:"All",
-  quiz:{i:0,picked:null,answers:[],done:false}};
+const state = {
+  view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,
+  quiz:{i:0,picked:null,answers:[],done:false},
+  auth:{screen:"signin", error:"", loading:false},  /* signin | signup | app */
+  user: JSON.parse(localStorage.getItem('qe_user')||'null'),
+};
 const T = () => STR[state.lang];
 const ME = () => ROLES.find(r=>r.id===state.role);
 
@@ -430,16 +528,25 @@ function learnView(){
   if(state.filter==="Not started") list=COURSES.filter(c=>c.d===0);
   if(state.filter==="Labs & projects") list=COURSES.filter(c=>/lab|Project|Kit/i.test(c.mode));
   const chips=tabs.map(x=>'<button class="chip'+(state.filter===x?' on':'')+'" style="'+(state.filter===x?'background:var(--ink);color:#fff;border-color:var(--ink)':'')+'" onclick="setFilter(\''+x+'\')">'+x+'</button>').join('');
-  const cards=list.map(c=>card('<div class="between">'+eyebrow(c.sub,'teal')+'<span class="small">'+c.g+'</span></div>'+
+  const cards=list.map(c=>card(
+    (c.yt?'<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="display:block;text-decoration:none"><div class="ytthumb" style="background-image:url(https://i.ytimg.com/vi/'+c.yt+'/hqdefault.jpg)"><span class="ytplay">'+I.play(20)+'</span></div></a>':'')+
+    '<div class="'+(c.yt?'p20':'')+'"><div class="between">'+eyebrow(c.sub,'teal')+'<span class="small">'+c.g+'</span></div>'+
     '<h3 class="display" style="font-size:17px;font-weight:700;margin-top:8px;line-height:1.35">'+c.t+'</h3>'+
     '<p class="muted mt4">'+c.mode+' · '+c.by+'</p>'+
     '<div class="row mt16"><div class="bar"><i style="width:'+(c.d/c.l*100)+'%"></i></div><span class="small">'+c.d+'/'+c.l+'</span></div>'+
-    '<div class="mt16">'+btn(c.d?t.resume:t.start,c.d?'ghost':'solid',c.d?'play':'arrow','style="width:100%"')+'</div>')).join('');
+    '<div class="mt16">'+(c.yt
+      ? '<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">'+btn(c.d?t.resume:t.start,c.d?'ghost':'solid','play','style="width:100%"')+'</a>'
+      : btn(c.d?t.resume:t.start,c.d?'ghost':'solid',c.d?'play':'arrow','style="width:100%"'))+'</div></div>',
+    c.yt?'p0':'p20')).join('');
+  const books=LIBRARY.map(b=>'<div class="libbook"><div class="libcover" style="background:linear-gradient(160deg,'+b.g+',rgba(0,0,0,.25))">'+b.t+'</div>'+
+    '<div><div style="font-size:13px;font-weight:600;line-height:1.3">'+b.t+'</div><div class="small">'+b.sub+'</div></div>'+
+    '<a href="'+b.pdf+'" download target="_blank" rel="noopener" style="text-decoration:none">'+btn('⬇ Download PDF','ghost','book','style="width:100%"')+'</a></div>').join('');
   return '<div class="wrap" style="margin-bottom:20px">'+chips+'</div><div class="cards3">'+cards+'</div>'+
     card('<div class="between" style="flex-wrap:wrap">'+
-      '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">Digital textbooks, e-books and past papers</h3>'+
-      '<p class="muted">412 titles for Grade 8 · downloadable for offline study</p></div>'+
-      btn('Open library','ghost','book')+'</div>','p20 mt20');
+      '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">NCERT textbooks, supplementary readers and reference books</h3>'+
+      '<p class="muted">'+LIBRARY.length+' titles for Grade 8, plus general reference reading · NCERT titles open the official NCERT e-book portal</p></div>'+
+      btn(state.libOpen?'Hide library':'Open library','ghost','book','onclick="toggleLib()"')+'</div>'+
+      (state.libOpen?'<div class="libgrid mt20">'+books+'</div>':''),'p20 mt20');
 }
 
 function liveView(){
@@ -566,8 +673,42 @@ function bodyHTML(){
   if(state.view==="home") return {student:studentHome,parent:parentHome,teacher:teacherHome,admin:adminHome}[state.role]();
   return {learn:learnView,live:liveView,assess:assessView,progress:progressView,awards:awardsView}[state.view]();
 }
+/* ─────────── auth screens ─────────── */
+function authScreen(){
+  const s=state.auth, err=s.error?'<div class="auth-error">'+s.error+'</div>':'';
+  const isSign = s.screen==='signin';
+  return '<div class="auth-bg">'+
+    '<div class="auth-box">'+
+      '<div class="auth-brand">'+I.cap(28)+'<div><div class="auth-brand-name">Quality Education</div><div class="auth-brand-sub">EDTECH PLATFORM</div></div></div>'+
+      '<h2 class="auth-title">'+(isSign?'Welcome back':'Create your account')+'</h2>'+
+      '<p class="auth-sub">'+(isSign?'Sign in to continue learning':'Join thousands of students learning every day')+'</p>'+
+      err+
+      '<form class="auth-form" onsubmit="'+(isSign?'doSignIn':'doSignUp')+'(event)">'+
+        (!isSign?'<div class="auth-field"><label>Full Name</label><input id="f_name" type="text" placeholder="e.g. Aarthi Ramesh" required autocomplete="name"/></div>':'')+
+        '<div class="auth-field"><label>Email Address</label><input id="f_email" type="email" placeholder="you@example.com" required autocomplete="email"/></div>'+
+        '<div class="auth-field"><label>Password</label><input id="f_pass" type="password" placeholder="At least 6 characters" required autocomplete="'+(isSign?'current-password':'new-password')+'"/></div>'+
+        (!isSign?'<div class="auth-row">'+
+          '<div class="auth-field"><label>Grade</label><select id="f_grade" required><option value="">Select grade</option>'+
+            ['6','7','8','9','10','11','12'].map(g=>'<option value="Grade '+g+'">Grade '+g+'</option>').join('')+
+          '</select></div>'+
+          '<div class="auth-field"><label>Age</label><input id="f_age" type="number" placeholder="e.g. 14" min="5" max="25" required/></div>'+
+        '</div>':'')+
+        '<button type="submit" class="auth-btn">'+(s.loading?'<span class="auth-spinner"></span> Please wait…':(isSign?'Sign In →':'Create Account →'))+'</button>'+
+      '</form>'+
+      '<p class="auth-switch">'+(isSign?'New here? <a href="#" onclick="switchAuth(\'signup\')">Create an account</a>':'Already have an account? <a href="#" onclick="switchAuth(\'signin\')">Sign in</a>')+'</p>'+
+    '</div>'+
+  '</div>';
+}
+
 function render(){
+  // Show auth screen if not logged in
+  if(!state.user){
+    document.getElementById('app').innerHTML = authScreen();
+    return;
+  }
+
   const t=T(), me=ME();
+  const u=state.user;
   const langs=[["en","EN"],["ta","தமிழ்"],["hi","हिं"]].map(l=>
     '<button class="'+(state.lang===l[0]?'on':'')+'" onclick="setLang(\''+l[0]+'\')">'+l[1]+'</button>').join('');
   const roles=ROLES.map(r=>'<button class="chip'+(state.role===r.id?' on':'')+'" onclick="setRole(\''+r.id+'\')">'+r.label+'</button>').join('');
@@ -577,8 +718,13 @@ function render(){
     '<aside class="side"><div class="brand"><div class="brand-mark">'+I.cap(18)+'</div>'+
       '<div><h1>Quality Education</h1><p>EDTECH PLATFORM</p></div></div>'+
       navHTML()+
-      '<div class="whoami"><div class="eyebrow" style="color:#7D94A0">Signed in as</div>'+
-      '<div class="n">'+me.who+'</div><div class="m">'+me.meta+'</div></div></aside>'+
+      '<div class="whoami">'+
+        '<div class="auth-avatar">'+u.name.charAt(0).toUpperCase()+'</div>'+
+        '<div class="n">'+u.name+'</div>'+
+        '<div class="m">'+u.grade+' · Age '+u.age+'</div>'+
+        '<div class="m" style="margin-top:2px;font-size:10px;word-break:break-all">'+u.email+'</div>'+
+        '<button onclick="doSignOut()" style="margin-top:10px;color:#9FB3BD;font-size:11px;font-family:var(--mono);letter-spacing:.05em;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 10px;width:100%;text-align:center">Sign out</button>'+
+      '</div></aside>'+
     '<div class="main">'+
       '<header class="top"><div class="toprow">'+
         '<button class="iconbtn burger" onclick="toggleNav()">'+(state.navOpen?I.close(18):I.menu(18))+'</button>'+
@@ -590,7 +736,7 @@ function render(){
       '<div class="mobnav'+(state.navOpen?' open':'')+'">'+navHTML()+'</div>'+
       '</header>'+
       '<main><div class="pagehead">'+eyebrow(me.label+' workspace')+
-        '<h2>'+title()+'</h2></div>'+bodyHTML()+
+        '<h2>'+t.greet+', '+u.name.split(' ')[0]+'</h2></div>'+bodyHTML()+
         '<footer class="legal">'+
         [["shield","Role-based access"],["globe","3 languages enabled"],["check","Works offline on mobile"]]
           .map(f=>'<div class="row" style="gap:6px;color:var(--mute)">'+I[f[0]](14)+'<span class="mono" style="font-size:11px">'+f[1]+'</span></div>').join('')+
@@ -599,12 +745,69 @@ function render(){
   '</div>';
 }
 
+/* ─────────── auth actions ─────────── */
+function switchAuth(screen){state.auth={screen,error:'',loading:false};render();}
+
+async function doSignIn(e){
+  e.preventDefault();
+  const email=document.getElementById('f_email').value.trim();
+  const password=document.getElementById('f_pass').value;
+  state.auth.error=''; state.auth.loading=true; render();
+  try {
+    const res = await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||'Login failed');
+    localStorage.setItem('qe_token', data.token);
+    localStorage.setItem('qe_user', JSON.stringify(data.user));
+    state.user = data.user;
+    state.auth = {screen:'app',error:'',loading:false};
+    render();
+  } catch(err){
+    state.auth.error = err.message;
+    state.auth.loading = false;
+    render();
+  }
+}
+
+async function doSignUp(e){
+  e.preventDefault();
+  const name=document.getElementById('f_name').value.trim();
+  const email=document.getElementById('f_email').value.trim();
+  const password=document.getElementById('f_pass').value;
+  const grade=document.getElementById('f_grade').value;
+  const age=document.getElementById('f_age').value;
+  state.auth.error=''; state.auth.loading=true; render();
+  try {
+    const res = await fetch(API+'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password,grade,age})});
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||'Registration failed');
+    localStorage.setItem('qe_token', data.token);
+    localStorage.setItem('qe_user', JSON.stringify(data.user));
+    state.user = data.user;
+    state.auth = {screen:'app',error:'',loading:false};
+    render();
+  } catch(err){
+    state.auth.error = err.message;
+    state.auth.loading = false;
+    render();
+  }
+}
+
+function doSignOut(){
+  localStorage.removeItem('qe_token');
+  localStorage.removeItem('qe_user');
+  state.user = null;
+  state.auth = {screen:'signin',error:'',loading:false};
+  render();
+}
+
 /* ─────────── actions ─────────── */
 function go(v){state.view=v;state.navOpen=false;render();window.scrollTo(0,0);}
 function setRole(r){state.role=r;state.view="home";render();}
 function setLang(l){state.lang=l;render();}
 function setFilter(f){state.filter=f;render();}
 function toggleNav(){state.navOpen=!state.navOpen;render();}
+function toggleLib(){state.libOpen=!state.libOpen;render();}
 function pick(n){if(state.quiz.answers.length===state.quiz.i+1)return;state.quiz.picked=n;render();}
 function checkQ(){const q=state.quiz;if(q.picked===null)return;q.answers.push(q.picked===QUIZ[q.i].a);render();}
 function nextQ(){const q=state.quiz;q.picked=null;if(q.i+1<QUIZ.length)q.i++;else q.done=true;render();}

@@ -1125,7 +1125,7 @@ function authScreen(){
         '<div class="auth-field"><label>Password</label><input id="f_pass" type="password" placeholder="At least 6 characters" required autocomplete="'+(isSign?'current-password':'new-password')+'"/></div>'+
         (!isSign?'<div class="auth-row">'+
           '<div class="auth-field"><label>Grade</label><select id="f_grade" required><option value="">Select grade</option>'+
-            ['6','7','8','9','10','11','12'].map(g=>'<option value="Grade '+g+'">Grade '+g+'</option>').join('')+
+            ['1','2','3','4','5','6','7','8','9','10','11','12'].map(g=>'<option value="Grade '+g+'">Grade '+g+'</option>').join('')+
           '</select></div>'+
           '<div class="auth-field"><label>Age</label><input id="f_age" type="number" placeholder="e.g. 14" min="5" max="25" required/></div>'+
         '</div>':'')+

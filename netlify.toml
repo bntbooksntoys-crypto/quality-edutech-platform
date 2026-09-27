@@ -1,0 +1,19 @@
+[build]
+  publish = "."
+  ignore = "exit 0"
+
+[[redirects]]
+  from = "/labs/language"
+  to = "/labs/language.html"
+  status = 200
+
+[[redirects]]
+  from = "/labs/english"
+  to = "/labs/english.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "ALLOWALL"
+    Content-Security-Policy = "frame-ancestors *"

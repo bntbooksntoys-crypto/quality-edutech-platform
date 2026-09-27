@@ -776,9 +776,9 @@ function liveView(){
         '<div style="font-size:13px;font-weight:600">'+cls.time+'</div>'+
         '<div style="font-size:11px;color:var(--mute)">'+cls.date+' · '+cls.dur+'</div>'+
       '</div>'+
-      '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none;flex-shrink:0">'+
-        '<button style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">Join</button>'+
-      '</a>'+
+      (cls.live
+        ? '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none;flex-shrink:0"><button style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">Join</button></a>'
+        : '<button disabled style="background:var(--canvas);color:var(--mute);border:1.5px solid var(--line);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:not-allowed;flex-shrink:0">Scheduled</button>')+
     '</div>';
   }).join('');
 

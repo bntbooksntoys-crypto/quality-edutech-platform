@@ -347,14 +347,121 @@ const SUBJECTS = [
   {n:"Financial Literacy",m:45,c:8,d:3,h:"var(--vermilion)"},
   {n:"Life Skills",m:68,c:9,d:6,h:"var(--marigold)"},
 ];
-const COURSES = [
-  {sub:"Mathematics",t:"Linear Equations in One Variable",g:"Grade 8",l:9,d:6,mode:"Video + practice",by:"S. Rajkumar",yt:"NybHckSEQBI"},
-  {sub:"Science",t:"Life Processes: Photosynthesis",g:"Grade 8",l:7,d:3,mode:"Virtual lab",by:"Meera Nair",yt:"UPBMG5EYydo"},
-  {sub:"Coding",t:"Python Foundations: Loops & Logic",g:"Grade 8",l:12,d:8,mode:"Project-based",by:"A. Balaji",yt:"94UHCEmprCY"},
-  {sub:"Financial Literacy",t:"Money, Savings and Simple Interest",g:"Grade 8",l:6,d:1,mode:"Interactive",by:"K. Devi",yt:"Rmol9IzSDXk"},
-  {sub:"Robotics",t:"Sensors and Simple Circuits",g:"Grade 8",l:8,d:0,mode:"Kit + simulation",by:"A. Balaji",yt:"cqJpoJjRQ_E"},
-  {sub:"Social Studies",t:"Resources and Development",g:"Grade 8",l:11,d:7,mode:"Video + maps",by:"P. Anitha",yt:"osBVRfvkmAU"},
-];
+/* ── YouTube playlists by grade (auto-selected from user's grade) ── */
+const GRADE_PLAYLISTS = {
+  1:[
+    {sub:"Maths",      t:"Addition and Subtraction",          by:"Khan Academy",   list:"PLSQl0a2vh4HDGBPpSf1oJdaRSa33SxbMf"},
+    {sub:"Maths",      t:"Math for 1st Grade",                by:"Kids Academy",   list:"PLiMIqKsOLxPyPlp6jqHpcLbQO3XLdZzJk"},
+    {sub:"English",    t:"Phonics First Steps (Alphablocks)",  by:"BBC Alphablocks",list:"PLSW2D61TnopTdy7cNOSbBJS0bpajBjAVJ"},
+    {sub:"English",    t:"Class 1 English Complete Course",   by:"Magnet Brains",  list:"PLVLoWQFkZbhUgWG86tMtoodU40io7KFWZ"},
+    {sub:"Maths",      t:"Class 1 Maths",                     by:"Magnet Brains",  list:"PLVLoWQFkZbhX0yhin2ynxbUciVLaA_5CW"},
+    {sub:"Science/EVS",t:"1st Grade Science Lessons",         by:"Homeschool Pop", list:"PLNmq_T1B9ljLInH1JhP0EQu3y1EJltTSU"},
+    {sub:"Science/EVS",t:"Class 1 EVS Full Chapter Videos",   by:"Magnet Brains",  list:"PLVLoWQFkZbhVjuuiOJ7wOZC1QkUzHSHHw"},
+  ],
+  2:[
+    {sub:"Maths",       t:"Addition & Subtraction within 100", by:"Khan Academy",   list:"PLSQl0a2vh4HANBZUWi_685KtRECBh31sj"},
+    {sub:"Maths",       t:"Math — 2nd Grade",                  by:"Kids Academy",   list:"PLiMIqKsOLxPyhrf3_4iVelJtO7hOGZJ4H"},
+    {sub:"English",     t:"Grammar — 2nd Grade",               by:"Kids Academy",   list:"PLiMIqKsOLxPw92OcaIYat3MEu_v61P8hc"},
+    {sub:"English",     t:"Long Vowels Phonics (Alphablocks)",  by:"BBC Alphablocks",list:"PLSW2D61TnopTvTxScjdHlxlBcRYjJreH2"},
+    {sub:"Science",     t:"2nd Grade Science Lesson Videos",   by:"Homeschool Pop", list:"PLNmq_T1B9ljLp6Ml9HqA5H_7GziVGaEnt"},
+    {sub:"Social Studies",t:"Social Studies Adventures",       by:"Homeschool Pop", list:"PLNmq_T1B9ljLHEDh7kWbcYOs2APduqalc"},
+  ],
+  3:[
+    {sub:"Maths",       t:"3rd Grade Maths",                   by:"Khan Academy",   list:"PLSQl0a2vh4HBWaIqqKWiBYG13KlChPd1M"},
+    {sub:"Maths",       t:"Class 3 Maths Full Chapter Videos", by:"Magnet Brains",  list:"PLVLoWQFkZbhX1DUx2RPfhk-n8e3Y05mhr"},
+    {sub:"English",     t:"Class 3 English Grammar",           by:"Magnet Brains",  list:"PLVLoWQFkZbhVthMi7NCeesHcW0nTUmMcR"},
+    {sub:"Science",     t:"3rd Grade Science Videos",          by:"Homeschool Pop", list:"PLNmq_T1B9ljLVbBz_KeGNstReVRj80D3K"},
+    {sub:"Science/EVS", t:"Class 3 EVS Complete Course",       by:"Magnet Brains",  list:"PLVLoWQFkZbhVDervrmyOcy_Bh-6BIrXNu"},
+    {sub:"Science",     t:"The Dr. Binocs Show (Fun Science)", by:"Peekaboo Kidz",  list:"PLmJ33rwb1zZZj2EwyHxV_EntBTLZSTlTQ"},
+  ],
+  4:[
+    {sub:"Maths",       t:"Multiplication & Division",         by:"Khan Academy",   list:"PLSQl0a2vh4HCgwhuvizv_vTLnCMfN1Tsm"},
+    {sub:"Maths",       t:"Fun Math Videos for 4th Graders",   by:"Homeschool Pop", list:"PLNmq_T1B9ljIrerCiaNQKCFwpiOv73UNG"},
+    {sub:"English",     t:"Class 4 English Grammar",           by:"Magnet Brains",  list:"PLVLoWQFkZbhVS3ogfiSlSBQY8VUstufz2"},
+    {sub:"Science/EVS", t:"Class 4 EVS Full Chapter Videos",   by:"Magnet Brains",  list:"PLVLoWQFkZbhUT0LIEvkKrXHmiN3NgI55n"},
+    {sub:"Science",     t:"Explore Our Planet!",               by:"SciShow Kids",   list:"PLw2cuKNQvZ2e8_cKWWgRReLYiIH5XBme1"},
+    {sub:"Coding",      t:"Learn to Code in Scratch 3.0",      by:"learn awesome tuts",list:"PLNIdDxctsZe9gVqjHHj_TxzHfElHszdst"},
+  ],
+  5:[
+    {sub:"Maths",       t:"Get Ready for 5th Grade",           by:"Khan Academy",   list:"PLSQl0a2vh4HCthyyJ8XF1dcvenOkOmE6Q"},
+    {sub:"Maths",       t:"Class 5 Maths Complete Course",     by:"Magnet Brains",  list:"PLVLoWQFkZbhV0kPS6-8eWJw2GuBSSkjYD"},
+    {sub:"English",     t:"Class 5 English Complete Course",   by:"Magnet Brains",  list:"PLVLoWQFkZbhUOY_a1-hgpQFc22MZ8Qqo1"},
+    {sub:"Science/EVS", t:"Class 5 EVS Complete Course",       by:"Magnet Brains",  list:"PLVLoWQFkZbhVxyA3K-Ru0kuVTqhgqOJmO"},
+    {sub:"Computer",    t:"Class 5 Computer",                  by:"Magnet Brains",  list:"PLVLoWQFkZbhX7KHCxcjCnC5LtpRojrsHq"},
+    {sub:"Coding",      t:"Code.org CS Fundamentals",          by:"Mr. Kaiser",     list:"PLbsvRhEyGkKdUm_18wDMd0fIdqGYIbN4i"},
+  ],
+  6:[
+    {sub:"Maths",            t:"Get Ready for 6th Grade",          by:"Khan Academy",  list:"PLSQl0a2vh4HCnw4O0QyV1G_WLFmOkCeXd"},
+    {sub:"Maths",            t:"Class 6 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhXhyTmv71FsOx0MoMZOLelp"},
+    {sub:"Science",          t:"Class 6 Science Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhW47wzJZJ6mkN_K9jeiAFhK"},
+    {sub:"English",          t:"Class 6 English Grammar",          by:"Magnet Brains", list:"PLVLoWQFkZbhWYCmKqzuzhnq57ENS7kgqO"},
+    {sub:"Social Studies",   t:"Class 6 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhX8NJIryAuRqcl9I3xFAZWC"},
+    {sub:"Social Studies",   t:"Class 6 Geography Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhVZ18jUx-7kBa9RZGqAYHG_"},
+    {sub:"Coding",           t:"Programming for Kids: Scratch 3.0",by:"learn awesome tuts",list:"PLNIdDxctsZe9gVqjHHj_TxzHfElHszdst"},
+  ],
+  7:[
+    {sub:"Maths",            t:"Get Ready for 7th Grade",          by:"Khan Academy",  list:"PLSQl0a2vh4HADvjXzE4rEo7B60J3RUScn"},
+    {sub:"Maths",            t:"Class 7 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhVgT5aM-GRuQHnzthwllEHq"},
+    {sub:"Science",          t:"Class 7 Science Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhVcZ8f3BMLxt5E17GmIitf-"},
+    {sub:"Science",          t:"Middle School Physics",            by:"Khan Academy",  list:"PLSQl0a2vh4HC-daPugvP8kL_zuE3u_3Zr"},
+    {sub:"English",          t:"Class 7 English Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhUAwhnMuyKT_XeDn6WGU924"},
+    {sub:"Social Studies",   t:"Class 7 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhUUe49TU6pfgcuxA_YFh8m8"},
+    {sub:"Social Studies",   t:"Class 7 Geography Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhVjHjFP9Okf_SGiG8drP3nk"},
+  ],
+  8:[
+    {sub:"Maths",            t:"Get Ready for 8th Grade",          by:"Khan Academy",  list:"PLSQl0a2vh4HDJ85Bwgofo-57BWFCIlQfg"},
+    {sub:"Maths",            t:"Class 8 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhWwuZmoe15zj2Kmq7sApfcw"},
+    {sub:"Science",          t:"Class 8 Science Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhWMHRA2nMUENtoXZ6vmnePu"},
+    {sub:"English",          t:"Class 8 English Grammar",          by:"Magnet Brains", list:"PLVLoWQFkZbhVuMhiezYWOW4AZFkNfbWuS"},
+    {sub:"English",          t:"Class 8 English Literature",       by:"Magnet Brains", list:"PLVLoWQFkZbhWWdPx33Fo55ivvR1K-NyDS"},
+    {sub:"Social Studies",   t:"Class 8 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhW0rcXsCUWKK3bUAT12T_iV"},
+    {sub:"Social Studies",   t:"Class 8 Geography Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhW5-aYybgbeXQxphcF9jVtv"},
+    {sub:"Coding",           t:"Code.org CS Principles",           by:"Mr. Kaiser",    list:"PLbsvRhEyGkKfNgYm2K5bYKedKDZ_7zPf_"},
+  ],
+  9:[
+    {sub:"Maths",            t:"Algebra 1",                        by:"Khan Academy",  list:"PLSQl0a2vh4HAIu1ZvUEjn1xWBBa7RPQFL"},
+    {sub:"Maths",            t:"Class 9 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhW1YSpUGOUrqAu7SvJCaZNQ"},
+    {sub:"Science",          t:"Class 9 Science LIVE Course",      by:"Magnet Brains", list:"PLVLoWQFkZbhUF3n-Twoz7I-SM1od80kzw"},
+    {sub:"Science",          t:"Class 9 Chemistry Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhXIV0LETVHpfYSz7BtQu-Po"},
+    {sub:"Science",          t:"Biology Learning Playlist",        by:"Amoeba Sisters",list:"PLwL0Myd7Dk1F0iQPGrjehze3eDpco1eVz"},
+    {sub:"English",          t:"Class 9 English Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhWvnzQBSVOj14dJlH6YeoQc"},
+    {sub:"History",          t:"Class 9 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhXpspmeJBezKBXmm2DFcv7_"},
+    {sub:"Computer",         t:"Class 9 Information Technology",   by:"Magnet Brains", list:"PLVLoWQFkZbhWgZrgnU4gAfRZDxGY2L-xy"},
+  ],
+  10:[
+    {sub:"Maths",            t:"Class 10 Maths Complete Course",   by:"Magnet Brains", list:"PLVLoWQFkZbhWKEdwnxAMWbVWE16zqNWAv"},
+    {sub:"Maths",            t:"High School Geometry",             by:"Khan Academy",  list:"PLSQl0a2vh4HBPG0QzOpPRB9GoDC2OFG42"},
+    {sub:"Science (Physics)",t:"Class 10 Physics Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhXAipqg8dmzLQOED1uxgUTx"},
+    {sub:"Science (Biology)",t:"Class 10 Biology Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhXuBRmnH3CwHsk3ZzNHbXmG"},
+    {sub:"Science (Chemistry)",t:"Chemistry (CrashCourse)",        by:"CrashCourse",   list:"PL8dPuuaLjXtPHzzYuWy6fYEaX9mQQ8oGr"},
+    {sub:"English",          t:"Class 10 English Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhVGeoo-eZSYwbd-zHpjxKSu"},
+    {sub:"History",          t:"Class 10 History Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhUqoA8LckeDv_d75e0JaQwL"},
+    {sub:"Geography",        t:"Class 10 Geography",               by:"Magnet Brains", list:"PLVLoWQFkZbhWTMCmKVQENOML-eJilisJz"},
+    {sub:"Computer",         t:"Class 10 Information Technology",  by:"Magnet Brains", list:"PLVLoWQFkZbhUs5cKQzIJW08f6ipEiPLjH"},
+  ],
+  11:[
+    {sub:"Maths",            t:"Class 11 Maths Complete Course",   by:"Magnet Brains", list:"PLVLoWQFkZbhURj3eEKnp8ELKuny-EOatu"},
+    {sub:"Maths",            t:"Precalculus",                      by:"Khan Academy",  list:"PLSQl0a2vh4HAaEjpaB03S1FOY7ONBQHig"},
+    {sub:"Physics",          t:"Class 11 Physics Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhU1kLxPm9QtUdrX9I1pCURP"},
+    {sub:"Chemistry",        t:"Class 11 Chemistry Complete Course",by:"Magnet Brains",list:"PLVLoWQFkZbhVZkRbl1jBvgRr1VAnOeQ01"},
+    {sub:"Biology",          t:"Class 11 Biology Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhUwZGuyybTm5CFRiBbtDAa7"},
+    {sub:"English",          t:"Class 11 English Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhVWaTIGB27JMv0btP9bbJb2"},
+    {sub:"Economics",        t:"Class 11 Economics (Microeconomics)",by:"Magnet Brains",list:"PLVLoWQFkZbhWHDLaCWEyWw_KSzoTUjicl"},
+    {sub:"Accountancy",      t:"Class 11 Accounts Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhWmLRc107wMYahsyARt7t2D"},
+    {sub:"Computer Science", t:"Computer Science with Python (11)",by:"ScoreShala",    list:"PLmGElG-9wxc-4bD1j88gLwS7w1cIJbiYb"},
+  ],
+  12:[
+    {sub:"Maths",            t:"Class 12 Maths Complete Course",   by:"Magnet Brains", list:"PLVLoWQFkZbhU5r5DlfxPc3gKw-QLLAvLn"},
+    {sub:"Physics",          t:"Class 12 Physics Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhU6U0BhqGieiARjUYmyoa8p"},
+    {sub:"Chemistry",        t:"Class 12 Chemistry Complete Course",by:"Magnet Brains",list:"PLVLoWQFkZbhVlHk1YYLfsSzUCLAGnkD82"},
+    {sub:"Biology",          t:"Class 12 Biology Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhU9wgMK7nJv0eZK4gcaI8FJ"},
+    {sub:"Biology",          t:"Biology (CrashCourse)",            by:"CrashCourse",   list:"PL3EED4C1D684D3ADF"},
+    {sub:"English",          t:"Class 12 English Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhV3WUgQA4EZA-0ffqW1B2EX"},
+    {sub:"Economics",        t:"Class 12 Economics",               by:"Magnet Brains", list:"PLVLoWQFkZbhUDHy3Zh0r7MZcUYZXl-DYa"},
+    {sub:"Accountancy",      t:"Class 12 Accountancy",             by:"Magnet Brains", list:"PLVLoWQFkZbhXLbMUqwUCl1GJcjO_G8ByA"},
+    {sub:"Computer Science", t:"Computer Science with Python (12)",by:"ScoreShala",    list:"PLmGElG-9wxc-b3CjZ7gARrp_lZOVviShd"},
+  ],
+};
 /* subject → colour mapping */
 const SUBJ_COLOR={
   "English":"var(--marigold)","Hindi":"var(--vermilion)","Sanskrit":"#8A5A44",
@@ -717,23 +824,40 @@ function adminHome(){
 }
 
 function learnView(){
-  const t=T(), tabs=["All","In progress","Not started","Labs & projects"];
-  let list=COURSES;
-  if(state.filter==="In progress") list=COURSES.filter(c=>c.d>0&&c.d<c.l);
-  if(state.filter==="Not started") list=COURSES.filter(c=>c.d===0);
-  if(state.filter==="Labs & projects") list=COURSES.filter(c=>/lab|Project|Kit/i.test(c.mode));
-  const chips=tabs.map(x=>'<button class="chip'+(state.filter===x?' on':'')+'" style="'+(state.filter===x?'background:var(--ink);color:#fff;border-color:var(--ink)':'')+'" onclick="setFilter(\''+x+'\')">'+x+'</button>').join('');
-  const cards=list.map(c=>card(
-    (c.yt?'<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="display:block;text-decoration:none"><div class="ytthumb" style="background-image:url(https://i.ytimg.com/vi/'+c.yt+'/hqdefault.jpg)"><span class="ytplay">'+I.play(20)+'</span></div></a>':'')+
-    '<div class="'+(c.yt?'p20':'')+'"><div class="between">'+eyebrow(c.sub,'teal')+'<span class="small">'+(state.user?state.user.grade:c.g)+'</span></div>'+
-    '<h3 class="display" style="font-size:17px;font-weight:700;margin-top:8px;line-height:1.35">'+c.t+'</h3>'+
-    '<p class="muted mt4">'+c.mode+' · '+c.by+'</p>'+
-    '<div class="row mt16"><div class="bar"><i style="width:'+(c.d/c.l*100)+'%"></i></div><span class="small">'+c.d+'/'+c.l+'</span></div>'+
-    '<div class="mt16">'+(c.yt
-      ? '<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">'+btn(c.d?t.resume:t.start,c.d?'ghost':'solid','play','style="width:100%"')+'</a>'
-      : btn(c.d?t.resume:t.start,c.d?'ghost':'solid',c.d?'play':'arrow','style="width:100%"'))+'</div></div>',
-    c.yt?'p0':'p20')).join('');
+  const t=T();
   const userGrade=state.libGrade;
+  const gradeLabel='Grade '+userGrade;
+  const allPlaylists=GRADE_PLAYLISTS[userGrade]||GRADE_PLAYLISTS[6];
+  const subFilters=['All',...[...new Set(allPlaylists.map(p=>p.sub))]];
+  const activeFilter=subFilters.includes(state.filter)?state.filter:'All';
+  const list=activeFilter==='All'?allPlaylists:allPlaylists.filter(p=>p.sub===activeFilter);
+  const chips=subFilters.map(x=>'<button class="chip'+(activeFilter===x?' on':'')+'" style="'+(activeFilter===x?'background:var(--ink);color:#fff;border-color:var(--ink)':'')+'" onclick="setFilter(\''+x+'\')">'+x+'</button>').join('');
+  const cards=list.map(p=>{
+    const col=SC(p.sub)||'var(--teal)';
+    const playlistUrl='https://www.youtube.com/playlist?list='+p.list;
+    const thumbId=p.list.substring(0,11); // use first 11 chars as a fake id for thumbnail
+    return card(
+      '<a href="'+playlistUrl+'" target="_blank" rel="noopener" style="display:block;text-decoration:none">'+
+        '<div style="background:linear-gradient(135deg,'+col+'cc,'+col+'44);height:110px;display:flex;align-items:center;justify-content:center;position:relative;border-radius:12px 12px 0 0;overflow:hidden">'+
+          '<svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="rgba(255,255,255,0.18)"/><polygon points="19,15 37,24 19,33" fill="#fff"/></svg>'+
+          '<div style="position:absolute;top:8px;right:8px;background:rgba(255,0,0,.85);color:#fff;font-size:10px;font-weight:700;border-radius:4px;padding:2px 6px">▶ PLAYLIST</div>'+
+        '</div>'+
+      '</a>'+
+      '<div class="p20">'+
+        '<div class="between">'+
+          eyebrow(p.sub)+
+          '<span style="font-size:11px;font-weight:600;color:var(--slate);background:var(--canvas);border:1px solid var(--line);border-radius:99px;padding:2px 8px">'+gradeLabel+'</span>'+
+        '</div>'+
+        '<h3 class="display" style="font-size:16px;font-weight:700;margin-top:8px;line-height:1.35">'+p.t+'</h3>'+
+        '<p class="muted mt4" style="font-size:13px">'+p.by+'</p>'+
+        '<div class="mt16">'+
+          '<a href="'+playlistUrl+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">'+
+            btn('Watch playlist','solid','play','style="width:100%"')+
+          '</a>'+
+        '</div>'+
+      '</div>',
+    'p0');
+  }).join('');
   const gradeBooks=LIBRARY.filter(b=>b.gr===userGrade);
   const books=gradeBooks.map(b=>{
     const col=SC(b.sub);
@@ -748,7 +872,15 @@ function learnView(){
         '<a href="'+b.zip+'" target="_blank" rel="noopener" style="text-decoration:none;flex:1">'+btn('⬇ ZIP','ghost','','style="width:100%;font-size:12px;padding:7px 8px"')+'</a>'+
       '</div></div>';
   }).join('');
-  return '<div class="wrap" style="margin-bottom:20px">'+chips+'</div><div class="cards3">'+cards+'</div>'+
+  return '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px">'+
+      '<div>'+
+        '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate)">YouTube Learning</div>'+
+        '<h2 class="display" style="font-size:20px;font-weight:800;margin:4px 0 0">Playlists for '+gradeLabel+'</h2>'+
+      '</div>'+
+      '<span style="font-size:12px;color:var(--mute)">'+allPlaylists.length+' playlists · auto-matched to your grade</span>'+
+    '</div>'+
+    '<div class="wrap" style="margin-bottom:20px">'+chips+'</div>'+
+    '<div class="cards3">'+cards+'</div>'+
     card('<div class="between" style="flex-wrap:wrap">'+
       '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">NCERT Textbooks — Grade '+userGrade+'</h3>'+
       '<p class="muted">'+gradeBooks.length+' official NCERT titles for your grade</p></div>'+

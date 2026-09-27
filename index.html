@@ -761,6 +761,28 @@ function liveView(){
   const upcoming = LIVE_SCHEDULE.filter(s=>!s.live);
   const subColor = s => SC(s)||'var(--teal)';
 
+  /* ── in-page meeting embed ── */
+  if(state.liveJoin){
+    const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveJoin);
+    if(!cls) return '';
+    const room=cls.meet.replace('https://meet.jit.si/','');
+    const userName=encodeURIComponent((state.user&&state.user.name)||'Student');
+    return '<div style="max-width:900px;margin:0 auto">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
+        '<button onclick="state.liveJoin=null;render()" style="font-size:13px;color:var(--slate);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0">'+I.chev(14)+' Leave class</button>'+
+        '<div class="livetag"><i></i>LIVE</div>'+
+      '</div>'+
+      '<div style="font-size:16px;font-weight:700;margin-bottom:4px">'+cls.t+'</div>'+
+      '<p class="muted" style="margin-bottom:14px">'+cls.teacher+' · '+cls.sub+'</p>'+
+      '<div style="position:relative;width:100%;padding-bottom:56.25%;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.18)">'+
+        '<iframe id="jitsi-frame" allow="camera;microphone;display-capture;autoplay" '+
+          'src="https://meet.jit.si/'+room+'#userInfo.displayName='+userName+'&config.prejoinPageEnabled=false&config.startWithAudioMuted=true&config.startWithVideoMuted=false&config.disableDeepLinking=true&config.toolbarButtons=[%22microphone%22,%22camera%22,%22hangup%22,%22chat%22,%22raisehand%22,%22tileview%22]" '+
+          'style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:16px">'+
+        '</iframe>'+
+      '</div>'+
+    '</div>';
+  }
+
   /* ── notes modal (auto-generated) ── */
   if(state.liveNotes){
     const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveNotes);
@@ -809,9 +831,7 @@ function liveView(){
             '<p style="color:#9FB3BD;font-size:13px;font-family:var(--mono)">'+cls.teacher.toUpperCase()+' · '+cls.sub.toUpperCase()+' · '+cls.dur+'</p>'+
           '</div>'+
           '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-            '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none">'+
-              '<button style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">'+I.radio(16)+'Join now</button>'+
-            '</a>'+
+            '<button onclick="state.liveJoin=\''+cls.id+'\';render()" style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">'+I.radio(16)+'Join now</button>'+
             '<button onclick="state.liveNotes=\''+cls.id+'\';render()" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">📝 Session Notes</button>'+
           '</div>'+
         '</div>'+
@@ -837,7 +857,7 @@ function liveView(){
         '<div style="font-size:11px;color:var(--mute)">'+cls.date+' · '+cls.dur+'</div>'+
       '</div>'+
       (cls.live
-        ? '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none;flex-shrink:0"><button style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">Join</button></a>'
+        ? '<button onclick="state.liveJoin=\''+cls.id+'\';render()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">Join</button>'
         : '<button disabled style="background:var(--canvas);color:var(--mute);border:1.5px solid var(--line);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:not-allowed;flex-shrink:0">Scheduled</button>')+
     '</div>';
   }).join('');

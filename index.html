@@ -287,12 +287,54 @@ const KIND = {
 };
 /* ── Live class schedule (teachers update this) ── */
 const LIVE_SCHEDULE = [
-  {id:"ls1", sub:"Mathematics",   t:"Linear Equations — Chapter 2 Recap",  teacher:"S. Rajkumar",  date:"Mon, 29 Sep", time:"9:00 AM",  dur:"45 min", live:false, meet:"https://meet.google.com/"},
-  {id:"ls2", sub:"Science",       t:"Photosynthesis Virtual Lab",           teacher:"Meera Nair",   date:"Mon, 29 Sep", time:"11:00 AM", dur:"60 min", live:false, meet:"https://meet.google.com/"},
-  {id:"ls3", sub:"English",       t:"Persuasive Writing Workshop",          teacher:"L. Fernandes", date:"Tue, 30 Sep", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.google.com/"},
-  {id:"ls4", sub:"Coding",        t:"Python: Functions & Loops",            teacher:"A. Balaji",    date:"Wed, 1 Oct",  time:"11:30 AM", dur:"60 min", live:true,  meet:"https://meet.google.com/"},
-  {id:"ls5", sub:"Social Studies",t:"Resources and Development",            teacher:"P. Anitha",    date:"Thu, 2 Oct",  time:"9:30 AM",  dur:"45 min", live:false, meet:"https://meet.google.com/"},
-  {id:"ls6", sub:"Mathematics",   t:"Simple Equations — Problem Solving",   teacher:"S. Rajkumar",  date:"Fri, 3 Oct",  time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.google.com/"},
+  {id:"ls1", sub:"Mathematics", t:"Linear Equations — Chapter 2 Recap", teacher:"S. Rajkumar", date:"Mon, 29 Sep", time:"9:00 AM", dur:"45 min", live:false, meet:"https://meet.google.com/",
+   notes:{
+     objective:"Recap Chapter 2 of Linear Equations in One Variable and solve practice problems.",
+     topics:["What is a linear equation?","Solving equations using transposition","Cross-multiplication method","Word problems — age, speed, and fractions"],
+     keyPoints:["An equation has an equal sign — both sides must stay balanced","Transposition: move terms across = by flipping their sign","Always verify your answer by substituting back"],
+     formulas:["ax + b = 0 → x = −b/a","Cross multiply: a/b = c/d → ad = bc"],
+     prepare:["Bring Chapter 2 textbook","Try Exercise 2.3 Q1–5 before class","Write down any question where you got the wrong answer"]
+   }},
+  {id:"ls2", sub:"Science", t:"Photosynthesis Virtual Lab", teacher:"Meera Nair", date:"Mon, 29 Sep", time:"11:00 AM", dur:"60 min", live:false, meet:"https://meet.google.com/",
+   notes:{
+     objective:"Observe and understand photosynthesis through a guided virtual lab experiment.",
+     topics:["Raw materials: CO₂, water, sunlight","Chlorophyll and the role of chloroplasts","Light-dependent vs light-independent reactions (overview)","Starch test with iodine"],
+     keyPoints:["Photosynthesis only happens in green parts of the plant","Oxygen is a by-product, not the main goal","Without sunlight, photosynthesis stops completely"],
+     formulas:["6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂"],
+     prepare:["Read Chapter 6 (Life Processes) pages 88–95","Know what variegated leaves are — teacher will ask!"]
+   }},
+  {id:"ls3", sub:"English", t:"Persuasive Writing Workshop", teacher:"L. Fernandes", date:"Tue, 30 Sep", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.google.com/",
+   notes:{
+     objective:"Learn to write a structured persuasive essay with strong arguments and evidence.",
+     topics:["Structure: Hook → Claim → Arguments → Counter-argument → Conclusion","Persuasive devices: repetition, rhetorical questions, statistics","Tone and formal language","Practise writing a 3-paragraph argument"],
+     keyPoints:["Your claim goes in the first paragraph — be direct","Always acknowledge the other side, then rebut it","Facts and examples are more persuasive than emotions alone"],
+     formulas:[],
+     prepare:["Think of a topic you feel strongly about","Bring 2 facts or statistics related to it","Draft a one-line claim before class"]
+   }},
+  {id:"ls4", sub:"Coding", t:"Python: Functions & Loops", teacher:"A. Balaji", date:"Wed, 1 Oct", time:"11:30 AM", dur:"60 min", live:true, meet:"https://meet.google.com/",
+   notes:{
+     objective:"Write and call functions in Python; combine them with for and while loops to solve real problems.",
+     topics:["Defining functions with def","Parameters and return values","for loop with range()","while loop and break/continue","Mini-project: number guessing game"],
+     keyPoints:["A function runs only when you call it — defining it does nothing by itself","return sends a value back; print just displays it","Avoid infinite loops — always change the condition variable inside the while block"],
+     formulas:["def greet(name):\n    return 'Hello, ' + name\n\nfor i in range(1, 6):\n    print(i)"],
+     prepare:["Have Python (IDLE or Replit) open and ready","Try writing a function that adds two numbers before class","Know what range(5) produces"]
+   }},
+  {id:"ls5", sub:"Social Studies", t:"Resources and Development", teacher:"P. Anitha", date:"Thu, 2 Oct", time:"9:30 AM", dur:"45 min", live:false, meet:"https://meet.google.com/",
+   notes:{
+     objective:"Understand the types of resources, their distribution, and sustainable development.",
+     topics:["Types of resources: natural, human-made, human","Classification: renewable vs non-renewable","Resource planning in India","Land use pattern and its changes"],
+     keyPoints:["Resources are not just things — they need technology and humans to become useful","Over-exploitation of resources leads to scarcity for future generations","India has uneven distribution of resources across states"],
+     formulas:[],
+     prepare:["Read Chapter 1 of Social Science Geography textbook","Note the difference between renewable and non-renewable with 2 examples each"]
+   }},
+  {id:"ls6", sub:"Mathematics", t:"Simple Equations — Problem Solving", teacher:"S. Rajkumar", date:"Fri, 3 Oct", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.google.com/",
+   notes:{
+     objective:"Apply simple equation methods to solve word problems from everyday life.",
+     topics:["Setting up equations from word problems","Problems on age, money, and perimeter","Two-step equations","Common mistakes and how to avoid them"],
+     keyPoints:["Read the problem twice before writing the equation","Let x be the unknown — label it clearly","Check: does your answer make sense in the real-world context?"],
+     formulas:["If a number + 7 = 15 → x = 15 − 7 = 8","Perimeter of rectangle: 2(l + b) = P"],
+     prepare:["Complete Exercise 4.2 from the textbook","Mark any question you could not solve — teacher will cover those first"]
+   }},
 ];
 
 const SUBJECTS = [
@@ -719,27 +761,41 @@ function liveView(){
   const upcoming = LIVE_SCHEDULE.filter(s=>!s.live);
   const subColor = s => SC(s)||'var(--teal)';
 
-  /* ── notes modal ── */
+  /* ── notes modal (auto-generated) ── */
   if(state.liveNotes){
     const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveNotes);
-    const savedKey='qe_notes_'+state.liveNotes;
-    let saved=''; try{saved=localStorage.getItem(savedKey)||'';}catch(e){}
-    return cls ? '<div style="max-width:680px;margin:0 auto">'+
+    if(!cls) return '';
+    const n=cls.notes||{};
+    const noteSection=(label,icon,items,code)=>{
+      if(!items||!items.length) return '';
+      const rows=items.map(item=>
+        code
+          ? '<li style="background:var(--canvas);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:13px;color:var(--ink);white-space:pre-wrap;margin-bottom:6px;list-style:none">'+item+'</li>'
+          : '<li style="margin-bottom:6px;font-size:14px;color:var(--ink);padding-left:4px">'+item+'</li>'
+      ).join('');
+      return '<div style="margin-bottom:20px">'+
+        '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);margin-bottom:10px">'+icon+' '+label+'</div>'+
+        '<ul style="margin:0;padding:'+(code?'0':'0 0 0 18px')+'">'+rows+'</ul>'+
+      '</div>';
+    };
+    return '<div style="max-width:700px;margin:0 auto">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'+
+        '<button onclick="state.liveNotes=null;render()" style="font-size:13px;color:var(--slate);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0">'+I.chev(14)+' Back to Live</button>'+
+        (cls.live?'<div class="livetag"><i></i>LIVE</div>':'<span style="font-size:12px;color:var(--mute);font-weight:600;background:var(--canvas);border:1px solid var(--line);border-radius:20px;padding:4px 10px">Scheduled</span>')+
+      '</div>'+
       card(
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">'+
-          '<button onclick="state.liveNotes=null;render()" style="font-size:13px;color:var(--slate);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px">'+I.chev(14)+' Back</button>'+
-          '<div class="livetag"><i></i>LIVE</div>'+
+        '<div style="margin-bottom:20px">'+
+          eyebrow(cls.sub)+
+          '<h2 class="display" style="font-size:20px;font-weight:800;margin:6px 0 4px">'+cls.t+'</h2>'+
+          '<p class="muted" style="margin:0">'+cls.teacher+' · '+cls.date+' · '+cls.time+' · '+cls.dur+'</p>'+
         '</div>'+
-        eyebrow(cls.sub)+
-        '<h2 class="display" style="font-size:20px;font-weight:800;margin:6px 0 4px">'+cls.t+'</h2>'+
-        '<p class="muted" style="margin-bottom:20px">'+cls.teacher+' · '+cls.dur+'</p>'+
-        '<div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--slate)">📝 Your notes</div>'+
-        '<textarea id="cls_notes" style="width:100%;min-height:260px;border:1.5px solid var(--line);border-radius:12px;padding:14px;font-size:14px;font-family:var(--body);color:var(--ink);background:var(--canvas);resize:vertical;outline:none;box-sizing:border-box" placeholder="Type your notes here… key points, questions, formulas…" onchange="try{localStorage.setItem(\''+savedKey+'\',this.value)}catch(e){}">'+saved.replace(/</g,'&lt;')+'</textarea>'+
-        '<div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">'+
-          '<button onclick="try{localStorage.setItem(\''+savedKey+'\',document.getElementById(\'cls_notes\').value)}catch(e){};this.textContent=\'✓ Saved!\';setTimeout(()=>this.textContent=\'💾 Save notes\',1500)" style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">💾 Save notes</button>'+
-          '<button onclick="if(confirm(\'Clear all notes for this session?\')){try{localStorage.removeItem(\''+savedKey+'\')}catch(e){}document.getElementById(\'cls_notes\').value=\'\'}" style="background:var(--canvas);color:var(--slate);border:1.5px solid var(--line);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">🗑 Clear</button>'+
-        '</div>',
-      'p24 rise') : '';
+        '<div style="background:var(--tealSoft);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px;font-size:14px;color:var(--ink)">'+
+          '<strong>🎯 Objective:</strong> '+(n.objective||'Session notes for this class.')+'</div>'+
+        noteSection('Topics Covered','📚',n.topics,false)+
+        noteSection('Key Points to Remember','💡',n.keyPoints,false)+
+        noteSection('Formulas &amp; Syntax','🔢',n.formulas,true)+
+        noteSection('How to Prepare','✅',n.prepare,false),
+      'p24 rise');
   }
 
   /* ── live now banner ── */

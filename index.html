@@ -172,9 +172,30 @@ main{padding:24px}
 .note{background:var(--marigoldSoft);border-left:3px solid var(--marigold);border-radius:12px;padding:16px;font-size:14px}
 .badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
 .player{background:var(--ink);height:250px;display:grid;place-items:center;position:relative;border-radius:16px 16px 0 0}
-.livetag{position:absolute;left:16px;top:16px;background:var(--vermilion);color:#fff;border-radius:99px;padding:4px 12px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+.livetag{background:var(--vermilion);color:#fff;border-radius:99px;padding:4px 12px;display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;width:fit-content}
 .livetag i{width:7px;height:7px;border-radius:99px;background:#fff;animation:pulse 2.4s ease-in-out infinite}
 footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+/* ── lab ── */
+.lab-grid{display:grid;gap:20px;grid-template-columns:repeat(2,1fr)}
+@media(max-width:820px){.lab-grid{grid-template-columns:1fr}}
+.lab-card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease}
+.lab-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(17,33,45,.12)}
+.lab-banner{height:140px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.lab-banner svg{opacity:.18;position:absolute;inset:0;width:100%;height:100%}
+.lab-icon{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:rgba(255,255,255,.2);backdrop-filter:blur(4px);position:relative;z-index:1}
+.lab-body{padding:20px;flex:1;display:flex;flex-direction:column;gap:10px}
+.lab-body h3{font-family:var(--display);font-size:18px;font-weight:800;letter-spacing:-.02em}
+.lab-body p{font-size:13px;color:var(--slate);line-height:1.55;flex:1}
+.lab-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lab-tag{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--canvas);color:var(--slate)}
+.lab-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:600;color:#fff;transition:filter .18s ease;cursor:pointer;border:none;margin:0 20px 20px;font-family:var(--body)}
+.lab-open-btn:hover{filter:brightness(1.1)}
+/* lab iframe overlay */
+.lab-modal{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:rgba(17,33,45,.88);backdrop-filter:blur(4px)}
+.lab-modal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--ink);flex-shrink:0}
+.lab-modal-head h4{color:#fff;font-family:var(--display);font-size:15px;font-weight:700}
+.lab-modal-close{color:#fff;background:rgba(255,255,255,.12);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+.lab-modal iframe{flex:1;border:none;background:#fff}
 .rise{animation:rise .45s cubic-bezier(.2,.7,.3,1) both}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 ::-webkit-scrollbar{width:7px;height:7px}::-webkit-scrollbar-thumb{background:#C9D4D4;border-radius:99px}
@@ -260,13 +281,13 @@ const I = {
 
 /* ─────────── content ─────────── */
 const STR = {
-  en:{home:"Today",learn:"Learn",live:"Live classes",assess:"Assessments",progress:"Progress",awards:"Achievements",
+  en:{home:"Today",learn:"Learn",live:"Live classes",assess:"Assessments",progress:"Progress",awards:"Achievements",lab:"Lab",
       search:"Search lessons, chapters, teachers",greet:"Good morning",cont:"Continue learning",join:"Join now",
       day:"Your day",mastery:"Subject mastery",streak:"day streak",all:"View all",start:"Start",resume:"Resume",viewas:"View as"},
-  ta:{home:"இன்று",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"மதிப்பீடு",progress:"முன்னேற்றம்",awards:"சாதனைகள்",
+  ta:{home:"இன்று",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"மதிப்பீடு",progress:"முன்னேற்றம்",awards:"சாதனைகள்",lab:"ஆய்வகம்",
       search:"பாடங்கள், அத்தியாயங்களைத் தேடுங்கள்",greet:"காலை வணக்கம்",cont:"தொடர்ந்து கற்க",join:"இணைக",
       day:"உங்கள் நாள்",mastery:"பாட தேர்ச்சி",streak:"நாள் தொடர்ச்சி",all:"அனைத்தும்",start:"தொடங்கு",resume:"தொடர்",viewas:"பார்வை"},
-  hi:{home:"आज",learn:"सीखें",live:"लाइव कक्षा",assess:"मूल्यांकन",progress:"प्रगति",awards:"उपलब्धियाँ",
+  hi:{home:"आज",learn:"सीखें",live:"लाइव कक्षा",assess:"मूल्यांकन",progress:"प्रगति",awards:"उपलब्धियाँ",lab:"प्रयोगशाला",
       search:"पाठ, अध्याय, शिक्षक खोजें",greet:"सुप्रभात",cont:"सीखना जारी रखें",join:"अभी जुड़ें",
       day:"आपका दिन",mastery:"विषय दक्षता",streak:"दिन की लय",all:"सभी देखें",start:"शुरू करें",resume:"जारी रखें",viewas:"देखें"},
 };
@@ -285,6 +306,58 @@ const KIND = {
   video:{bg:"#EEF2F1",bar:"var(--slate)",tag:"Recorded"},
   test:{bg:"var(--redSoft)",bar:"var(--vermilion)",tag:"Timed test"},
 };
+/* ── Live class schedule (teachers update this) ── */
+const LIVE_SCHEDULE = [
+  {id:"ls1", sub:"Mathematics", t:"Linear Equations — Chapter 2 Recap", teacher:"S. Rajkumar", date:"Mon, 29 Sep", time:"9:00 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls1-Mathematics",
+   notes:{
+     objective:"Recap Chapter 2 of Linear Equations in One Variable and solve practice problems.",
+     topics:["What is a linear equation?","Solving equations using transposition","Cross-multiplication method","Word problems — age, speed, and fractions"],
+     keyPoints:["An equation has an equal sign — both sides must stay balanced","Transposition: move terms across = by flipping their sign","Always verify your answer by substituting back"],
+     formulas:["ax + b = 0 → x = −b/a","Cross multiply: a/b = c/d → ad = bc"],
+     prepare:["Bring Chapter 2 textbook","Try Exercise 2.3 Q1–5 before class","Write down any question where you got the wrong answer"]
+   }},
+  {id:"ls2", sub:"Science", t:"Photosynthesis Virtual Lab", teacher:"Meera Nair", date:"Mon, 29 Sep", time:"11:00 AM", dur:"60 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls2-Science",
+   notes:{
+     objective:"Observe and understand photosynthesis through a guided virtual lab experiment.",
+     topics:["Raw materials: CO₂, water, sunlight","Chlorophyll and the role of chloroplasts","Light-dependent vs light-independent reactions (overview)","Starch test with iodine"],
+     keyPoints:["Photosynthesis only happens in green parts of the plant","Oxygen is a by-product, not the main goal","Without sunlight, photosynthesis stops completely"],
+     formulas:["6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂"],
+     prepare:["Read Chapter 6 (Life Processes) pages 88–95","Know what variegated leaves are — teacher will ask!"]
+   }},
+  {id:"ls3", sub:"English", t:"Persuasive Writing Workshop", teacher:"L. Fernandes", date:"Tue, 30 Sep", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls3-English",
+   notes:{
+     objective:"Learn to write a structured persuasive essay with strong arguments and evidence.",
+     topics:["Structure: Hook → Claim → Arguments → Counter-argument → Conclusion","Persuasive devices: repetition, rhetorical questions, statistics","Tone and formal language","Practise writing a 3-paragraph argument"],
+     keyPoints:["Your claim goes in the first paragraph — be direct","Always acknowledge the other side, then rebut it","Facts and examples are more persuasive than emotions alone"],
+     formulas:[],
+     prepare:["Think of a topic you feel strongly about","Bring 2 facts or statistics related to it","Draft a one-line claim before class"]
+   }},
+  {id:"ls4", sub:"Coding", t:"Python: Functions & Loops", teacher:"A. Balaji", date:"Wed, 1 Oct", time:"11:30 AM", dur:"60 min", live:true, meet:"https://meet.jit.si/QEPlatform-ls4-Coding",
+   notes:{
+     objective:"Write and call functions in Python; combine them with for and while loops to solve real problems.",
+     topics:["Defining functions with def","Parameters and return values","for loop with range()","while loop and break/continue","Mini-project: number guessing game"],
+     keyPoints:["A function runs only when you call it — defining it does nothing by itself","return sends a value back; print just displays it","Avoid infinite loops — always change the condition variable inside the while block"],
+     formulas:["def greet(name):\n    return 'Hello, ' + name\n\nfor i in range(1, 6):\n    print(i)"],
+     prepare:["Have Python (IDLE or Replit) open and ready","Try writing a function that adds two numbers before class","Know what range(5) produces"]
+   }},
+  {id:"ls5", sub:"Social Studies", t:"Resources and Development", teacher:"P. Anitha", date:"Thu, 2 Oct", time:"9:30 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls5-SocialStudies",
+   notes:{
+     objective:"Understand the types of resources, their distribution, and sustainable development.",
+     topics:["Types of resources: natural, human-made, human","Classification: renewable vs non-renewable","Resource planning in India","Land use pattern and its changes"],
+     keyPoints:["Resources are not just things — they need technology and humans to become useful","Over-exploitation of resources leads to scarcity for future generations","India has uneven distribution of resources across states"],
+     formulas:[],
+     prepare:["Read Chapter 1 of Social Science Geography textbook","Note the difference between renewable and non-renewable with 2 examples each"]
+   }},
+  {id:"ls6", sub:"Mathematics", t:"Simple Equations — Problem Solving", teacher:"S. Rajkumar", date:"Fri, 3 Oct", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls6-Mathematics",
+   notes:{
+     objective:"Apply simple equation methods to solve word problems from everyday life.",
+     topics:["Setting up equations from word problems","Problems on age, money, and perimeter","Two-step equations","Common mistakes and how to avoid them"],
+     keyPoints:["Read the problem twice before writing the equation","Let x be the unknown — label it clearly","Check: does your answer make sense in the real-world context?"],
+     formulas:["If a number + 7 = 15 → x = 15 − 7 = 8","Perimeter of rectangle: 2(l + b) = P"],
+     prepare:["Complete Exercise 4.2 from the textbook","Mark any question you could not solve — teacher will cover those first"]
+   }},
+];
+
 const SUBJECTS = [
   {n:"Mathematics",m:82,c:14,d:11,h:"var(--teal)"},
   {n:"Science",m:74,c:16,d:11,h:"var(--teal)"},
@@ -295,14 +368,121 @@ const SUBJECTS = [
   {n:"Financial Literacy",m:45,c:8,d:3,h:"var(--vermilion)"},
   {n:"Life Skills",m:68,c:9,d:6,h:"var(--marigold)"},
 ];
-const COURSES = [
-  {sub:"Mathematics",t:"Linear Equations in One Variable",g:"Grade 8",l:9,d:6,mode:"Video + practice",by:"S. Rajkumar",yt:"NybHckSEQBI"},
-  {sub:"Science",t:"Life Processes: Photosynthesis",g:"Grade 8",l:7,d:3,mode:"Virtual lab",by:"Meera Nair",yt:"UPBMG5EYydo"},
-  {sub:"Coding",t:"Python Foundations: Loops & Logic",g:"Grade 8",l:12,d:8,mode:"Project-based",by:"A. Balaji",yt:"94UHCEmprCY"},
-  {sub:"Financial Literacy",t:"Money, Savings and Simple Interest",g:"Grade 8",l:6,d:1,mode:"Interactive",by:"K. Devi",yt:"Rmol9IzSDXk"},
-  {sub:"Robotics",t:"Sensors and Simple Circuits",g:"Grade 8",l:8,d:0,mode:"Kit + simulation",by:"A. Balaji",yt:"cqJpoJjRQ_E"},
-  {sub:"Social Studies",t:"Resources and Development",g:"Grade 8",l:11,d:7,mode:"Video + maps",by:"P. Anitha",yt:"osBVRfvkmAU"},
-];
+/* ── YouTube playlists by grade (auto-selected from user's grade) ── */
+const GRADE_PLAYLISTS = {
+  1:[
+    {sub:"Maths",      t:"Addition and Subtraction",          by:"Khan Academy",   list:"PLSQl0a2vh4HDGBPpSf1oJdaRSa33SxbMf"},
+    {sub:"Maths",      t:"Math for 1st Grade",                by:"Kids Academy",   list:"PLiMIqKsOLxPyPlp6jqHpcLbQO3XLdZzJk"},
+    {sub:"English",    t:"Phonics First Steps (Alphablocks)",  by:"BBC Alphablocks",list:"PLSW2D61TnopTdy7cNOSbBJS0bpajBjAVJ"},
+    {sub:"English",    t:"Class 1 English Complete Course",   by:"Magnet Brains",  list:"PLVLoWQFkZbhUgWG86tMtoodU40io7KFWZ"},
+    {sub:"Maths",      t:"Class 1 Maths",                     by:"Magnet Brains",  list:"PLVLoWQFkZbhX0yhin2ynxbUciVLaA_5CW"},
+    {sub:"Science/EVS",t:"1st Grade Science Lessons",         by:"Homeschool Pop", list:"PLNmq_T1B9ljLInH1JhP0EQu3y1EJltTSU"},
+    {sub:"Science/EVS",t:"Class 1 EVS Full Chapter Videos",   by:"Magnet Brains",  list:"PLVLoWQFkZbhVjuuiOJ7wOZC1QkUzHSHHw"},
+  ],
+  2:[
+    {sub:"Maths",       t:"Addition & Subtraction within 100", by:"Khan Academy",   list:"PLSQl0a2vh4HANBZUWi_685KtRECBh31sj"},
+    {sub:"Maths",       t:"Math — 2nd Grade",                  by:"Kids Academy",   list:"PLiMIqKsOLxPyhrf3_4iVelJtO7hOGZJ4H"},
+    {sub:"English",     t:"Grammar — 2nd Grade",               by:"Kids Academy",   list:"PLiMIqKsOLxPw92OcaIYat3MEu_v61P8hc"},
+    {sub:"English",     t:"Long Vowels Phonics (Alphablocks)",  by:"BBC Alphablocks",list:"PLSW2D61TnopTvTxScjdHlxlBcRYjJreH2"},
+    {sub:"Science",     t:"2nd Grade Science Lesson Videos",   by:"Homeschool Pop", list:"PLNmq_T1B9ljLp6Ml9HqA5H_7GziVGaEnt"},
+    {sub:"Social Studies",t:"Social Studies Adventures",       by:"Homeschool Pop", list:"PLNmq_T1B9ljLHEDh7kWbcYOs2APduqalc"},
+  ],
+  3:[
+    {sub:"Maths",       t:"3rd Grade Maths",                   by:"Khan Academy",   list:"PLSQl0a2vh4HBWaIqqKWiBYG13KlChPd1M"},
+    {sub:"Maths",       t:"Class 3 Maths Full Chapter Videos", by:"Magnet Brains",  list:"PLVLoWQFkZbhX1DUx2RPfhk-n8e3Y05mhr"},
+    {sub:"English",     t:"Class 3 English Grammar",           by:"Magnet Brains",  list:"PLVLoWQFkZbhVthMi7NCeesHcW0nTUmMcR"},
+    {sub:"Science",     t:"3rd Grade Science Videos",          by:"Homeschool Pop", list:"PLNmq_T1B9ljLVbBz_KeGNstReVRj80D3K"},
+    {sub:"Science/EVS", t:"Class 3 EVS Complete Course",       by:"Magnet Brains",  list:"PLVLoWQFkZbhVDervrmyOcy_Bh-6BIrXNu"},
+    {sub:"Science",     t:"The Dr. Binocs Show (Fun Science)", by:"Peekaboo Kidz",  list:"PLmJ33rwb1zZZj2EwyHxV_EntBTLZSTlTQ"},
+  ],
+  4:[
+    {sub:"Maths",       t:"Multiplication & Division",         by:"Khan Academy",   list:"PLSQl0a2vh4HCgwhuvizv_vTLnCMfN1Tsm"},
+    {sub:"Maths",       t:"Fun Math Videos for 4th Graders",   by:"Homeschool Pop", list:"PLNmq_T1B9ljIrerCiaNQKCFwpiOv73UNG"},
+    {sub:"English",     t:"Class 4 English Grammar",           by:"Magnet Brains",  list:"PLVLoWQFkZbhVS3ogfiSlSBQY8VUstufz2"},
+    {sub:"Science/EVS", t:"Class 4 EVS Full Chapter Videos",   by:"Magnet Brains",  list:"PLVLoWQFkZbhUT0LIEvkKrXHmiN3NgI55n"},
+    {sub:"Science",     t:"Explore Our Planet!",               by:"SciShow Kids",   list:"PLw2cuKNQvZ2e8_cKWWgRReLYiIH5XBme1"},
+    {sub:"Coding",      t:"Learn to Code in Scratch 3.0",      by:"learn awesome tuts",list:"PLNIdDxctsZe9gVqjHHj_TxzHfElHszdst"},
+  ],
+  5:[
+    {sub:"Maths",       t:"Get Ready for 5th Grade",           by:"Khan Academy",   list:"PLSQl0a2vh4HCthyyJ8XF1dcvenOkOmE6Q"},
+    {sub:"Maths",       t:"Class 5 Maths Complete Course",     by:"Magnet Brains",  list:"PLVLoWQFkZbhV0kPS6-8eWJw2GuBSSkjYD"},
+    {sub:"English",     t:"Class 5 English Complete Course",   by:"Magnet Brains",  list:"PLVLoWQFkZbhUOY_a1-hgpQFc22MZ8Qqo1"},
+    {sub:"Science/EVS", t:"Class 5 EVS Complete Course",       by:"Magnet Brains",  list:"PLVLoWQFkZbhVxyA3K-Ru0kuVTqhgqOJmO"},
+    {sub:"Computer",    t:"Class 5 Computer",                  by:"Magnet Brains",  list:"PLVLoWQFkZbhX7KHCxcjCnC5LtpRojrsHq"},
+    {sub:"Coding",      t:"Code.org CS Fundamentals",          by:"Mr. Kaiser",     list:"PLbsvRhEyGkKdUm_18wDMd0fIdqGYIbN4i"},
+  ],
+  6:[
+    {sub:"Maths",            t:"Get Ready for 6th Grade",          by:"Khan Academy",  list:"PLSQl0a2vh4HCnw4O0QyV1G_WLFmOkCeXd"},
+    {sub:"Maths",            t:"Class 6 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhXhyTmv71FsOx0MoMZOLelp"},
+    {sub:"Science",          t:"Class 6 Science Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhW47wzJZJ6mkN_K9jeiAFhK"},
+    {sub:"English",          t:"Class 6 English Grammar",          by:"Magnet Brains", list:"PLVLoWQFkZbhWYCmKqzuzhnq57ENS7kgqO"},
+    {sub:"Social Studies",   t:"Class 6 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhX8NJIryAuRqcl9I3xFAZWC"},
+    {sub:"Social Studies",   t:"Class 6 Geography Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhVZ18jUx-7kBa9RZGqAYHG_"},
+    {sub:"Coding",           t:"Programming for Kids: Scratch 3.0",by:"learn awesome tuts",list:"PLNIdDxctsZe9gVqjHHj_TxzHfElHszdst"},
+  ],
+  7:[
+    {sub:"Maths",            t:"Get Ready for 7th Grade",          by:"Khan Academy",  list:"PLSQl0a2vh4HADvjXzE4rEo7B60J3RUScn"},
+    {sub:"Maths",            t:"Class 7 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhVgT5aM-GRuQHnzthwllEHq"},
+    {sub:"Science",          t:"Class 7 Science Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhVcZ8f3BMLxt5E17GmIitf-"},
+    {sub:"Science",          t:"Middle School Physics",            by:"Khan Academy",  list:"PLSQl0a2vh4HC-daPugvP8kL_zuE3u_3Zr"},
+    {sub:"English",          t:"Class 7 English Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhUAwhnMuyKT_XeDn6WGU924"},
+    {sub:"Social Studies",   t:"Class 7 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhUUe49TU6pfgcuxA_YFh8m8"},
+    {sub:"Social Studies",   t:"Class 7 Geography Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhVjHjFP9Okf_SGiG8drP3nk"},
+  ],
+  8:[
+    {sub:"Maths",            t:"Get Ready for 8th Grade",          by:"Khan Academy",  list:"PLSQl0a2vh4HDJ85Bwgofo-57BWFCIlQfg"},
+    {sub:"Maths",            t:"Class 8 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhWwuZmoe15zj2Kmq7sApfcw"},
+    {sub:"Science",          t:"Class 8 Science Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhWMHRA2nMUENtoXZ6vmnePu"},
+    {sub:"English",          t:"Class 8 English Grammar",          by:"Magnet Brains", list:"PLVLoWQFkZbhVuMhiezYWOW4AZFkNfbWuS"},
+    {sub:"English",          t:"Class 8 English Literature",       by:"Magnet Brains", list:"PLVLoWQFkZbhWWdPx33Fo55ivvR1K-NyDS"},
+    {sub:"Social Studies",   t:"Class 8 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhW0rcXsCUWKK3bUAT12T_iV"},
+    {sub:"Social Studies",   t:"Class 8 Geography Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhW5-aYybgbeXQxphcF9jVtv"},
+    {sub:"Coding",           t:"Code.org CS Principles",           by:"Mr. Kaiser",    list:"PLbsvRhEyGkKfNgYm2K5bYKedKDZ_7zPf_"},
+  ],
+  9:[
+    {sub:"Maths",            t:"Algebra 1",                        by:"Khan Academy",  list:"PLSQl0a2vh4HAIu1ZvUEjn1xWBBa7RPQFL"},
+    {sub:"Maths",            t:"Class 9 Maths Complete Course",    by:"Magnet Brains", list:"PLVLoWQFkZbhW1YSpUGOUrqAu7SvJCaZNQ"},
+    {sub:"Science",          t:"Class 9 Science LIVE Course",      by:"Magnet Brains", list:"PLVLoWQFkZbhUF3n-Twoz7I-SM1od80kzw"},
+    {sub:"Science",          t:"Class 9 Chemistry Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhXIV0LETVHpfYSz7BtQu-Po"},
+    {sub:"Science",          t:"Biology Learning Playlist",        by:"Amoeba Sisters",list:"PLwL0Myd7Dk1F0iQPGrjehze3eDpco1eVz"},
+    {sub:"English",          t:"Class 9 English Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhWvnzQBSVOj14dJlH6YeoQc"},
+    {sub:"History",          t:"Class 9 History Complete Course",  by:"Magnet Brains", list:"PLVLoWQFkZbhXpspmeJBezKBXmm2DFcv7_"},
+    {sub:"Computer",         t:"Class 9 Information Technology",   by:"Magnet Brains", list:"PLVLoWQFkZbhWgZrgnU4gAfRZDxGY2L-xy"},
+  ],
+  10:[
+    {sub:"Maths",            t:"Class 10 Maths Complete Course",   by:"Magnet Brains", list:"PLVLoWQFkZbhWKEdwnxAMWbVWE16zqNWAv"},
+    {sub:"Maths",            t:"High School Geometry",             by:"Khan Academy",  list:"PLSQl0a2vh4HBPG0QzOpPRB9GoDC2OFG42"},
+    {sub:"Science (Physics)",t:"Class 10 Physics Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhXAipqg8dmzLQOED1uxgUTx"},
+    {sub:"Science (Biology)",t:"Class 10 Biology Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhXuBRmnH3CwHsk3ZzNHbXmG"},
+    {sub:"Science (Chemistry)",t:"Chemistry (CrashCourse)",        by:"CrashCourse",   list:"PL8dPuuaLjXtPHzzYuWy6fYEaX9mQQ8oGr"},
+    {sub:"English",          t:"Class 10 English Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhVGeoo-eZSYwbd-zHpjxKSu"},
+    {sub:"History",          t:"Class 10 History Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhUqoA8LckeDv_d75e0JaQwL"},
+    {sub:"Geography",        t:"Class 10 Geography",               by:"Magnet Brains", list:"PLVLoWQFkZbhWTMCmKVQENOML-eJilisJz"},
+    {sub:"Computer",         t:"Class 10 Information Technology",  by:"Magnet Brains", list:"PLVLoWQFkZbhUs5cKQzIJW08f6ipEiPLjH"},
+  ],
+  11:[
+    {sub:"Maths",            t:"Class 11 Maths Complete Course",   by:"Magnet Brains", list:"PLVLoWQFkZbhURj3eEKnp8ELKuny-EOatu"},
+    {sub:"Maths",            t:"Precalculus",                      by:"Khan Academy",  list:"PLSQl0a2vh4HAaEjpaB03S1FOY7ONBQHig"},
+    {sub:"Physics",          t:"Class 11 Physics Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhU1kLxPm9QtUdrX9I1pCURP"},
+    {sub:"Chemistry",        t:"Class 11 Chemistry Complete Course",by:"Magnet Brains",list:"PLVLoWQFkZbhVZkRbl1jBvgRr1VAnOeQ01"},
+    {sub:"Biology",          t:"Class 11 Biology Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhUwZGuyybTm5CFRiBbtDAa7"},
+    {sub:"English",          t:"Class 11 English Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhVWaTIGB27JMv0btP9bbJb2"},
+    {sub:"Economics",        t:"Class 11 Economics (Microeconomics)",by:"Magnet Brains",list:"PLVLoWQFkZbhWHDLaCWEyWw_KSzoTUjicl"},
+    {sub:"Accountancy",      t:"Class 11 Accounts Complete Course",by:"Magnet Brains", list:"PLVLoWQFkZbhWmLRc107wMYahsyARt7t2D"},
+    {sub:"Computer Science", t:"Computer Science with Python (11)",by:"ScoreShala",    list:"PLmGElG-9wxc-4bD1j88gLwS7w1cIJbiYb"},
+  ],
+  12:[
+    {sub:"Maths",            t:"Class 12 Maths Complete Course",   by:"Magnet Brains", list:"PLVLoWQFkZbhU5r5DlfxPc3gKw-QLLAvLn"},
+    {sub:"Physics",          t:"Class 12 Physics Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhU6U0BhqGieiARjUYmyoa8p"},
+    {sub:"Chemistry",        t:"Class 12 Chemistry Complete Course",by:"Magnet Brains",list:"PLVLoWQFkZbhVlHk1YYLfsSzUCLAGnkD82"},
+    {sub:"Biology",          t:"Class 12 Biology Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhU9wgMK7nJv0eZK4gcaI8FJ"},
+    {sub:"Biology",          t:"Biology (CrashCourse)",            by:"CrashCourse",   list:"PL3EED4C1D684D3ADF"},
+    {sub:"English",          t:"Class 12 English Complete Course", by:"Magnet Brains", list:"PLVLoWQFkZbhV3WUgQA4EZA-0ffqW1B2EX"},
+    {sub:"Economics",        t:"Class 12 Economics",               by:"Magnet Brains", list:"PLVLoWQFkZbhUDHy3Zh0r7MZcUYZXl-DYa"},
+    {sub:"Accountancy",      t:"Class 12 Accountancy",             by:"Magnet Brains", list:"PLVLoWQFkZbhXLbMUqwUCl1GJcjO_G8ByA"},
+    {sub:"Computer Science", t:"Computer Science with Python (12)",by:"ScoreShala",    list:"PLmGElG-9wxc-b3CjZ7gARrp_lZOVviShd"},
+  ],
+};
 /* subject → colour mapping */
 const SUBJ_COLOR={
   "English":"var(--marigold)","Hindi":"var(--vermilion)","Sanskrit":"#8A5A44",
@@ -500,15 +680,21 @@ const ROLES = [
   {id:"admin",label:"Administrator",who:"Principal's office",meta:"Kongu Vidyalaya"},
 ];
 
-/* ─────────── config ─────────── */
-const API = 'http://localhost:4000'; // Change to your deployed server URL after hosting
+/* ─────────── Local Auth (localStorage — no server needed) ─────────── */
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function getUsers(){ try{return JSON.parse(localStorage.getItem('qe_users')||'[]');}catch(e){return [];} }
+function saveUsers(u){ localStorage.setItem('qe_users', JSON.stringify(u)); }
 
 /* ─────────── state ─────────── */
 const state = {
   view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,
   libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
+  liveJoin: null, liveNotes: null, labOpen: null,
   quiz:{i:0,picked:null,answers:[],done:false},
-  auth:{screen:"signin", error:"", loading:false},  /* signin | signup | app */
+  auth:{screen:(()=>{try{return localStorage.getItem('qe_token')&&localStorage.getItem('qe_user')?'app':'signin';}catch(e){return 'signin';}})(), error:"", loading:false},  /* signin | signup | app */
   user: JSON.parse(localStorage.getItem('qe_user')||'null'),
 };
 const T = () => STR[state.lang];
@@ -664,23 +850,40 @@ function adminHome(){
 }
 
 function learnView(){
-  const t=T(), tabs=["All","In progress","Not started","Labs & projects"];
-  let list=COURSES;
-  if(state.filter==="In progress") list=COURSES.filter(c=>c.d>0&&c.d<c.l);
-  if(state.filter==="Not started") list=COURSES.filter(c=>c.d===0);
-  if(state.filter==="Labs & projects") list=COURSES.filter(c=>/lab|Project|Kit/i.test(c.mode));
-  const chips=tabs.map(x=>'<button class="chip'+(state.filter===x?' on':'')+'" style="'+(state.filter===x?'background:var(--ink);color:#fff;border-color:var(--ink)':'')+'" onclick="setFilter(\''+x+'\')">'+x+'</button>').join('');
-  const cards=list.map(c=>card(
-    (c.yt?'<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="display:block;text-decoration:none"><div class="ytthumb" style="background-image:url(https://i.ytimg.com/vi/'+c.yt+'/hqdefault.jpg)"><span class="ytplay">'+I.play(20)+'</span></div></a>':'')+
-    '<div class="'+(c.yt?'p20':'')+'"><div class="between">'+eyebrow(c.sub,'teal')+'<span class="small">'+(state.user?state.user.grade:c.g)+'</span></div>'+
-    '<h3 class="display" style="font-size:17px;font-weight:700;margin-top:8px;line-height:1.35">'+c.t+'</h3>'+
-    '<p class="muted mt4">'+c.mode+' · '+c.by+'</p>'+
-    '<div class="row mt16"><div class="bar"><i style="width:'+(c.d/c.l*100)+'%"></i></div><span class="small">'+c.d+'/'+c.l+'</span></div>'+
-    '<div class="mt16">'+(c.yt
-      ? '<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">'+btn(c.d?t.resume:t.start,c.d?'ghost':'solid','play','style="width:100%"')+'</a>'
-      : btn(c.d?t.resume:t.start,c.d?'ghost':'solid',c.d?'play':'arrow','style="width:100%"'))+'</div></div>',
-    c.yt?'p0':'p20')).join('');
+  const t=T();
   const userGrade=state.libGrade;
+  const gradeLabel='Grade '+userGrade;
+  const allPlaylists=GRADE_PLAYLISTS[userGrade]||GRADE_PLAYLISTS[6];
+  const subFilters=['All',...[...new Set(allPlaylists.map(p=>p.sub))]];
+  const activeFilter=subFilters.includes(state.filter)?state.filter:'All';
+  const list=activeFilter==='All'?allPlaylists:allPlaylists.filter(p=>p.sub===activeFilter);
+  const chips=subFilters.map(x=>'<button class="chip'+(activeFilter===x?' on':'')+'" style="'+(activeFilter===x?'background:var(--ink);color:#fff;border-color:var(--ink)':'')+'" onclick="setFilter(\''+x+'\')">'+x+'</button>').join('');
+  const cards=list.map(p=>{
+    const col=SC(p.sub)||'var(--teal)';
+    const playlistUrl='https://www.youtube.com/playlist?list='+p.list;
+    const thumbId=p.list.substring(0,11); // use first 11 chars as a fake id for thumbnail
+    return card(
+      '<a href="'+playlistUrl+'" target="_blank" rel="noopener" style="display:block;text-decoration:none">'+
+        '<div style="background:linear-gradient(135deg,'+col+'cc,'+col+'44);height:110px;display:flex;align-items:center;justify-content:center;position:relative;border-radius:12px 12px 0 0;overflow:hidden">'+
+          '<svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="rgba(255,255,255,0.18)"/><polygon points="19,15 37,24 19,33" fill="#fff"/></svg>'+
+          '<div style="position:absolute;top:8px;right:8px;background:rgba(255,0,0,.85);color:#fff;font-size:10px;font-weight:700;border-radius:4px;padding:2px 6px">▶ PLAYLIST</div>'+
+        '</div>'+
+      '</a>'+
+      '<div class="p20">'+
+        '<div class="between">'+
+          eyebrow(p.sub)+
+          '<span style="font-size:11px;font-weight:600;color:var(--slate);background:var(--canvas);border:1px solid var(--line);border-radius:99px;padding:2px 8px">'+gradeLabel+'</span>'+
+        '</div>'+
+        '<h3 class="display" style="font-size:16px;font-weight:700;margin-top:8px;line-height:1.35">'+p.t+'</h3>'+
+        '<p class="muted mt4" style="font-size:13px">'+p.by+'</p>'+
+        '<div class="mt16">'+
+          '<a href="'+playlistUrl+'" target="_blank" rel="noopener" style="text-decoration:none;display:block">'+
+            btn('Watch playlist','solid','play','style="width:100%"')+
+          '</a>'+
+        '</div>'+
+      '</div>',
+    'p0');
+  }).join('');
   const gradeBooks=LIBRARY.filter(b=>b.gr===userGrade);
   const books=gradeBooks.map(b=>{
     const col=SC(b.sub);
@@ -695,7 +898,15 @@ function learnView(){
         '<a href="'+b.zip+'" target="_blank" rel="noopener" style="text-decoration:none;flex:1">'+btn('⬇ ZIP','ghost','','style="width:100%;font-size:12px;padding:7px 8px"')+'</a>'+
       '</div></div>';
   }).join('');
-  return '<div class="wrap" style="margin-bottom:20px">'+chips+'</div><div class="cards3">'+cards+'</div>'+
+  return '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px">'+
+      '<div>'+
+        '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate)">YouTube Learning</div>'+
+        '<h2 class="display" style="font-size:20px;font-weight:800;margin:4px 0 0">Playlists for '+gradeLabel+'</h2>'+
+      '</div>'+
+      '<span style="font-size:12px;color:var(--mute)">'+allPlaylists.length+' playlists · auto-matched to your grade</span>'+
+    '</div>'+
+    '<div class="wrap" style="margin-bottom:20px">'+chips+'</div>'+
+    '<div class="cards3">'+cards+'</div>'+
     card('<div class="between" style="flex-wrap:wrap">'+
       '<div>'+eyebrow('Library')+'<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px">NCERT Textbooks — Grade '+userGrade+'</h3>'+
       '<p class="muted">'+gradeBooks.length+' official NCERT titles for your grade</p></div>'+
@@ -704,21 +915,228 @@ function learnView(){
 }
 
 function liveView(){
-  const upcoming=[["Algebra revision before unit test","Tomorrow · 9:00 am","Join","S. Rajkumar"],
-    ["Virtual lab: acids, bases and salts","Tue · 10:15 am","Join","Meera Nair"],
-    ["Persuasive writing — full session","Recorded · 42 min","Watch","L. Fernandes"],
-    ["Career guidance: paths after Grade 10","Recorded · 28 min","Watch","Counselling desk"]]
-    .map(r=>'<div class="row" style="padding:12px 0"><span style="color:var(--mute)">'+I.clock(16)+'</span>'+
-      '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500">'+r[0]+'</div>'+
-      '<div class="small">'+r[1]+' · '+r[3]+'</div></div>'+btn(r[2],'ghost')+'</div>').join('');
-  return '<section class="card rise" style="overflow:hidden">'+
-    '<div class="player"><div style="text-align:center">'+
-      '<div style="width:56px;height:56px;border-radius:99px;background:var(--teal);display:grid;place-items:center;margin:0 auto 12px;color:#fff">'+I.play(20)+'</div>'+
-      '<div class="display" style="color:#fff;font-size:20px;font-weight:800">Coding: Loops in Python</div>'+
-      '<div class="mono" style="color:#9FB3BD;font-size:11px;letter-spacing:.1em;margin-top:6px">A. BALAJI · 11:30 – 12:15 · 28 CLASSMATES JOINED</div>'+
-      '</div><div class="livetag"><i></i>LIVE</div></div>'+
-    '<div class="wrap p20">'+btn('Join classroom','teal','radio')+btn('Raise hand','ghost','users')+btn('Session notes','ghost','down')+'</div></section>'+
-    card(eyebrow('Upcoming and recorded')+'<div class="divide mt12">'+upcoming+'</div>','p20 mt20');
+  const liveNow = LIVE_SCHEDULE.filter(s=>s.live);
+  const upcoming = LIVE_SCHEDULE.filter(s=>!s.live);
+  const subColor = s => SC(s)||'var(--teal)';
+
+  /* ── in-page meeting embed ── */
+  if(state.liveJoin){
+    const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveJoin);
+    if(!cls) return '';
+    const room=cls.meet.replace('https://meet.jit.si/','');
+    const userName=encodeURIComponent((state.user&&state.user.name)||'Student');
+    return '<div style="max-width:900px;margin:0 auto">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
+        '<button onclick="state.liveJoin=null;render()" style="font-size:13px;color:var(--slate);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0">'+I.chev(14)+' Leave class</button>'+
+        '<div class="livetag"><i></i>LIVE</div>'+
+      '</div>'+
+      '<div style="font-size:16px;font-weight:700;margin-bottom:4px">'+cls.t+'</div>'+
+      '<p class="muted" style="margin-bottom:14px">'+cls.teacher+' · '+cls.sub+'</p>'+
+      '<div style="position:relative;width:100%;padding-bottom:56.25%;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.18)">'+
+        '<iframe id="jitsi-frame" allow="camera;microphone;display-capture;autoplay" '+
+          'src="https://meet.jit.si/'+room+'#userInfo.displayName='+userName+'&config.prejoinPageEnabled=false&config.startWithAudioMuted=true&config.startWithVideoMuted=false&config.disableDeepLinking=true&config.toolbarButtons=[%22microphone%22,%22camera%22,%22hangup%22,%22chat%22,%22raisehand%22,%22tileview%22]" '+
+          'style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:16px">'+
+        '</iframe>'+
+      '</div>'+
+    '</div>';
+  }
+
+  /* ── notes modal (auto-generated) ── */
+  if(state.liveNotes){
+    const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveNotes);
+    if(!cls) return '';
+    const n=cls.notes||{};
+    const noteSection=(label,icon,items,code)=>{
+      if(!items||!items.length) return '';
+      const rows=items.map(item=>
+        code
+          ? '<li style="background:var(--canvas);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:13px;color:var(--ink);white-space:pre-wrap;margin-bottom:6px;list-style:none">'+item+'</li>'
+          : '<li style="margin-bottom:6px;font-size:14px;color:var(--ink);padding-left:4px">'+item+'</li>'
+      ).join('');
+      return '<div style="margin-bottom:20px">'+
+        '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);margin-bottom:10px">'+icon+' '+label+'</div>'+
+        '<ul style="margin:0;padding:'+(code?'0':'0 0 0 18px')+'">'+rows+'</ul>'+
+      '</div>';
+    };
+    return '<div style="max-width:700px;margin:0 auto">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'+
+        '<button onclick="state.liveNotes=null;render()" style="font-size:13px;color:var(--slate);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0">'+I.chev(14)+' Back to Live</button>'+
+        (cls.live?'<div class="livetag"><i></i>LIVE</div>':'<span style="font-size:12px;color:var(--mute);font-weight:600;background:var(--canvas);border:1px solid var(--line);border-radius:20px;padding:4px 10px">Scheduled</span>')+
+      '</div>'+
+      card(
+        '<div style="margin-bottom:20px">'+
+          eyebrow(cls.sub)+
+          '<h2 class="display" style="font-size:20px;font-weight:800;margin:6px 0 4px">'+cls.t+'</h2>'+
+          '<p class="muted" style="margin:0">'+cls.teacher+' · '+cls.date+' · '+cls.time+' · '+cls.dur+'</p>'+
+        '</div>'+
+        '<div style="background:var(--tealSoft);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px;font-size:14px;color:var(--ink)">'+
+          '<strong>🎯 Objective:</strong> '+(n.objective||'Session notes for this class.')+'</div>'+
+        noteSection('Topics Covered','📚',n.topics,false)+
+        noteSection('Key Points to Remember','💡',n.keyPoints,false)+
+        noteSection('Formulas &amp; Syntax','🔢',n.formulas,true)+
+        noteSection('How to Prepare','✅',n.prepare,false),
+      'p24 rise');
+  }
+
+  /* ── live now banner ── */
+  const liveBanner = liveNow.length ? liveNow.map(cls=>
+    '<section class="card rise" style="overflow:hidden;background:var(--ink);border:none;margin-bottom:20px">'+
+      '<div style="padding:24px">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">'+
+          '<div>'+
+            '<div class="livetag" style="margin-bottom:10px"><i></i>LIVE NOW</div>'+
+            '<h3 class="display" style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px">'+cls.t+'</h3>'+
+            '<p style="color:#9FB3BD;font-size:13px;font-family:var(--mono)">'+cls.teacher.toUpperCase()+' · '+cls.sub.toUpperCase()+' · '+cls.dur+'</p>'+
+          '</div>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+            '<button onclick="state.liveJoin=\''+cls.id+'\';render()" style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">'+I.radio(16)+'Join now</button>'+
+            '<button onclick="state.liveNotes=\''+cls.id+'\';render()" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">📝 Session Notes</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</section>').join('') :
+    card('<div style="text-align:center;padding:20px 0">'+
+      '<div style="width:52px;height:52px;border-radius:99px;background:var(--canvas);display:grid;place-items:center;margin:0 auto 12px;color:var(--mute)">'+I.radio(22)+'</div>'+
+      '<div style="font-size:15px;font-weight:600;margin-bottom:4px">No class is live right now</div>'+
+      '<p class="muted">Check the schedule below for your next session</p>'+
+    '</div>','p20 mt0 mb20');
+
+  /* ── schedule list ── */
+  const scheduleRows = upcoming.map(cls=>{
+    const col=subColor(cls.sub);
+    return '<div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)">'+
+      '<div style="width:44px;height:44px;border-radius:12px;background:'+col+'22;display:grid;place-items:center;flex-shrink:0;color:'+col+'">'+I.cal(18)+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+cls.t+'</div>'+
+        '<div style="font-size:12px;color:var(--slate);margin-top:2px">'+cls.teacher+' · <span style="color:'+col+';font-weight:600">'+cls.sub+'</span></div>'+
+      '</div>'+
+      '<div style="text-align:right;flex-shrink:0">'+
+        '<div style="font-size:13px;font-weight:600">'+cls.time+'</div>'+
+        '<div style="font-size:11px;color:var(--mute)">'+cls.date+' · '+cls.dur+'</div>'+
+      '</div>'+
+      (cls.live
+        ? '<button onclick="state.liveJoin=\''+cls.id+'\';render()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">Join</button>'
+        : '<button disabled style="background:var(--canvas);color:var(--mute);border:1.5px solid var(--line);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:not-allowed;flex-shrink:0">Scheduled</button>')+
+    '</div>';
+  }).join('');
+
+  return liveBanner +
+    card(
+      eyebrow('Upcoming sessions')+
+      '<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px;margin-bottom:4px">Your class schedule</h3>'+
+      '<p class="muted">Teachers update this schedule from the admin portal</p>'+
+      '<div style="margin-top:8px">'+scheduleRows+'</div>',
+    'p20');
+}
+
+/* ─────────── labView ─────────── */
+const LABS = [
+  {
+    id:"physics",
+    title:"Physics Measurement Lab",
+    sub:"Physics · Grades 8–12",
+    desc:"Take real readings with virtual instruments — Vernier caliper, screw gauge, simple pendulum, metre scale, and measuring cylinder. Every trial logs error vs. reference just like a practical notebook.",
+    tags:["Vernier Caliper","Screw Gauge","Pendulum","Metre Scale","Cylinder"],
+    url:"https://bntbooksntoys-crypto.github.io/Quality-Education/",
+    embedUrl:"https://bntbooksntoys-crypto.github.io/measure-lab/",
+    color:"#0E7C6B",
+    bg:"linear-gradient(135deg,#0E7C6B 0%,#0a5548 100%)",
+    icon:'<path d="M9 2v6.5L3.8 18A2 2 0 0 0 5.6 21h12.8a2 2 0 0 0 1.8-3L15 8.5V2"/><path d="M8 2h8M6.5 14h11"/>',
+  },
+  {
+    id:"chemistry",
+    title:"Spectra Lab — Chemistry",
+    sub:"Chemistry · Grades 9–12",
+    desc:"Explore all 118 elements on an interactive periodic table. Mix elements in a virtual beaker to simulate reactions, build compound formulas, visualise electron shells, and plot property trends.",
+    tags:["Periodic Table","Reactions","Compounds","Bohr Model","Trends"],
+    url:"https://claude.ai/artifact/Cx1sK7WiKFvTNyCDDovQsb",
+    embedUrl:"https://claude.ai/artifact/Cx1sK7WiKFvTNyCDDovQsb",
+    color:"#7C3AED",
+    bg:"linear-gradient(135deg,#7C3AED 0%,#4c1d95 100%)",
+    icon:'<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="11" ry="4.5" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="11" ry="4.5" stroke="currentColor" stroke-width="1.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="11" ry="4.5" stroke="currentColor" stroke-width="1.6" transform="rotate(120 12 12)"/>',
+  },
+  {
+    id:"language",
+    title:"Lingo Passport — Language Lab",
+    sub:"Languages · All Grades",
+    desc:"Zero-to-advanced journey across 6 languages (Spanish, French, German, Italian, Japanese, Tamil). Listen with native TTS, record your pronunciation, and get an instant similarity score.",
+    tags:["Spanish","French","German","Japanese","Tamil","Pronunciation"],
+    url:"https://splendorous-druid-25dcce.netlify.app/labs/language.html",
+    embedUrl:"https://splendorous-druid-25dcce.netlify.app/labs/language.html",
+    color:"#F5A524",
+    bg:"linear-gradient(135deg,#F5A524 0%,#c47d0e 100%)",
+    icon:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/>',
+  },
+  {
+    id:"english",
+    title:"WordMaster — English Lab",
+    sub:"English · All Grades",
+    desc:"Complete English learning studio with 110+ vocabulary words, grammar lessons and drills, reading comprehension passages, pronunciation scoring, mock tests, and a daily progress streak tracker.",
+    tags:["Vocabulary","Grammar","Reading","Pronunciation","Tests"],
+    url:"https://splendorous-druid-25dcce.netlify.app/labs/english.html",
+    embedUrl:"https://splendorous-druid-25dcce.netlify.app/labs/english.html",
+    color:"#C6362F",
+    bg:"linear-gradient(135deg,#C6362F 0%,#8b1a15 100%)",
+    icon:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  },
+];
+
+function labView(){
+  /* If a lab is open, show full-screen iframe */
+  if(state.labOpen){
+    const lab = LABS.find(l=>l.id===state.labOpen);
+    if(!lab) { state.labOpen=null; }
+    else {
+      return '<div class="lab-modal">'+
+        '<div class="lab-modal-head">'+
+          '<div style="display:flex;align-items:center;gap:10px">'+
+            '<div style="width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:'+lab.color+';color:#fff">'+
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+lab.icon+'</svg>'+
+            '</div>'+
+            '<h4>'+lab.title+'</h4>'+
+          '</div>'+
+          '<button class="lab-modal-close" onclick="state.labOpen=null;render()">'+I.close(14)+' Close lab</button>'+
+        '</div>'+
+        '<iframe src="'+lab.embedUrl+'" allow="camera;microphone;accelerometer" title="'+lab.title+'"></iframe>'+
+      '</div>';
+    }
+  }
+
+  const cards = LABS.map(lab=>{
+    const btnStyle='background:'+lab.color;
+    return '<div class="lab-card">'+
+      '<div class="lab-banner" style="'+lab.bg+'">'+
+        '<svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
+          '<circle cx="160" cy="20" r="60" fill="white" opacity="0.08"/><circle cx="30" cy="120" r="50" fill="white" opacity="0.06"/>'+
+          '<rect x="80" y="50" width="40" height="40" rx="8" fill="white" opacity="0.05"/>'+
+        '</svg>'+
+        '<div class="lab-icon" style="color:#fff">'+
+          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+lab.icon+'</svg>'+
+        '</div>'+
+      '</div>'+
+      '<div class="lab-body">'+
+        '<div>'+
+          '<div class="eyebrow">'+lab.sub+'</div>'+
+          '<h3>'+lab.title+'</h3>'+
+        '</div>'+
+        '<p>'+lab.desc+'</p>'+
+        '<div class="lab-tags">'+lab.tags.map(t=>'<span class="lab-tag">'+t+'</span>').join('')+'</div>'+
+      '</div>'+
+      '<button class="lab-open-btn" style="'+btnStyle+'" onclick="openLab(\''+lab.id+'\')">'+
+        I.flask(16)+' Open Lab'+
+      '</button>'+
+    '</div>';
+  }).join('');
+
+  return '<div class="pagehead">'+eyebrow('Interactive Labs')+'<h2 class="display">Virtual Lab Bench</h2>'+
+    '<p class="muted" style="margin-top:6px">Hands-on simulations for Physics, Chemistry, Languages, and English. No setup needed — open and start experimenting.</p></div>'+
+    '<div class="lab-grid">'+cards+'</div>'+
+    '<div class="note mt24">'+I.spark(14)+' Labs open inside the platform. Make sure to allow <strong>microphone access</strong> for the Language and English labs\' pronunciation features.</div>';
+}
+
+function openLab(id){
+  state.labOpen=id;
+  render();
 }
 
 function assessView(){
@@ -815,17 +1233,17 @@ function awardsView(){
 function navHTML(){
   const t=T();
   const items=[["home",t.home,"grid"],["learn",t.learn,"book"],["live",t.live,"radio"],
-    ["assess",t.assess,"clip"],["progress",t.progress,"trend"],["awards",t.awards,"medal"]];
+    ["assess",t.assess,"clip"],["progress",t.progress,"trend"],["awards",t.awards,"medal"],["lab",t.lab,"flask"]];
   return '<div class="nav">'+items.map(n=>'<button class="'+(state.view===n[0]?'on':'')+'" onclick="go(\''+n[0]+'\')">'+
     I[n[2]](18)+'<span>'+n[1]+'</span></button>').join('')+'</div>';
 }
 function title(){
-  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,progress:t.progress,awards:t.awards};
+  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,progress:t.progress,awards:t.awards,lab:t.lab};
   return state.view==="home" ? t.greet+", "+ME().who.split(" ")[0] : map[state.view];
 }
 function bodyHTML(){
   if(state.view==="home") return {student:studentHome,parent:parentHome,teacher:teacherHome,admin:adminHome}[state.role]();
-  return {learn:learnView,live:liveView,assess:assessView,progress:progressView,awards:awardsView}[state.view]();
+  return {learn:learnView,live:liveView,assess:assessView,progress:progressView,awards:awardsView,lab:labView}[state.view]();
 }
 /* ─────────── auth screens ─────────── */
 function authScreen(){
@@ -843,7 +1261,7 @@ function authScreen(){
         '<div class="auth-field"><label>Password</label><input id="f_pass" type="password" placeholder="At least 6 characters" required autocomplete="'+(isSign?'current-password':'new-password')+'"/></div>'+
         (!isSign?'<div class="auth-row">'+
           '<div class="auth-field"><label>Grade</label><select id="f_grade" required><option value="">Select grade</option>'+
-            ['6','7','8','9','10','11','12'].map(g=>'<option value="Grade '+g+'">Grade '+g+'</option>').join('')+
+            ['1','2','3','4','5','6','7','8','9','10','11','12'].map(g=>'<option value="Grade '+g+'">Grade '+g+'</option>').join('')+
           '</select></div>'+
           '<div class="auth-field"><label>Age</label><input id="f_age" type="number" placeholder="e.g. 14" min="5" max="25" required/></div>'+
         '</div>':'')+
@@ -904,17 +1322,19 @@ function switchAuth(screen){state.auth={screen,error:'',loading:false};render();
 
 async function doSignIn(e){
   e.preventDefault();
-  const email=document.getElementById('f_email').value.trim();
+  const email=document.getElementById('f_email').value.trim().toLowerCase();
   const password=document.getElementById('f_pass').value;
   state.auth.error=''; state.auth.loading=true; render();
   try {
-    const res = await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
-    const data = await res.json();
-    if(!res.ok) throw new Error(data.error||'Login failed');
-    localStorage.setItem('qe_token', data.token);
-    localStorage.setItem('qe_user', JSON.stringify(data.user));
-    state.user = data.user;
-    const _gm1=String(data.user.grade).match(/\d+/); state.libGrade=_gm1?parseInt(_gm1[0])||8:8;
+    const pwHash = await sha256(password);
+    const users = getUsers();
+    const user = users.find(u=>u.email===email && u.passwordHash===pwHash);
+    if(!user) throw new Error('Incorrect email or password.');
+    const userData = {name:user.name,email:user.email,grade:user.grade,age:user.age};
+    localStorage.setItem('qe_token','local-'+Date.now());
+    localStorage.setItem('qe_user',JSON.stringify(userData));
+    state.user = userData;
+    const _gm1=String(userData.grade).match(/\d+/); state.libGrade=_gm1?parseInt(_gm1[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
   } catch(err){
@@ -927,19 +1347,23 @@ async function doSignIn(e){
 async function doSignUp(e){
   e.preventDefault();
   const name=document.getElementById('f_name').value.trim();
-  const email=document.getElementById('f_email').value.trim();
+  const email=document.getElementById('f_email').value.trim().toLowerCase();
   const password=document.getElementById('f_pass').value;
   const grade=document.getElementById('f_grade').value;
   const age=document.getElementById('f_age').value;
+  if(password.length<6){state.auth.error='Password must be at least 6 characters.';render();return;}
   state.auth.error=''; state.auth.loading=true; render();
   try {
-    const res = await fetch(API+'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password,grade,age})});
-    const data = await res.json();
-    if(!res.ok) throw new Error(data.error||'Registration failed');
-    localStorage.setItem('qe_token', data.token);
-    localStorage.setItem('qe_user', JSON.stringify(data.user));
-    state.user = data.user;
-    const _gm2=String(data.user.grade).match(/\d+/); state.libGrade=_gm2?parseInt(_gm2[0])||8:8;
+    const users = getUsers();
+    if(users.find(u=>u.email===email)) throw new Error('An account with this email already exists.');
+    const pwHash = await sha256(password);
+    users.push({name,email,passwordHash:pwHash,grade,age:Number(age),createdAt:new Date().toISOString()});
+    saveUsers(users);
+    const userData = {name,email,grade,age:Number(age)};
+    localStorage.setItem('qe_token','local-'+Date.now());
+    localStorage.setItem('qe_user',JSON.stringify(userData));
+    state.user = userData;
+    const _gm2=String(grade).match(/\d+/); state.libGrade=_gm2?parseInt(_gm2[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
   } catch(err){
@@ -958,7 +1382,7 @@ function doSignOut(){
 }
 
 /* ─────────── actions ─────────── */
-function go(v){state.view=v;state.navOpen=false;render();window.scrollTo(0,0);}
+function go(v){state.view=v;state.navOpen=false;state.labOpen=null;render();window.scrollTo(0,0);}
 function setRole(r){state.role=r;state.view="home";render();}
 function setLang(l){state.lang=l;render();}
 function setFilter(f){state.filter=f;render();}

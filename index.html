@@ -672,7 +672,7 @@ function learnView(){
   const chips=tabs.map(x=>'<button class="chip'+(state.filter===x?' on':'')+'" style="'+(state.filter===x?'background:var(--ink);color:#fff;border-color:var(--ink)':'')+'" onclick="setFilter(\''+x+'\')">'+x+'</button>').join('');
   const cards=list.map(c=>card(
     (c.yt?'<a href="https://www.youtube.com/watch?v='+c.yt+'" target="_blank" rel="noopener" style="display:block;text-decoration:none"><div class="ytthumb" style="background-image:url(https://i.ytimg.com/vi/'+c.yt+'/hqdefault.jpg)"><span class="ytplay">'+I.play(20)+'</span></div></a>':'')+
-    '<div class="'+(c.yt?'p20':'')+'"><div class="between">'+eyebrow(c.sub,'teal')+'<span class="small">'+c.g+'</span></div>'+
+    '<div class="'+(c.yt?'p20':'')+'"><div class="between">'+eyebrow(c.sub,'teal')+'<span class="small">'+(state.user?state.user.grade:c.g)+'</span></div>'+
     '<h3 class="display" style="font-size:17px;font-weight:700;margin-top:8px;line-height:1.35">'+c.t+'</h3>'+
     '<p class="muted mt4">'+c.mode+' · '+c.by+'</p>'+
     '<div class="row mt16"><div class="bar"><i style="width:'+(c.d/c.l*100)+'%"></i></div><span class="small">'+c.d+'/'+c.l+'</span></div>'+

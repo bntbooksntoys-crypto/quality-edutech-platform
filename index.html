@@ -172,7 +172,7 @@ main{padding:24px}
 .note{background:var(--marigoldSoft);border-left:3px solid var(--marigold);border-radius:12px;padding:16px;font-size:14px}
 .badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
 .player{background:var(--ink);height:250px;display:grid;place-items:center;position:relative;border-radius:16px 16px 0 0}
-.livetag{position:absolute;left:16px;top:16px;background:var(--vermilion);color:#fff;border-radius:99px;padding:4px 12px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+.livetag{background:var(--vermilion);color:#fff;border-radius:99px;padding:4px 12px;display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;width:fit-content}
 .livetag i{width:7px;height:7px;border-radius:99px;background:#fff;animation:pulse 2.4s ease-in-out infinite}
 footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
 .rise{animation:rise .45s cubic-bezier(.2,.7,.3,1) both}
@@ -285,6 +285,16 @@ const KIND = {
   video:{bg:"#EEF2F1",bar:"var(--slate)",tag:"Recorded"},
   test:{bg:"var(--redSoft)",bar:"var(--vermilion)",tag:"Timed test"},
 };
+/* ── Live class schedule (teachers update this) ── */
+const LIVE_SCHEDULE = [
+  {id:"ls1", sub:"Mathematics",   t:"Linear Equations — Chapter 2 Recap",  teacher:"S. Rajkumar",  date:"Mon, 29 Sep", time:"9:00 AM",  dur:"45 min", live:false, meet:"https://meet.google.com/"},
+  {id:"ls2", sub:"Science",       t:"Photosynthesis Virtual Lab",           teacher:"Meera Nair",   date:"Mon, 29 Sep", time:"11:00 AM", dur:"60 min", live:false, meet:"https://meet.google.com/"},
+  {id:"ls3", sub:"English",       t:"Persuasive Writing Workshop",          teacher:"L. Fernandes", date:"Tue, 30 Sep", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.google.com/"},
+  {id:"ls4", sub:"Coding",        t:"Python: Functions & Loops",            teacher:"A. Balaji",    date:"Wed, 1 Oct",  time:"11:30 AM", dur:"60 min", live:true,  meet:"https://meet.google.com/"},
+  {id:"ls5", sub:"Social Studies",t:"Resources and Development",            teacher:"P. Anitha",    date:"Thu, 2 Oct",  time:"9:30 AM",  dur:"45 min", live:false, meet:"https://meet.google.com/"},
+  {id:"ls6", sub:"Mathematics",   t:"Simple Equations — Problem Solving",   teacher:"S. Rajkumar",  date:"Fri, 3 Oct",  time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.google.com/"},
+];
+
 const SUBJECTS = [
   {n:"Mathematics",m:82,c:14,d:11,h:"var(--teal)"},
   {n:"Science",m:74,c:16,d:11,h:"var(--teal)"},
@@ -507,6 +517,7 @@ const API = 'http://localhost:4000'; // Change to your deployed server URL after
 const state = {
   view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,
   libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
+  liveJoin: null,
   quiz:{i:0,picked:null,answers:[],done:false},
   auth:{screen:"signin", error:"", loading:false},  /* signin | signup | app */
   user: JSON.parse(localStorage.getItem('qe_user')||'null'),
@@ -704,21 +715,80 @@ function learnView(){
 }
 
 function liveView(){
-  const upcoming=[["Algebra revision before unit test","Tomorrow · 9:00 am","Join","S. Rajkumar"],
-    ["Virtual lab: acids, bases and salts","Tue · 10:15 am","Join","Meera Nair"],
-    ["Persuasive writing — full session","Recorded · 42 min","Watch","L. Fernandes"],
-    ["Career guidance: paths after Grade 10","Recorded · 28 min","Watch","Counselling desk"]]
-    .map(r=>'<div class="row" style="padding:12px 0"><span style="color:var(--mute)">'+I.clock(16)+'</span>'+
-      '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500">'+r[0]+'</div>'+
-      '<div class="small">'+r[1]+' · '+r[3]+'</div></div>'+btn(r[2],'ghost')+'</div>').join('');
-  return '<section class="card rise" style="overflow:hidden">'+
-    '<div class="player"><div style="text-align:center">'+
-      '<div style="width:56px;height:56px;border-radius:99px;background:var(--teal);display:grid;place-items:center;margin:0 auto 12px;color:#fff">'+I.play(20)+'</div>'+
-      '<div class="display" style="color:#fff;font-size:20px;font-weight:800">Coding: Loops in Python</div>'+
-      '<div class="mono" style="color:#9FB3BD;font-size:11px;letter-spacing:.1em;margin-top:6px">A. BALAJI · 11:30 – 12:15 · 28 CLASSMATES JOINED</div>'+
-      '</div><div class="livetag"><i></i>LIVE</div></div>'+
-    '<div class="wrap p20">'+btn('Join classroom','teal','radio')+btn('Raise hand','ghost','users')+btn('Session notes','ghost','down')+'</div></section>'+
-    card(eyebrow('Upcoming and recorded')+'<div class="divide mt12">'+upcoming+'</div>','p20 mt20');
+  const liveNow = LIVE_SCHEDULE.filter(s=>s.live);
+  const upcoming = LIVE_SCHEDULE.filter(s=>!s.live);
+  const subColor = s => SC(s)||'var(--teal)';
+
+  /* ── join modal ── */
+  if(state.liveJoin){
+    const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveJoin);
+    return cls ? '<div style="max-width:640px;margin:0 auto">'+
+      card('<button onclick="state.liveJoin=null;render()" style="font-size:12px;color:var(--slate);background:none;border:none;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;gap:4px">'+I.chev(14)+' Back to Live Classes</button>'+
+        '<div class="livetag" style="margin-bottom:16px"><i></i>LIVE NOW</div>'+
+        '<h2 class="display" style="font-size:22px;font-weight:800;line-height:1.3;margin-bottom:6px">'+cls.t+'</h2>'+
+        '<p class="muted" style="margin-bottom:20px">'+cls.teacher+' · '+cls.sub+' · '+cls.dur+'</p>'+
+        '<div style="background:var(--ink);border-radius:16px;aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:20px">'+
+          '<div style="width:64px;height:64px;border-radius:99px;background:var(--teal);display:grid;place-items:center;color:#fff">'+I.radio(24)+'</div>'+
+          '<div style="color:#fff;font-size:16px;font-weight:700">'+cls.t+'</div>'+
+          '<div style="color:#9FB3BD;font-size:12px;font-family:var(--mono)">'+cls.teacher.toUpperCase()+' · LIVE</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
+          '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none;flex:1">'+btn('🎥 Join Video Call','teal','','style="width:100%"')+'</a>'+
+          btn('📝 Session Notes','ghost','clip','style="flex:1"')+
+        '</div>','p24 rise') : '';
+  }
+
+  /* ── live now banner ── */
+  const liveBanner = liveNow.length ? liveNow.map(cls=>
+    '<section class="card rise" style="overflow:hidden;background:var(--ink);border:none;margin-bottom:20px">'+
+      '<div style="padding:24px">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">'+
+          '<div>'+
+            '<div class="livetag" style="margin-bottom:10px"><i></i>LIVE NOW</div>'+
+            '<h3 class="display" style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px">'+cls.t+'</h3>'+
+            '<p style="color:#9FB3BD;font-size:13px;font-family:var(--mono)">'+cls.teacher.toUpperCase()+' · '+cls.sub.toUpperCase()+' · '+cls.dur+'</p>'+
+          '</div>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+            '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none">'+
+              '<button style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">'+I.radio(16)+'Join now</button>'+
+            '</a>'+
+            '<button onclick="state.liveJoin=\''+cls.id+'\';render()" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">View details</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</section>').join('') :
+    card('<div style="text-align:center;padding:20px 0">'+
+      '<div style="width:52px;height:52px;border-radius:99px;background:var(--canvas);display:grid;place-items:center;margin:0 auto 12px;color:var(--mute)">'+I.radio(22)+'</div>'+
+      '<div style="font-size:15px;font-weight:600;margin-bottom:4px">No class is live right now</div>'+
+      '<p class="muted">Check the schedule below for your next session</p>'+
+    '</div>','p20 mt0 mb20');
+
+  /* ── schedule list ── */
+  const scheduleRows = upcoming.map(cls=>{
+    const col=subColor(cls.sub);
+    return '<div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)">'+
+      '<div style="width:44px;height:44px;border-radius:12px;background:'+col+'22;display:grid;place-items:center;flex-shrink:0;color:'+col+'">'+I.cal(18)+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+cls.t+'</div>'+
+        '<div style="font-size:12px;color:var(--slate);margin-top:2px">'+cls.teacher+' · <span style="color:'+col+';font-weight:600">'+cls.sub+'</span></div>'+
+      '</div>'+
+      '<div style="text-align:right;flex-shrink:0">'+
+        '<div style="font-size:13px;font-weight:600">'+cls.time+'</div>'+
+        '<div style="font-size:11px;color:var(--mute)">'+cls.date+' · '+cls.dur+'</div>'+
+      '</div>'+
+      '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none;flex-shrink:0">'+
+        '<button style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">Join</button>'+
+      '</a>'+
+    '</div>';
+  }).join('');
+
+  return liveBanner +
+    card(
+      eyebrow('Upcoming sessions')+
+      '<h3 class="display" style="font-size:17px;font-weight:700;margin-top:4px;margin-bottom:4px">Your class schedule</h3>'+
+      '<p class="muted">Teachers update this schedule from the admin portal</p>'+
+      '<div style="margin-top:8px">'+scheduleRows+'</div>',
+    'p20');
 }
 
 function assessView(){

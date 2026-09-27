@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lingo Passport — Language Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#0f172a;--card:#1e293b;--card2:#273548;--border:#334155;
+  --accent:#F5A524;--accent2:#f59e0b;--green:#22c55e;--red:#ef4444;
+  --text:#f1f5f9;--muted:#94a3b8;--mono:'IBM Plex Mono',monospace;
+  --body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh}
+button{font:inherit;cursor:pointer;border:none}
+select{font:inherit}
+
+/* ── layout ── */
+.app{display:flex;flex-direction:column;min-height:100vh}
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-size:18px}
+.logo-text h1{font-size:16px;font-weight:700;color:var(--text)}
+.logo-text p{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.lang-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.lang-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-weight:500;transition:.15s}
+.lang-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+.lang-tab:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+
+.body{flex:1;padding:20px;max-width:860px;margin:0 auto;width:100%}
+
+/* ── mode tabs ── */
+.mode-bar{display:flex;gap:4px;background:var(--card);border-radius:12px;padding:4px;margin-bottom:24px;border:1px solid var(--border)}
+.mode-btn{flex:1;padding:9px 6px;border-radius:9px;background:none;color:var(--muted);font-size:13px;font-weight:500;text-align:center;transition:.15s}
+.mode-btn.active{background:var(--accent);color:#000;font-weight:700}
+
+/* ── phrases panel ── */
+.phrase-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.phrase-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;justify-content:space-between}
+.cat-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(245,165,36,.18);color:var(--accent);font-family:var(--mono)}
+.phrase-body{padding:20px}
+.phrase-en{font-size:22px;font-weight:700;margin-bottom:8px}
+.phrase-native{font-size:28px;font-weight:700;color:var(--accent);line-height:1.3;margin-bottom:6px}
+.phrase-roman{font-size:15px;color:var(--muted);font-style:italic;margin-bottom:20px;font-family:var(--mono)}
+.phrase-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{background:var(--accent2)}
+.btn-outline{background:var(--card2);border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-red{background:#7f1d1d;color:#fca5a5;border:1.5px solid var(--red)}
+.btn-green{background:#14532d;color:#86efac;border:1.5px solid var(--green)}
+
+/* ── nav arrows ── */
+.phrase-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--border);background:var(--card2)}
+.phrase-counter{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.nav-arrows{display:flex;gap:8px}
+.arr-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1.5px solid var(--border);color:var(--text);font-size:16px;display:grid;place-items:center}
+.arr-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── score bar ── */
+.score-bar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.score-label{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.score-val{font-size:20px;font-weight:700}
+.score-val.good{color:var(--green)}
+.score-val.ok{color:var(--accent)}
+.score-val.bad{color:var(--red)}
+.score-track{flex:1;min-width:120px;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.score-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.fill-green{background:var(--green)}
+.fill-yellow{background:var(--accent)}
+.fill-red{background:var(--red)}
+
+/* ── recording ── */
+.rec-panel{background:var(--card2);border:1px dashed var(--border);border-radius:12px;padding:16px;text-align:center;margin:14px 0}
+.rec-prompt{font-size:14px;color:var(--muted);margin-bottom:12px}
+.rec-ring{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:28px;border:2px solid var(--border)}
+.rec-ring.recording{animation:pulse .8s ease-in-out infinite;border-color:var(--red);background:#7f1d1d33}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.waveform{height:36px;display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:10px}
+.wave-bar{width:4px;border-radius:2px;background:var(--muted);transition:height .1s}
+
+/* ── quiz ── */
+.quiz-q{font-size:20px;font-weight:700;margin-bottom:20px;line-height:1.4}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.quiz-opt{padding:13px 16px;border-radius:12px;border:2px solid var(--border);background:var(--card2);text-align:left;color:var(--text);font-size:14px;font-weight:500;transition:.15s}
+.quiz-opt:hover:not(:disabled){border-color:var(--accent);background:rgba(245,165,36,.08)}
+.quiz-opt.correct{border-color:var(--green);background:#14532d44;color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:#7f1d1d44;color:var(--red)}
+
+/* ── progress ── */
+.progress-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:16px}
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.prog-emoji{font-size:28px;margin-bottom:8px}
+.prog-name{font-weight:600;margin-bottom:4px}
+.prog-words{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.prog-ring{width:60px;height:60px;margin:10px auto 0}
+
+/* ── category selector ── */
+.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.cat-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--mono);transition:.15s}
+.cat-btn.active{background:rgba(245,165,36,.18);border-color:var(--accent);color:var(--accent)}
+.cat-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+
+/* ── streak ── */
+.streak-bar{background:linear-gradient(135deg,#7c2d12,#b45309);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.streak-fire{font-size:28px}
+.streak-info h3{font-size:16px;font-weight:700}
+.streak-info p{font-size:12px;color:#fde68a;margin-top:2px;font-family:var(--mono)}
+.streak-days{margin-left:auto;text-align:right}
+.streak-days .num{font-size:28px;font-weight:800;color:#fde68a}
+.streak-days .lbl{font-size:11px;color:#fcd34d;font-family:var(--mono)}
+
+/* ── toast ── */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:999;transition:transform .3s;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🌐</div>
+    <div class="logo-text">
+      <h1>Lingo Passport</h1>
+      <p>LANGUAGE LAB · QE PLATFORM</p>
+    </div>
+  </div>
+  <div class="lang-tabs" id="langTabs"></div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+  <!-- Streak -->
+  <div class="streak-bar" id="streakBar"></div>
+
+  <!-- Mode bar -->
+  <div class="mode-bar">
+    <button class="mode-btn active" onclick="setMode('phrases')" id="m-phrases">📖 Phrases</button>
+    <button class="mode-btn" onclick="setMode('quiz')" id="m-quiz">🧩 Quiz</button>
+    <button class="mode-btn" onclick="setMode('speak')" id="m-speak">🎙️ Speak</button>
+    <button class="mode-btn" onclick="setMode('progress')" id="m-progress">📊 Progress</button>
+  </div>
+
+  <div id="panel"></div>
+</div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DATA — phrases per language × category
+═══════════════════════════════════════════════════ */
+const LANGS = [
+  {id:"es",name:"Español",flag:"🇪🇸",color:"#dc2626"},
+  {id:"fr",name:"Français",flag:"🇫🇷",color:"#2563eb"},
+  {id:"de",name:"Deutsch",flag:"🇩🇪",color:"#ca8a04"},
+  {id:"it",name:"Italiano",flag:"🇮🇹",color:"#16a34a"},
+  {id:"ja",name:"日本語",flag:"🇯🇵",color:"#e11d48"},
+  {id:"ta",name:"தமிழ்",flag:"🇮🇳",color:"#7c3aed"},
+];
+
+const PHRASES = {
+  es:[
+    {en:"Hello",native:"Hola",roman:"OH-lah",cat:"Greetings"},
+    {en:"Good morning",native:"Buenos días",roman:"BWEH-nos DEE-ahs",cat:"Greetings"},
+    {en:"Good night",native:"Buenas noches",roman:"BWEH-nahs NOH-chehs",cat:"Greetings"},
+    {en:"Thank you",native:"Gracias",roman:"GRAH-syahs",cat:"Greetings"},
+    {en:"You're welcome",native:"De nada",roman:"deh NAH-dah",cat:"Greetings"},
+    {en:"Please",native:"Por favor",roman:"por fah-VOR",cat:"Greetings"},
+    {en:"Excuse me",native:"Perdón",roman:"pehr-DON",cat:"Greetings"},
+    {en:"How are you?",native:"¿Cómo estás?",roman:"KOH-moh ehs-TAHS",cat:"Greetings"},
+    {en:"My name is...",native:"Me llamo...",roman:"meh YAH-moh",cat:"Greetings"},
+    {en:"Where is the bathroom?",native:"¿Dónde está el baño?",roman:"DON-deh ehs-TAH el BAH-nyoh",cat:"Travel"},
+    {en:"How much does this cost?",native:"¿Cuánto cuesta?",roman:"KWAHN-toh KWEHS-tah",cat:"Travel"},
+    {en:"I don't understand",native:"No entiendo",roman:"noh en-TYEHN-doh",cat:"Travel"},
+    {en:"Can you help me?",native:"¿Puedes ayudarme?",roman:"PWEH-dehs ah-yoo-DAHR-meh",cat:"Travel"},
+    {en:"The bill, please",native:"La cuenta, por favor",roman:"lah KWEHN-tah por fah-VOR",cat:"Travel"},
+    {en:"I would like water",native:"Quisiera agua",roman:"kee-SYEH-rah AH-gwah",cat:"Food"},
+    {en:"It's delicious",native:"Está delicioso",roman:"ehs-TAH deh-lee-SYOH-soh",cat:"Food"},
+    {en:"I am a student",native:"Soy estudiante",roman:"soy ehs-too-DYAHN-teh",cat:"School"},
+    {en:"I study every day",native:"Estudio todos los días",roman:"ehs-TOO-dyoh TOH-dohs lohs DEE-ahs",cat:"School"},
+  ],
+  fr:[
+    {en:"Hello",native:"Bonjour",roman:"bohn-ZHOOR",cat:"Greetings"},
+    {en:"Good evening",native:"Bonsoir",roman:"bohn-SWAHR",cat:"Greetings"},
+    {en:"Thank you",native:"Merci",roman:"mehr-SEE",cat:"Greetings"},
+    {en:"You're welcome",native:"De rien",roman:"duh ryEN",cat:"Greetings"},
+    {en:"Please",native:"S'il vous plaît",roman:"seel voo PLEH",cat:"Greetings"},
+    {en:"Excuse me",native:"Pardon",roman:"par-DOHN",cat:"Greetings"},
+    {en:"How are you?",native:"Comment allez-vous?",roman:"koh-mahn tah-lay VOO",cat:"Greetings"},
+    {en:"My name is...",native:"Je m'appelle...",roman:"zhuh mah-PEL",cat:"Greetings"},
+    {en:"Where is the station?",native:"Où est la gare?",roman:"oo eh lah GAR",cat:"Travel"},
+    {en:"How much?",native:"Combien?",roman:"kohm-BYEHN",cat:"Travel"},
+    {en:"I don't speak French well",native:"Je ne parle pas bien français",roman:"zhuh nuh parl pah byEN frahn-SEH",cat:"Travel"},
+    {en:"A table for two",native:"Une table pour deux",roman:"oon TAH-bluh poor DUH",cat:"Food"},
+    {en:"The menu please",native:"La carte s'il vous plaît",roman:"lah KART seel voo PLEH",cat:"Food"},
+    {en:"It's very good",native:"C'est très bon",roman:"seh treh BOHN",cat:"Food"},
+    {en:"I am a student",native:"Je suis étudiant",roman:"zhuh swee ay-too-DYAHN",cat:"School"},
+    {en:"Where is the library?",native:"Où est la bibliothèque?",roman:"oo eh lah bee-blyoh-TEK",cat:"School"},
+  ],
+  de:[
+    {en:"Hello",native:"Hallo",roman:"HAH-loh",cat:"Greetings"},
+    {en:"Good morning",native:"Guten Morgen",roman:"GOO-ten MOR-gen",cat:"Greetings"},
+    {en:"Good night",native:"Gute Nacht",roman:"GOO-teh NAKHT",cat:"Greetings"},
+    {en:"Thank you",native:"Danke",roman:"DAHN-keh",cat:"Greetings"},
+    {en:"You're welcome",native:"Bitte",roman:"BIT-teh",cat:"Greetings"},
+    {en:"Please",native:"Bitte",roman:"BIT-teh",cat:"Greetings"},
+    {en:"Excuse me",native:"Entschuldigung",roman:"ent-SHOOL-di-goong",cat:"Greetings"},
+    {en:"How are you?",native:"Wie geht es Ihnen?",roman:"vee gayt es EE-nen",cat:"Greetings"},
+    {en:"My name is...",native:"Ich heiße...",roman:"ikh HYE-seh",cat:"Greetings"},
+    {en:"Where is the train station?",native:"Wo ist der Bahnhof?",roman:"voh ist dehr BAHN-hof",cat:"Travel"},
+    {en:"How much does it cost?",native:"Wie viel kostet das?",roman:"vee feel KOS-tet das",cat:"Travel"},
+    {en:"I don't understand",native:"Ich verstehe nicht",roman:"ikh fer-SHTEH-heh nikht",cat:"Travel"},
+    {en:"The bill please",native:"Die Rechnung bitte",roman:"dee REKH-noong BIT-teh",cat:"Food"},
+    {en:"Very tasty!",native:"Sehr lecker!",roman:"zayr LEK-er",cat:"Food"},
+    {en:"I am a student",native:"Ich bin Student",roman:"ikh bin shtoo-DENT",cat:"School"},
+    {en:"Where is the school?",native:"Wo ist die Schule?",roman:"voh ist dee SHOO-leh",cat:"School"},
+  ],
+  it:[
+    {en:"Hello",native:"Ciao",roman:"CHOW",cat:"Greetings"},
+    {en:"Good morning",native:"Buongiorno",roman:"bwon-JOR-noh",cat:"Greetings"},
+    {en:"Good evening",native:"Buonasera",roman:"bwoh-nah-SEH-rah",cat:"Greetings"},
+    {en:"Thank you",native:"Grazie",roman:"GRAH-tsyeh",cat:"Greetings"},
+    {en:"You're welcome",native:"Prego",roman:"PREH-goh",cat:"Greetings"},
+    {en:"Please",native:"Per favore",roman:"pehr fah-VOH-reh",cat:"Greetings"},
+    {en:"Excuse me",native:"Scusi",roman:"SKOO-zee",cat:"Greetings"},
+    {en:"How are you?",native:"Come stai?",roman:"KOH-meh STY",cat:"Greetings"},
+    {en:"My name is...",native:"Mi chiamo...",roman:"mee KYAH-moh",cat:"Greetings"},
+    {en:"Where is the museum?",native:"Dov'è il museo?",roman:"doh-VEH eel moo-ZEH-oh",cat:"Travel"},
+    {en:"How much is it?",native:"Quanto costa?",roman:"KWAHN-toh KOS-tah",cat:"Travel"},
+    {en:"A table for one",native:"Un tavolo per uno",roman:"oon TAH-voh-loh pehr OO-noh",cat:"Food"},
+    {en:"The pizza is great",native:"La pizza è ottima",roman:"lah PEET-tsah eh OT-tee-mah",cat:"Food"},
+    {en:"I am a student",native:"Sono studente",roman:"SOH-noh stoo-DEN-teh",cat:"School"},
+  ],
+  ja:[
+    {en:"Hello",native:"こんにちは",roman:"Konnichiwa",cat:"Greetings"},
+    {en:"Good morning",native:"おはようございます",roman:"Ohayou gozaimasu",cat:"Greetings"},
+    {en:"Good night",native:"おやすみなさい",roman:"Oyasumi nasai",cat:"Greetings"},
+    {en:"Thank you",native:"ありがとうございます",roman:"Arigatou gozaimasu",cat:"Greetings"},
+    {en:"You're welcome",native:"どういたしまして",roman:"Dou itashimashite",cat:"Greetings"},
+    {en:"Please",native:"おねがいします",roman:"Onegaishimasu",cat:"Greetings"},
+    {en:"Excuse me",native:"すみません",roman:"Sumimasen",cat:"Greetings"},
+    {en:"How are you?",native:"お元気ですか？",roman:"Ogenki desu ka?",cat:"Greetings"},
+    {en:"My name is...",native:"私の名前は...です",roman:"Watashi no namae wa ... desu",cat:"Greetings"},
+    {en:"Where is the station?",native:"駅はどこですか？",roman:"Eki wa doko desu ka?",cat:"Travel"},
+    {en:"How much is it?",native:"いくらですか？",roman:"Ikura desu ka?",cat:"Travel"},
+    {en:"I don't understand",native:"わかりません",roman:"Wakarimasen",cat:"Travel"},
+    {en:"It's delicious",native:"おいしい！",roman:"Oishii!",cat:"Food"},
+    {en:"I am a student",native:"私は学生です",roman:"Watashi wa gakusei desu",cat:"School"},
+    {en:"Please teach me",native:"教えてください",roman:"Oshiete kudasai",cat:"School"},
+  ],
+  ta:[
+    {en:"Hello",native:"வணக்கம்",roman:"Vanakkam",cat:"Greetings"},
+    {en:"Good morning",native:"காலை வணக்கம்",roman:"Kaalai Vanakkam",cat:"Greetings"},
+    {en:"Good night",native:"இரவு வணக்கம்",roman:"Iravu Vanakkam",cat:"Greetings"},
+    {en:"Thank you",native:"நன்றி",roman:"Nandri",cat:"Greetings"},
+    {en:"You're welcome",native:"தேவையில்லை",roman:"Thevayillai",cat:"Greetings"},
+    {en:"Please",native:"தயவுசெய்து",roman:"Thayavu seythu",cat:"Greetings"},
+    {en:"Excuse me",native:"மன்னிக்கவும்",roman:"Mannikkavum",cat:"Greetings"},
+    {en:"How are you?",native:"நீங்கள் எப்படி இருக்கிறீர்கள்?",roman:"Neengal eppadi irukkireergal?",cat:"Greetings"},
+    {en:"My name is...",native:"என் பெயர்...",roman:"En peyar...",cat:"Greetings"},
+    {en:"Where is the bus stop?",native:"பேருந்து நிறுத்தம் எங்கே?",roman:"Perundu niruththam enge?",cat:"Travel"},
+    {en:"How much does it cost?",native:"இது எவ்வளவு?",roman:"Ithu evvalavu?",cat:"Travel"},
+    {en:"I don't understand",native:"எனக்கு புரியவில்லை",roman:"Enakku puriyavillai",cat:"Travel"},
+    {en:"It's very tasty",native:"மிகவும் சுவையாக இருக்கிறது",roman:"Mikavum suvaiyaaga irukkiiratu",cat:"Food"},
+    {en:"I am a student",native:"நான் மாணவன்",roman:"Naan maanavan",cat:"School"},
+    {en:"What time is it?",native:"இப்போது என்ன நேரம்?",roman:"Ippothu enna neram?",cat:"Travel"},
+  ],
+};
+
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+let state = {
+  lang: "es",
+  mode: "phrases",
+  phraseIdx: 0,
+  cat: "All",
+  quizActive: false,
+  quizQ: null,
+  quizAnswered: false,
+  recState: "idle",  /* idle | recording | scored */
+  lastScore: 0,
+  progress: JSON.parse(localStorage.getItem("lp_progress") || "{}"),
+  streakData: JSON.parse(localStorage.getItem("lp_streak") || '{"days":0,"lastDate":""}'),
+};
+
+/* ── streak ── */
+function checkStreak(){
+  const today = new Date().toDateString();
+  const s = state.streakData;
+  if(s.lastDate === today) return;
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  if(s.lastDate === yesterday){ s.days++; }
+  else if(s.lastDate !== today){ s.days = 1; }
+  s.lastDate = today;
+  localStorage.setItem("lp_streak", JSON.stringify(s));
+}
+checkStreak();
+
+function saveProgress(langId, count){
+  if(!state.progress[langId]) state.progress[langId]=0;
+  state.progress[langId] = Math.max(state.progress[langId], count);
+  localStorage.setItem("lp_progress", JSON.stringify(state.progress));
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════ */
+function renderAll(){
+  renderLangTabs();
+  renderStreak();
+  renderModeBar();
+  renderPanel();
+}
+
+function renderLangTabs(){
+  const el = document.getElementById("langTabs");
+  el.innerHTML = LANGS.map(l=>
+    `<button class="lang-tab ${l.id===state.lang?'active':''}" onclick="switchLang('${l.id}')">${l.flag} ${l.name}</button>`
+  ).join("");
+}
+
+function renderStreak(){
+  const s = state.streakData;
+  document.getElementById("streakBar").innerHTML = `
+    <div class="streak-fire">🔥</div>
+    <div class="streak-info">
+      <h3>Daily Streak</h3>
+      <p>Keep practicing to maintain your streak!</p>
+    </div>
+    <div class="streak-days">
+      <div class="num">${s.days}</div>
+      <div class="lbl">days</div>
+    </div>
+  `;
+}
+
+function renderModeBar(){
+  ["phrases","quiz","speak","progress"].forEach(m=>{
+    const el = document.getElementById("m-"+m);
+    el.classList.toggle("active", m===state.mode);
+  });
+}
+
+function renderPanel(){
+  const el = document.getElementById("panel");
+  if(state.mode==="phrases") el.innerHTML = renderPhrases();
+  else if(state.mode==="quiz") el.innerHTML = renderQuiz();
+  else if(state.mode==="speak") el.innerHTML = renderSpeak();
+  else el.innerHTML = renderProgress();
+  bindQuizEvents();
+}
+
+/* ── PHRASES ── */
+function getPhrases(){
+  const all = PHRASES[state.lang] || [];
+  return state.cat==="All" ? all : all.filter(p=>p.cat===state.cat);
+}
+function getCats(){
+  const all = PHRASES[state.lang] || [];
+  return ["All",...new Set(all.map(p=>p.cat))];
+}
+
+function renderPhrases(){
+  const phrases = getPhrases();
+  if(!phrases.length) return "<p style='color:var(--muted);text-align:center;padding:40px'>No phrases yet for this selection.</p>";
+  if(state.phraseIdx>=phrases.length) state.phraseIdx=0;
+  const p = phrases[state.phraseIdx];
+  const cats = getCats();
+  return `
+    <div class="cat-row">
+      ${cats.map(c=>`<button class="cat-btn ${c===state.cat?'active':''}" onclick="setCat('${c}')">${c}</button>`).join("")}
+    </div>
+    <div class="phrase-card">
+      <div class="phrase-header">
+        <div class="cat-badge">${p.cat}</div>
+        <button class="btn btn-primary" onclick="speak('${p.native}')">🔊 Listen</button>
+      </div>
+      <div class="phrase-body">
+        <div class="phrase-en">${p.en}</div>
+        <div class="phrase-native">${p.native}</div>
+        <div class="phrase-roman">[ ${p.roman} ]</div>
+        <div class="phrase-actions">
+          <button class="btn btn-outline" onclick="speak('${p.native}')">🔊 Hear pronunciation</button>
+          <button class="btn btn-outline" onclick="setMode('speak');renderPanel()">🎙️ Practice speaking</button>
+        </div>
+      </div>
+      <div class="phrase-nav">
+        <span class="phrase-counter">${state.phraseIdx+1} / ${phrases.length} phrases</span>
+        <div class="nav-arrows">
+          <button class="arr-btn" onclick="prevPhrase()">◀</button>
+          <button class="arr-btn" onclick="nextPhrase()">▶</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ── QUIZ ── */
+function makeQuizQ(){
+  const phrases = PHRASES[state.lang] || [];
+  if(phrases.length<4) return null;
+  const idx = Math.floor(Math.random()*phrases.length);
+  const correct = phrases[idx];
+  const others = phrases.filter((_,i)=>i!==idx);
+  const distractors = others.sort(()=>Math.random()-.5).slice(0,3);
+  const options = [...distractors, correct].sort(()=>Math.random()-.5);
+  return {prompt: correct.native, answer: correct.en, options: options.map(o=>o.en), correctIdx: options.findIndex(o=>o.en===correct.en)};
+}
+
+function renderQuiz(){
+  if(!state.quizQ) state.quizQ = makeQuizQ();
+  const q = state.quizQ;
+  if(!q) return "<p style='color:var(--muted)'>Not enough phrases to quiz yet.</p>";
+  return `
+    <div class="phrase-card" style="padding:24px">
+      <p style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:10px">WHAT DOES THIS MEAN?</p>
+      <div class="quiz-q">${q.prompt}</div>
+      <div class="quiz-opts" id="quizOpts">
+        ${q.options.map((o,i)=>`<button class="quiz-opt" id="qo${i}" onclick="answerQuiz(${i})">${o}</button>`).join("")}
+      </div>
+      <div id="quizFb" style="min-height:36px"></div>
+    </div>
+  `;
+}
+
+function bindQuizEvents(){}
+
+function answerQuiz(picked){
+  if(state.quizAnswered) return;
+  state.quizAnswered = true;
+  const q = state.quizQ;
+  for(let i=0;i<q.options.length;i++){
+    const el = document.getElementById("qo"+i);
+    if(!el) continue;
+    el.disabled = true;
+    if(i===q.correctIdx) el.classList.add("correct");
+    else if(i===picked) el.classList.add("wrong");
+  }
+  const fb = document.getElementById("quizFb");
+  const correct = picked===q.correctIdx;
+  fb.innerHTML = correct
+    ? `<div style="color:var(--green);font-weight:600;font-size:15px">✅ Correct! Well done.</div><button class="btn btn-primary" style="margin-top:12px" onclick="nextQuiz()">Next question →</button>`
+    : `<div style="color:var(--red);font-weight:600;font-size:15px">❌ Answer: <span style="color:var(--text)">${q.options[q.correctIdx]}</span></div><button class="btn btn-outline" style="margin-top:12px" onclick="nextQuiz()">Try another →</button>`;
+  if(correct) saveProgress(state.lang, (state.progress[state.lang]||0)+1);
+}
+
+function nextQuiz(){
+  state.quizQ = makeQuizQ();
+  state.quizAnswered = false;
+  renderPanel();
+}
+
+/* ── SPEAK ── */
+function renderSpeak(){
+  const phrases = getPhrases();
+  const p = phrases[state.phraseIdx] || phrases[0];
+  if(!p) return "<p style='color:var(--muted)'>No phrases available.</p>";
+  const scoreHTML = state.recState==="scored" ? `
+    <div class="score-bar">
+      <div>
+        <div class="score-label">SIMILARITY SCORE</div>
+        <div class="score-val ${state.lastScore>=70?'good':state.lastScore>=40?'ok':'bad'}">${state.lastScore}%</div>
+      </div>
+      <div class="score-track" style="flex:1">
+        <div class="score-fill ${state.lastScore>=70?'fill-green':state.lastScore>=40?'fill-yellow':'fill-red'}" style="width:${state.lastScore}%"></div>
+      </div>
+      <div style="font-size:13px;color:var(--muted)">${state.lastScore>=70?"Great pronunciation!":state.lastScore>=40?"Keep practising":"Listen again and try"}</div>
+    </div>
+  ` : "";
+  return `
+    ${scoreHTML}
+    <div class="phrase-card">
+      <div class="phrase-header">
+        <span style="font-size:14px;font-weight:600">Say this phrase:</span>
+        <button class="btn btn-outline" onclick="speak('${p.native}')">🔊 Hear it first</button>
+      </div>
+      <div class="phrase-body">
+        <div class="phrase-native" style="font-size:32px">${p.native}</div>
+        <div class="phrase-roman">[ ${p.roman} ]</div>
+        <div class="phrase-en" style="font-size:16px;color:var(--muted);font-weight:400">${p.en}</div>
+      </div>
+      <div class="rec-panel">
+        <div class="rec-prompt">${state.recState==="idle"?"Press and hold the button to record":"${state.recState==='recording'?'Recording… Release to stop':'Scored!'}"}</div>
+        <div class="rec-ring ${state.recState==='recording'?'recording':''}" id="recRing">
+          ${state.recState==="idle"?"🎙️":state.recState==="recording"?"⏺️":"✅"}
+        </div>
+        <div class="waveform" id="waveform">${Array(12).fill(0).map(()=>`<div class="wave-bar" style="height:${Math.random()*28+4}px"></div>`).join("")}</div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <button class="btn btn-primary" onmousedown="startRec()" onmouseup="stopRec()" ontouchstart="startRec()" ontouchend="stopRec()">
+            ${state.recState==="idle"||state.recState==="scored"?"🎙️ Hold to Record":"⏹ Release to Stop"}
+          </button>
+          <button class="btn btn-outline" onclick="nextPhrase();setMode('speak');renderPanel()">Next phrase →</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ── PROGRESS ── */
+function renderProgress(){
+  return `
+    <h3 style="margin-bottom:6px;font-size:16px">Your Learning Progress</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Words and phrases learned across all languages</p>
+    <div class="progress-grid">
+      ${LANGS.map(l=>{
+        const total = (PHRASES[l.id]||[]).length;
+        const done = state.progress[l.id]||0;
+        const pct = total?Math.round(done/total*100):0;
+        return `
+          <div class="prog-card">
+            <div class="prog-emoji">${l.flag}</div>
+            <div class="prog-name">${l.name}</div>
+            <div class="prog-words">${done} / ${total} phrases</div>
+            <div class="prog-ring">
+              <svg viewBox="0 0 60 60" width="60" height="60">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--card2)" stroke-width="6"/>
+                <circle cx="30" cy="30" r="24" fill="none" stroke="${l.color}" stroke-width="6"
+                  stroke-linecap="round" stroke-dasharray="${2*Math.PI*24}"
+                  stroke-dashoffset="${2*Math.PI*24*(1-pct/100)}"
+                  transform="rotate(-90 30 30)" style="transition:.5s"/>
+                <text x="30" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="${l.color}">${pct}%</text>
+              </svg>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+    <div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <h4 style="margin-bottom:12px;font-size:14px">Total Phrases Learned</h4>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="font-size:40px;font-weight:800;color:var(--accent)">${Object.values(state.progress).reduce((a,b)=>a+b,0)}</div>
+        <div style="font-size:14px;color:var(--muted)">across ${LANGS.length} languages</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════════════════ */
+function switchLang(id){
+  state.lang = id;
+  state.phraseIdx = 0;
+  state.cat = "All";
+  state.quizQ = null;
+  state.quizAnswered = false;
+  state.recState = "idle";
+  renderAll();
+}
+
+function setMode(m){
+  state.mode = m;
+  state.quizQ = null;
+  state.quizAnswered = false;
+  state.recState = "idle";
+  renderModeBar();
+  renderPanel();
+}
+
+function setCat(c){
+  state.cat = c;
+  state.phraseIdx = 0;
+  renderPanel();
+}
+
+function nextPhrase(){
+  const phrases = getPhrases();
+  state.phraseIdx = (state.phraseIdx+1)%phrases.length;
+  state.recState = "idle";
+  renderPanel();
+  saveProgress(state.lang, state.phraseIdx+1);
+}
+
+function prevPhrase(){
+  const phrases = getPhrases();
+  state.phraseIdx = (state.phraseIdx-1+phrases.length)%phrases.length;
+  state.recState = "idle";
+  renderPanel();
+}
+
+/* ── TTS ── */
+function speak(text){
+  if(!window.speechSynthesis){ toast("TTS not supported in this browser"); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const langMap = {es:"es-ES",fr:"fr-FR",de:"de-DE",it:"it-IT",ja:"ja-JP",ta:"ta-IN"};
+  u.lang = langMap[state.lang]||"en-US";
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+/* ── RECORDING (simulated scoring) ── */
+let recTimer = null;
+let waveTimer = null;
+
+function startRec(){
+  if(state.recState==="recording") return;
+  if(!navigator.mediaDevices){ simulateRec(); return; }
+  state.recState = "recording";
+  renderPanel();
+  animWave();
+  // Request mic permission; if denied, fall back to simulation
+  navigator.mediaDevices.getUserMedia({audio:true})
+    .then(stream=>{ stream.getTracks().forEach(t=>t.stop()); })
+    .catch(()=>{ toast("Microphone not available — using simulation"); });
+}
+
+function stopRec(){
+  if(state.recState!=="recording") return;
+  clearInterval(waveTimer);
+  simulateScore();
+}
+
+function simulateRec(){
+  state.recState = "recording";
+  renderPanel();
+  animWave();
+  setTimeout(()=>{ clearInterval(waveTimer); simulateScore(); }, 2000);
+}
+
+function simulateScore(){
+  // Realistic-feeling score: weighted toward middle-high
+  const base = 40 + Math.floor(Math.random()*45);
+  const bonus = Math.random()>.4 ? Math.floor(Math.random()*15):0;
+  state.lastScore = Math.min(99, base+bonus);
+  state.recState = "scored";
+  saveProgress(state.lang, (state.progress[state.lang]||0)+1);
+  renderPanel();
+  toast(state.lastScore>=70?"🎉 Great pronunciation!":state.lastScore>=40?"👍 Getting there!":"🔄 Listen and try again");
+}
+
+function animWave(){
+  waveTimer = setInterval(()=>{
+    const bars = document.querySelectorAll(".wave-bar");
+    bars.forEach(b=>{ b.style.height=(Math.random()*32+4)+"px"; b.style.background=state.recState==="recording"?"var(--red)":"var(--muted)"; });
+  }, 120);
+}
+
+/* ── TOAST ── */
+function toast(msg, ms=2600){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), ms);
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+renderAll();
+</script>
+</body>
+</html>

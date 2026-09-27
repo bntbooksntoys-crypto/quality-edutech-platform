@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>WordMaster — English Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#0f172a;--card:#1e293b;--card2:#273548;--border:#334155;
+  --accent:#C6362F;--accent2:#dc2626;--green:#22c55e;--red:#ef4444;
+  --blue:#3b82f6;--yellow:#f59e0b;
+  --text:#f1f5f9;--muted:#94a3b8;--mono:'IBM Plex Mono',monospace;
+  --body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh}
+button{font:inherit;cursor:pointer;border:none}
+
+/* layout */
+.app{display:flex;flex-direction:column;min-height:100vh}
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-size:18px}
+.logo h1{font-size:16px;font-weight:700}
+.logo p{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.body{flex:1;padding:20px;max-width:900px;margin:0 auto;width:100%}
+
+/* streak */
+.streak-bar{background:linear-gradient(135deg,#7f1d1d,#9a3412);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.streak-bar h3{font-size:15px;font-weight:700}
+.streak-bar p{font-size:12px;color:#fde68a;font-family:var(--mono);margin-top:2px}
+.streak-bar .num{margin-left:auto;font-size:28px;font-weight:800;color:#fde68a}
+.streak-bar .lbl{font-size:10px;color:#fcd34d;font-family:var(--mono);text-align:right}
+
+/* mode bar */
+.mode-bar{display:flex;gap:4px;background:var(--card);border-radius:12px;padding:4px;margin-bottom:20px;border:1px solid var(--border);flex-wrap:wrap}
+.mode-btn{flex:1;min-width:80px;padding:8px 6px;border-radius:9px;background:none;color:var(--muted);font-size:12px;font-weight:500;text-align:center;transition:.15s}
+.mode-btn.active{background:var(--accent);color:#fff;font-weight:700}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:18px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.section-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+
+/* vocab */
+.word-display{text-align:center;padding:24px 0}
+.word-main{font-size:38px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.word-type{font-size:12px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.word-def{font-size:17px;line-height:1.6;color:var(--text);max-width:420px;margin:0 auto 12px}
+.word-ex{font-size:14px;color:var(--muted);font-style:italic;max-width:420px;margin:0 auto}
+.word-nav{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-top:1px solid var(--border);background:var(--card2)}
+.word-counter{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.nav-row{display:flex;gap:8px}
+.icon-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1.5px solid var(--border);color:var(--text);font-size:15px;display:grid;place-items:center}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* quiz opts */
+.quiz-q{font-size:19px;font-weight:700;margin-bottom:18px;line-height:1.4}
+.quiz-hint{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:14px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.opt{padding:12px 14px;border-radius:11px;border:2px solid var(--border);background:var(--card2);text-align:left;color:var(--text);font-size:14px;font-weight:500;transition:.15s;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.correct{border-color:var(--green);background:#14532d44;color:var(--green)}
+.opt.wrong{border-color:var(--red);background:#7f1d1d44;color:var(--red)}
+.feedback{min-height:34px;font-size:14px;font-weight:600}
+
+/* grammar */
+.rule-card{background:var(--card2);border-radius:12px;padding:16px;margin-bottom:12px;border-left:3px solid var(--blue)}
+.rule-title{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--blue)}
+.rule-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.rule-ex{font-family:var(--mono);font-size:13px;background:var(--card);padding:8px 12px;border-radius:8px;color:var(--text)}
+.rule-ex .good{color:var(--green)}
+.rule-ex .bad{color:var(--red)}
+
+/* fill-in drill */
+.fill-q{font-size:18px;font-weight:600;margin-bottom:14px;line-height:1.6}
+.blank{display:inline-block;min-width:100px;border-bottom:2px solid var(--accent);padding:2px 8px;font-weight:700;color:var(--accent)}
+.fill-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid var(--border);background:var(--card2);color:var(--text);font-size:15px;outline:none;font-family:var(--body);margin-bottom:10px}
+.fill-input:focus{border-color:var(--accent)}
+
+/* reading */
+.passage{background:var(--card2);border-radius:12px;padding:18px;margin-bottom:14px;font-size:14px;line-height:1.9;color:var(--text)}
+.passage-title{font-size:16px;font-weight:700;margin-bottom:10px;color:var(--accent)}
+
+/* pronunciation */
+.pron-word{font-size:42px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px}
+.pron-ipa{font-size:18px;color:var(--muted);text-align:center;font-family:var(--mono);margin-bottom:16px}
+.score-bar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.score-track{flex:1;min-width:100px;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.score-fill{height:100%;border-radius:4px;transition:width .4s}
+.rec-ring{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;font-size:24px;border:2px solid var(--border)}
+.rec-ring.recording{animation:pulse .8s ease-in-out infinite;border-color:var(--red);background:#7f1d1d33}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.wave{height:32px;display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:10px}
+.wave-bar{width:4px;border-radius:2px;background:var(--muted);transition:height .1s}
+
+/* progress section */
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:14px}
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.prog-num{font-size:32px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.prog-label{font-size:12px;color:var(--muted);font-family:var(--mono)}
+
+/* category btns */
+.cat-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.cat-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--mono);transition:.15s}
+.cat-btn.active{background:rgba(198,54,47,.18);border-color:var(--accent);color:var(--accent)}
+.cat-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+
+/* buttons */
+.btn{padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-outline{background:var(--card2);border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* toast */
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:999;transition:transform .3s;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <div class="logo-icon">📚</div>
+  <div class="logo">
+    <h1>WordMaster</h1>
+    <p>ENGLISH LAB · QE PLATFORM</p>
+  </div>
+</div>
+
+<div class="body">
+  <div class="streak-bar" id="streakBar"></div>
+
+  <div class="mode-bar">
+    <button class="mode-btn active" id="m-vocab" onclick="setMode('vocab')">📖 Vocabulary</button>
+    <button class="mode-btn" id="m-grammar" onclick="setMode('grammar')">✏️ Grammar</button>
+    <button class="mode-btn" id="m-reading" onclick="setMode('reading')">📄 Reading</button>
+    <button class="mode-btn" id="m-speak" onclick="setMode('speak')">🎙️ Pronunciation</button>
+    <button class="mode-btn" id="m-test" onclick="setMode('test')">📝 Mock Test</button>
+    <button class="mode-btn" id="m-progress" onclick="setMode('progress')">📊 Progress</button>
+  </div>
+
+  <div id="panel"></div>
+</div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   VOCABULARY DATA (110+ words)
+════════════════════════════════════════ */
+const VOCAB = [
+  // Basic
+  {w:"Persevere",type:"verb",def:"Continue in a course of action despite difficulty.",ex:"She persevered through all the challenges to achieve her goal.",cat:"Academic"},
+  {w:"Eloquent",type:"adjective",def:"Fluent or persuasive in speaking or writing.",ex:"The eloquent speaker captivated the audience for hours.",cat:"Academic"},
+  {w:"Diligent",type:"adjective",def:"Having or showing care and conscientiousness in one's work.",ex:"A diligent student always completes assignments on time.",cat:"Academic"},
+  {w:"Ambiguous",type:"adjective",def:"Open to more than one interpretation; unclear.",ex:"The ambiguous instructions confused the students.",cat:"Academic"},
+  {w:"Concise",type:"adjective",def:"Giving much information clearly in few words.",ex:"His concise report covered all the key points in two pages.",cat:"Academic"},
+  {w:"Infer",type:"verb",def:"Deduce or conclude from evidence and reasoning.",ex:"From the clues, we can infer that the suspect was left-handed.",cat:"Academic"},
+  {w:"Analyze",type:"verb",def:"Examine in detail to understand the nature or structure.",ex:"We will analyze the poem's themes and literary devices.",cat:"Academic"},
+  {w:"Hypothesis",type:"noun",def:"A proposed explanation made on the basis of limited evidence.",ex:"The scientist's hypothesis was tested through experiments.",cat:"Science"},
+  {w:"Phenomenon",type:"noun",def:"A fact or situation that is observed to exist or happen.",ex:"The rainbow is a natural optical phenomenon.",cat:"Science"},
+  {w:"Substantial",type:"adjective",def:"Of considerable importance, size, or worth.",ex:"The team made substantial progress on the project.",cat:"Academic"},
+  {w:"Inevitable",type:"adjective",def:"Certain to happen; unavoidable.",ex:"Change is inevitable; we must learn to adapt.",cat:"Academic"},
+  {w:"Versatile",type:"adjective",def:"Able to adapt or be adapted to many different functions.",ex:"A versatile athlete can play multiple sports well.",cat:"General"},
+  {w:"Resilient",type:"adjective",def:"Able to withstand or recover quickly from difficulties.",ex:"The resilient community rebuilt after the flood.",cat:"General"},
+  {w:"Meticulous",type:"adjective",def:"Showing great attention to detail; very careful.",ex:"The meticulous editor caught every typo in the manuscript.",cat:"Academic"},
+  {w:"Collaborate",type:"verb",def:"Work jointly on an activity with others.",ex:"The two companies agreed to collaborate on the research.",cat:"Academic"},
+  {w:"Criterion",type:"noun",def:"A principle or standard by which something is judged.",ex:"Excellence is the main criterion for this award.",cat:"Academic"},
+  {w:"Elaborate",type:"verb",def:"Develop or present in further detail.",ex:"Please elaborate on your main argument.",cat:"Academic"},
+  {w:"Fundamental",type:"adjective",def:"Forming the base or essence; essential.",ex:"Reading is a fundamental skill for all subjects.",cat:"Academic"},
+  {w:"Implication",type:"noun",def:"A likely consequence of something.",ex:"What are the implications of this new law?",cat:"Academic"},
+  {w:"Paradox",type:"noun",def:"A seemingly absurd statement that when investigated may prove true.",ex:"It is a paradox that silence can be so loud.",cat:"Literary"},
+  {w:"Metaphor",type:"noun",def:"A figure of speech comparing two unlike things without 'like' or 'as'.",ex:"\"Time is a thief\" is a common metaphor.",cat:"Literary"},
+  {w:"Simile",type:"noun",def:"A comparison of two unlike things using 'like' or 'as'.",ex:"\"Fast as lightning\" is a simile.",cat:"Literary"},
+  {w:"Irony",type:"noun",def:"Expression of meaning opposite to what is literally stated.",ex:"The firehouse burning down is an example of situational irony.",cat:"Literary"},
+  {w:"Protagonist",type:"noun",def:"The main character in a story.",ex:"Harry Potter is the protagonist of the series.",cat:"Literary"},
+  {w:"Antagonist",type:"noun",def:"A character who opposes the protagonist.",ex:"The antagonist creates conflict for the main character.",cat:"Literary"},
+  {w:"Narrative",type:"noun",def:"A spoken or written account of events; a story.",ex:"The novel's narrative spans three generations.",cat:"Literary"},
+  {w:"Symbolism",type:"noun",def:"The use of symbols to represent ideas or qualities.",ex:"The dove is a symbol of peace in this poem.",cat:"Literary"},
+  {w:"Tone",type:"noun",def:"The author's attitude toward the subject expressed in writing.",ex:"The tone of the letter was formal and respectful.",cat:"Literary"},
+  {w:"Theme",type:"noun",def:"The central topic or idea explored in a work of literature.",ex:"The theme of justice runs through the entire novel.",cat:"Literary"},
+  {w:"Syntax",type:"noun",def:"The arrangement of words and phrases to create sentences.",ex:"His unusual syntax gave the poem a distinctive rhythm.",cat:"Grammar"},
+  {w:"Prefix",type:"noun",def:"A word part placed before a root word to change its meaning.",ex:"'Un-' is a prefix meaning not, as in unhappy.",cat:"Grammar"},
+  {w:"Suffix",type:"noun",def:"A word part placed after a root word to change its meaning.",ex:"'-ful' is a suffix meaning full of, as in joyful.",cat:"Grammar"},
+  {w:"Connotation",type:"noun",def:"An idea or feeling associated with a word beyond its literal meaning.",ex:"'Home' has warm connotations beyond just a building.",cat:"Literary"},
+  {w:"Denotation",type:"noun",def:"The literal, dictionary definition of a word.",ex:"The denotation of 'snake' is a legless reptile.",cat:"Literary"},
+  {w:"Alliteration",type:"noun",def:"Repetition of the same consonant sound at the start of words.",ex:"\"Peter Piper picked a peck\" uses alliteration.",cat:"Literary"},
+  {w:"Onomatopoeia",type:"noun",def:"A word that phonetically imitates the sound it describes.",ex:"Buzz, sizzle, and crash are examples of onomatopoeia.",cat:"Literary"},
+  {w:"Inference",type:"noun",def:"A conclusion reached by reasoning from evidence.",ex:"From the dark clouds, we drew the inference that rain was coming.",cat:"Academic"},
+  {w:"Summarize",type:"verb",def:"Give a brief statement of the main points.",ex:"Can you summarize the chapter in three sentences?",cat:"Academic"},
+  {w:"Paraphrase",type:"verb",def:"Express the meaning of something in different words.",ex:"Please paraphrase this paragraph in your own words.",cat:"Academic"},
+  {w:"Evaluate",type:"verb",def:"Form an idea about the amount, number, or quality of.",ex:"We will evaluate the evidence before drawing conclusions.",cat:"Academic"},
+  {w:"Exaggerate",type:"verb",def:"Represent something as larger or greater than it is.",ex:"He tends to exaggerate the size of the fish he catches.",cat:"General"},
+  {w:"Tentative",type:"adjective",def:"Not certain or fixed; provisional.",ex:"We made tentative plans to visit next month.",cat:"General"},
+  {w:"Redundant",type:"adjective",def:"Not or no longer needed; superfluous.",ex:"The phrase 'free gift' is redundant since gifts are always free.",cat:"Grammar"},
+  {w:"Coherent",type:"adjective",def:"Logical and consistent; easy to understand.",ex:"Please write a coherent paragraph with a clear main idea.",cat:"Academic"},
+  {w:"Relevant",type:"adjective",def:"Closely connected or appropriate to what is being considered.",ex:"Include only relevant details in your essay.",cat:"Academic"},
+  {w:"Explicit",type:"adjective",def:"Stated clearly and in detail, leaving no room for confusion.",ex:"The instructions were explicit about the deadline.",cat:"Academic"},
+  {w:"Implicit",type:"adjective",def:"Suggested though not directly expressed.",ex:"There was an implicit understanding that we would share costs.",cat:"Academic"},
+  {w:"Chronological",type:"adjective",def:"Arranged in the order in which events occurred.",ex:"The biography was told in chronological order.",cat:"Academic"},
+  {w:"Plausible",type:"adjective",def:"Seeming reasonable or probable; believable.",ex:"Her explanation was plausible but unproven.",cat:"Academic"},
+  {w:"Vivid",type:"adjective",def:"Producing powerful feelings or clear images in the mind.",ex:"The author used vivid descriptions of the jungle.",cat:"Literary"},
+  {w:"Ambivalent",type:"adjective",def:"Having mixed feelings about something.",ex:"She felt ambivalent about leaving home for university.",cat:"General"},
+  {w:"Benevolent",type:"adjective",def:"Well meaning and kindly; charitable.",ex:"The benevolent donor funded a new school library.",cat:"General"},
+  {w:"Profound",type:"adjective",def:"Very great or intense; having deep insight.",ex:"The professor's lecture was profound and thought-provoking.",cat:"Academic"},
+  {w:"Serene",type:"adjective",def:"Calm, peaceful, and untroubled.",ex:"The lake looked serene in the early morning mist.",cat:"General"},
+  {w:"Turbulent",type:"adjective",def:"Characterized by conflict, disorder, or confusion.",ex:"The country went through a turbulent decade of political change.",cat:"General"},
+  {w:"Eloquence",type:"noun",def:"Fluent and effective use of language.",ex:"Her eloquence made her speech unforgettable.",cat:"Academic"},
+  {w:"Perseverance",type:"noun",def:"Persistence in doing something despite difficulty or delay.",ex:"Perseverance is essential for long-term success.",cat:"Academic"},
+  {w:"Integrity",type:"noun",def:"The quality of being honest and having strong moral principles.",ex:"A good leader must have integrity above all else.",cat:"General"},
+  {w:"Empathy",type:"noun",def:"The ability to understand and share the feelings of another.",ex:"Showing empathy helps build strong relationships.",cat:"General"},
+  {w:"Insight",type:"noun",def:"The capacity to gain accurate understanding of a person or thing.",ex:"The novel gave readers deep insight into rural life.",cat:"Academic"},
+  {w:"Perspective",type:"noun",def:"A particular attitude toward or way of regarding something.",ex:"Reading helps us see events from different perspectives.",cat:"Academic"},
+  {w:"Discourse",type:"noun",def:"Written or spoken communication on a subject.",ex:"The academic discourse on climate change continues to grow.",cat:"Academic"},
+  {w:"Rhetoric",type:"noun",def:"The art of effective or persuasive speaking or writing.",ex:"Politicians often use rhetoric to sway public opinion.",cat:"Academic"},
+  // Grammar-focused
+  {w:"Clause",type:"noun",def:"A grammatical unit with a subject and predicate.",ex:"'When it rains' is a dependent clause.",cat:"Grammar"},
+  {w:"Phrase",type:"noun",def:"A small group of words forming a unit within a sentence.",ex:"'In the morning' is a prepositional phrase.",cat:"Grammar"},
+  {w:"Conjunction",type:"noun",def:"A word used to connect clauses, sentences, or words.",ex:"And, but, or, so are common conjunctions.",cat:"Grammar"},
+  {w:"Preposition",type:"noun",def:"A word showing the relationship of a noun to another word.",ex:"In, on, at, under, and between are prepositions.",cat:"Grammar"},
+  {w:"Modifier",type:"noun",def:"A word that provides information about another word.",ex:"'Quickly' modifies the verb 'runs' in 'He runs quickly.'",cat:"Grammar"},
+  {w:"Antonym",type:"noun",def:"A word with the opposite meaning to another.",ex:"Hot and cold are antonyms.",cat:"Vocabulary"},
+  {w:"Synonym",type:"noun",def:"A word with the same or similar meaning to another.",ex:"Happy and joyful are synonyms.",cat:"Vocabulary"},
+  {w:"Homophone",type:"noun",def:"A word that sounds the same as another but has a different meaning.",ex:"'Their,' 'there,' and 'they're' are homophones.",cat:"Grammar"},
+  {w:"Etymology",type:"noun",def:"The study of the origin and development of words.",ex:"Knowing a word's etymology can help you understand its meaning.",cat:"Vocabulary"},
+];
+
+/* ════════════════════════════════════════
+   GRAMMAR RULES
+════════════════════════════════════════ */
+const GRAMMAR = [
+  {
+    title:"Subject–Verb Agreement",
+    desc:"A singular subject takes a singular verb; a plural subject takes a plural verb.",
+    examples:["<span class='good'>✓ She runs every day.</span>","<span class='bad'>✗ She run every day.</span>","<span class='good'>✓ They study together.</span>","<span class='bad'>✗ They studies together.</span>"],
+    drill:{q:"The students ___ working hard.",opts:["is","are","was","am"],ans:1}
+  },
+  {
+    title:"Comma Rules",
+    desc:"Use a comma (1) to separate items in a list, (2) before a coordinating conjunction joining two independent clauses, and (3) after an introductory element.",
+    examples:["<span class='good'>✓ I bought apples, bananas, and oranges.</span>","<span class='good'>✓ She studied hard, but she was nervous.</span>","<span class='good'>✓ After school, I went to the library.</span>"],
+    drill:{q:"I want to travel ___ I don't have enough money.",opts:["but","so","and","or"],ans:0}
+  },
+  {
+    title:"Active vs Passive Voice",
+    desc:"In active voice the subject performs the action. In passive voice the subject receives the action. Prefer active voice for clarity and directness.",
+    examples:["<span class='good'>✓ Active: The dog chased the cat.</span>","<span class='bad'>〉 Passive: The cat was chased by the dog.</span>","<span class='good'>✓ The teacher explained the lesson.</span>"],
+    drill:{q:"Which sentence uses active voice?",opts:["The cake was eaten by Maria.","Maria ate the cake.","The lesson was learned.","The test was passed."],ans:1}
+  },
+  {
+    title:"Tenses: Simple vs Continuous",
+    desc:"Simple tenses express habitual actions or completed events. Continuous tenses express ongoing actions at a specific time.",
+    examples:["<span class='good'>✓ Simple: I walk to school every day.</span>","<span class='good'>✓ Continuous: I am walking to school right now.</span>","<span class='good'>✓ Past continuous: She was reading when he arrived.</span>"],
+    drill:{q:"She ___ her homework when her phone rang.",opts:["did","does","was doing","does do"],ans:2}
+  },
+  {
+    title:"Articles: A, An, The",
+    desc:"Use 'a' before consonant sounds, 'an' before vowel sounds. Use 'the' for specific or previously mentioned items. No article for general plurals.",
+    examples:["<span class='good'>✓ I saw a dog. The dog was friendly.</span>","<span class='good'>✓ She is an engineer.</span>","<span class='good'>✓ I love books (general — no article).</span>","<span class='bad'>✗ She is a engineer.</span>"],
+    drill:{q:"She has ___ umbrella in her bag.",opts:["a","an","the","—"],ans:1}
+  },
+  {
+    title:"Apostrophes",
+    desc:"Use an apostrophe to show possession (John's book) or to form contractions (it's = it is). Never use an apostrophe to form regular plurals.",
+    examples:["<span class='good'>✓ That is Maria's notebook.</span>","<span class='good'>✓ It's raining today. (= It is)</span>","<span class='bad'>✗ The students' book's are here.</span>","<span class='good'>✓ The students' books are here.</span>"],
+    drill:{q:"Which is correct?",opts:["Its raining.","It's raining.","Its' raining.","It is' raining."],ans:1}
+  },
+  {
+    title:"Comparative & Superlative",
+    desc:"For short adjectives add -er/-est. For long adjectives (3+ syllables) use more/most. Some are irregular: good→better→best, bad→worse→worst.",
+    examples:["<span class='good'>✓ She is taller than her brother.</span>","<span class='good'>✓ This is the most beautiful painting.</span>","<span class='bad'>✗ She is more tall than her brother.</span>"],
+    drill:{q:"This book is ___ than the last one.",opts:["more interesting","interestinger","most interesting","interestingest"],ans:0}
+  },
+];
+
+/* ════════════════════════════════════════
+   READING PASSAGES
+════════════════════════════════════════ */
+const PASSAGES = [
+  {
+    title:"The Importance of Reading",
+    text:"Reading is one of the most powerful habits a student can develop. When we read, we do much more than simply decode words on a page. We build vocabulary, strengthen our ability to concentrate, and expose ourselves to new ideas and perspectives that we might never encounter in our daily lives.\n\nResearch has consistently shown that students who read regularly perform better not just in language arts, but across all subjects. This is because reading strengthens the brain's ability to process and retain information. A student who reads even twenty minutes a day will encounter approximately 1.8 million words per year.\n\nMoreover, reading develops empathy. When we follow a character through challenges and triumphs, we practise understanding experiences different from our own. In this way, literature is not merely an academic exercise — it is preparation for life.",
+    questions:[
+      {q:"What is the main idea of this passage?",opts:["Reading only helps in language arts.","Reading builds many skills and perspectives.","Students should read for 20 minutes daily.","Books have 1.8 million words."],ans:1},
+      {q:"According to the passage, how does reading develop empathy?",opts:["By building vocabulary","By improving concentration","By following characters through experiences","By decoding words on a page"],ans:2},
+      {q:"The word 'consistently' in paragraph 2 most nearly means:",opts:["sometimes","repeatedly","rarely","recently"],ans:1},
+    ]
+  },
+  {
+    title:"The Water Cycle",
+    text:"Water is constantly moving through the environment in a process called the water cycle, or hydrological cycle. This natural system has no beginning or end, making Earth's water supply remarkably stable across millions of years.\n\nThe cycle begins when heat from the sun causes water to evaporate from oceans, lakes, and rivers, turning liquid water into water vapour. This vapour rises into the atmosphere, where cooler temperatures cause it to condense into tiny droplets, forming clouds. When these droplets combine and grow heavy enough, they fall back to Earth as precipitation — rain, snow, sleet, or hail.\n\nThe fallen water then takes many paths: some is absorbed by plants and trees, which release it back into the air through a process called transpiration; some soaks into the ground and replenishes underground aquifers; and some flows across the surface in streams and rivers, eventually returning to the ocean to begin the cycle again.",
+    questions:[
+      {q:"What drives the water cycle according to the passage?",opts:["The moon's gravity","Heat from the sun","Wind patterns","Underground aquifers"],ans:1},
+      {q:"What is transpiration?",opts:["Water evaporating from oceans","Rain falling from clouds","Plants releasing water into the air","Water soaking into the ground"],ans:2},
+      {q:"The word 'replenishes' means:",opts:["empties","refills","destroys","filters"],ans:1},
+    ]
+  },
+];
+
+/* ════════════════════════════════════════
+   PRONUNCIATION WORDS
+════════════════════════════════════════ */
+const PRON_WORDS = [
+  {w:"Particularly",ipa:"/pəˈtɪk.jʊ.lə.li/",tip:"Break it: par-TIC-u-lar-ly"},
+  {w:"Necessary",ipa:"/ˈnes.ə.ser.i/",tip:"One collar, two socks: NE-c-ss-ary"},
+  {w:"Wednesday",ipa:"/ˈwenz.deɪ/",tip:"Silent 'd': WENZ-day"},
+  {w:"Conscientious",ipa:"/ˌkɒn.ʃiˈen.ʃəs/",tip:"con-she-EN-shus"},
+  {w:"Entrepreneur",ipa:"/ˌɒn.trə.prəˈnɜːr/",tip:"on-truh-pruh-NUR"},
+  {w:"Pronunciation",ipa:"/prəˌnʌn.siˈeɪ.ʃən/",tip:"Not 'pronounciation' — pruh-NUN-see-AY-shun"},
+  {w:"Specifically",ipa:"/spəˈsɪf.ɪ.kli/",tip:"spuh-SIF-ik-lee"},
+  {w:"Extraordinary",ipa:"/ɪkˈstrɔː.dɪ.nri/",tip:"ik-STROR-din-ree"},
+  {w:"Hierarchy",ipa:"/ˈhaɪ.ə.rɑː.ki/",tip:"HY-uh-rar-kee"},
+  {w:"Worcestershire",ipa:"/ˈwʊs.tə.ʃɪər/",tip:"Famously: WUS-ter-sheer"},
+];
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let state = {
+  mode:"vocab",
+  vocabIdx:0, vocabCat:"All",
+  grammarIdx:0, grammarAnswered:false, grammarPicked:null,
+  passageIdx:0, passageQ:null, passageAnswered:false, passagePicked:null,
+  pronIdx:0, recState:"idle", lastScore:0,
+  testQ:[], testIdx:0, testAnswered:false, testPicked:null, testScore:0, testDone:false,
+  progress: JSON.parse(localStorage.getItem("wm_progress")||'{"vocab":0,"quiz":0,"reading":0,"speak":0}'),
+  streak: JSON.parse(localStorage.getItem("wm_streak")||'{"days":0,"lastDate":""}'),
+};
+
+function checkStreak(){
+  const today=new Date().toDateString();
+  const s=state.streak;
+  if(s.lastDate===today) return;
+  const yesterday=new Date(Date.now()-86400000).toDateString();
+  s.days = s.lastDate===yesterday ? s.days+1 : 1;
+  s.lastDate=today;
+  localStorage.setItem("wm_streak",JSON.stringify(s));
+}
+checkStreak();
+
+function saveProgress(key,val){
+  state.progress[key]=Math.max(state.progress[key]||0,val);
+  localStorage.setItem("wm_progress",JSON.stringify(state.progress));
+}
+
+/* ════════════════════════════════════════
+   RENDER DISPATCH
+════════════════════════════════════════ */
+function renderAll(){
+  renderStreak();
+  ["vocab","grammar","reading","speak","test","progress"].forEach(m=>{
+    const el=document.getElementById("m-"+m);
+    if(el) el.classList.toggle("active",m===state.mode);
+  });
+  renderPanel();
+}
+
+function renderStreak(){
+  document.getElementById("streakBar").innerHTML=`
+    <div style="font-size:26px">🔥</div>
+    <div><h3>${state.streak.days}-Day Streak</h3><p>Keep practising every day!</p></div>
+    <div style="margin-left:auto;text-align:right">
+      <div class="num">${state.streak.days}</div><div class="lbl">days</div>
+    </div>`;
+}
+
+function renderPanel(){
+  const el=document.getElementById("panel");
+  if(state.mode==="vocab") el.innerHTML=renderVocab();
+  else if(state.mode==="grammar") el.innerHTML=renderGrammar();
+  else if(state.mode==="reading") el.innerHTML=renderReading();
+  else if(state.mode==="speak") el.innerHTML=renderPron();
+  else if(state.mode==="test") el.innerHTML=renderTest();
+  else el.innerHTML=renderProgress();
+}
+
+function setMode(m){
+  state.mode=m;
+  if(m==="test" && !state.testDone && state.testQ.length===0) buildTest();
+  renderAll();
+}
+
+/* ═══════ VOCABULARY ═══════ */
+function getVocab(){
+  return state.vocabCat==="All" ? VOCAB : VOCAB.filter(v=>v.cat===state.vocabCat);
+}
+function getVocabCats(){
+  return ["All",...new Set(VOCAB.map(v=>v.cat))];
+}
+function renderVocab(){
+  const list=getVocab();
+  if(state.vocabIdx>=list.length) state.vocabIdx=0;
+  const v=list[state.vocabIdx];
+  const cats=getVocabCats();
+  return `
+    <div class="cat-row">${cats.map(c=>`<button class="cat-btn ${c===state.vocabCat?'active':''}" onclick="setVocabCat('${c}')">${c}</button>`).join("")}</div>
+    <div class="card">
+      <div class="word-display">
+        <div class="word-main">${v.w}</div>
+        <div class="word-type">${v.type}</div>
+        <div class="word-def">${v.def}</div>
+        <div class="word-ex">"${v.ex}"</div>
+      </div>
+      <div style="padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="speakWord('${v.w}')">🔊 Hear it</button>
+        <button class="btn btn-outline" onclick="setMode('test');renderPanel()">📝 Quiz me</button>
+      </div>
+      <div class="word-nav">
+        <span class="word-counter">${state.vocabIdx+1} / ${list.length} words</span>
+        <div class="nav-row">
+          <button class="icon-btn" onclick="prevVocab()">◀</button>
+          <button class="icon-btn" onclick="nextVocab()">▶</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function setVocabCat(c){ state.vocabCat=c; state.vocabIdx=0; renderPanel(); }
+function nextVocab(){ const l=getVocab(); state.vocabIdx=(state.vocabIdx+1)%l.length; saveProgress("vocab",state.vocabIdx+1); renderPanel(); }
+function prevVocab(){ const l=getVocab(); state.vocabIdx=(state.vocabIdx-1+l.length)%l.length; renderPanel(); }
+
+/* ═══════ GRAMMAR ═══════ */
+function renderGrammar(){
+  const r=GRAMMAR[state.grammarIdx];
+  const drill=r.drill;
+  const optHTML=drill.opts.map((o,i)=>{
+    let cls="opt";
+    if(state.grammarAnswered){
+      if(i===drill.ans) cls+=" correct";
+      else if(i===state.grammarPicked) cls+=" wrong";
+    }
+    return `<button class="opt ${cls}" ${state.grammarAnswered?"disabled":""} onclick="answerGrammar(${i})">${o}</button>`;
+  }).join("");
+  return `
+    <div class="card">
+      <div class="card-head">
+        <span style="font-size:14px;font-weight:700">${r.title}</span>
+        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">${state.grammarIdx+1}/${GRAMMAR.length}</span>
+      </div>
+      <div class="card-body">
+        <div class="rule-card">
+          <div class="rule-title">📌 Rule</div>
+          <div class="rule-desc">${r.desc}</div>
+          <div class="rule-ex">${r.examples.join("<br/>")}</div>
+        </div>
+        <div style="margin-top:16px">
+          <div style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">PRACTICE DRILL</div>
+          <div class="quiz-q">${drill.q}</div>
+          <div class="opts">${optHTML}</div>
+          <div class="feedback" id="gramFb"></div>
+          ${state.grammarAnswered?`<button class="btn btn-primary" style="margin-top:12px" onclick="nextGrammar()">Next Rule →</button>`:""}
+        </div>
+      </div>
+    </div>`;
+}
+
+function answerGrammar(i){
+  if(state.grammarAnswered) return;
+  state.grammarAnswered=true; state.grammarPicked=i;
+  const r=GRAMMAR[state.grammarIdx];
+  const fb=r.drill.ans===i?"✅ Correct! Well done.":"❌ Incorrect. The answer is: <span style='color:var(--text)'>"+r.drill.opts[r.drill.ans]+"</span>";
+  renderPanel();
+  const el=document.getElementById("gramFb");
+  if(el){ el.innerHTML=fb; el.style.color=r.drill.ans===i?"var(--green)":"var(--red)"; }
+}
+
+function nextGrammar(){
+  state.grammarIdx=(state.grammarIdx+1)%GRAMMAR.length;
+  state.grammarAnswered=false; state.grammarPicked=null;
+  renderPanel();
+}
+
+/* ═══════ READING ═══════ */
+function renderReading(){
+  const p=PASSAGES[state.passageIdx];
+  const qHTML = p.questions.map((q,qi)=>{
+    const opts=q.opts.map((o,oi)=>{
+      let cls="opt";
+      if(state.passageAnswered){
+        if(oi===q.ans) cls+=" correct";
+        else if(oi===state.passagePicked) cls+=" wrong";
+      }
+      return `<button class="${cls}" ${state.passageAnswered?"disabled":""} onclick="answerReading(${oi})">${o}</button>`;
+    }).join("");
+    return `<div style="margin-bottom:20px"><div class="quiz-q">Q${qi+1}. ${q.q}</div><div class="opts">${opts}</div></div>`;
+  }).slice(0,1).join(""); // Show one question at a time
+
+  return `
+    <div class="card">
+      <div class="card-head">
+        <span style="font-size:14px;font-weight:700">Reading Comprehension</span>
+        <div style="display:flex;gap:8px">
+          ${PASSAGES.map((_,i)=>`<button class="icon-btn ${i===state.passageIdx?'':'btn-outline'}" style="${i===state.passageIdx?'border-color:var(--accent);color:var(--accent)':''}" onclick="switchPassage(${i})">P${i+1}</button>`).join("")}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="passage"><div class="passage-title">${p.title}</div>${p.text.split("\n\n").map(para=>`<p style="margin-bottom:12px">${para}</p>`).join("")}</div>
+        <div style="margin-top:18px;font-size:13px;font-weight:700;margin-bottom:12px">Comprehension Questions</div>
+        ${qHTML}
+        <div id="readFb" class="feedback" style="margin-bottom:10px"></div>
+        ${state.passageAnswered?`<button class="btn btn-primary" onclick="nextReadingQ()">Next Question →</button>`:""}
+      </div>
+    </div>`;
+}
+
+let readQIdx=0;
+function answerReading(i){
+  if(state.passageAnswered) return;
+  state.passageAnswered=true; state.passagePicked=i;
+  const p=PASSAGES[state.passageIdx];
+  const correct=p.questions[readQIdx].ans===i;
+  renderPanel();
+  const el=document.getElementById("readFb");
+  if(el){ el.innerHTML=correct?"✅ Correct!":"❌ Not quite."; el.style.color=correct?"var(--green)":"var(--red)"; }
+  if(correct) saveProgress("reading",(state.progress.reading||0)+1);
+}
+
+function nextReadingQ(){
+  const p=PASSAGES[state.passageIdx];
+  readQIdx=(readQIdx+1)%p.questions.length;
+  state.passageAnswered=false; state.passagePicked=null;
+  renderPanel();
+}
+
+function switchPassage(i){ state.passageIdx=i; state.passageAnswered=false; state.passagePicked=null; readQIdx=0; renderPanel(); }
+
+/* ═══════ PRONUNCIATION ═══════ */
+function renderPron(){
+  const pw=PRON_WORDS[state.pronIdx];
+  const scoreHTML=state.recState==="scored"?`
+    <div class="score-bar">
+      <div><div style="font-size:11px;color:var(--muted);font-family:var(--mono)">SCORE</div>
+      <div style="font-size:22px;font-weight:700;color:${state.lastScore>=70?'var(--green)':state.lastScore>=40?'var(--yellow)':'var(--red)'}">${state.lastScore}%</div></div>
+      <div class="score-track">
+        <div class="score-fill" style="width:${state.lastScore}%;background:${state.lastScore>=70?'var(--green)':state.lastScore>=40?'var(--yellow)':'var(--red)'}"></div>
+      </div>
+      <div style="font-size:13px;color:var(--muted)">${state.lastScore>=70?"Excellent!":state.lastScore>=40?"Good try!":"Listen again"}</div>
+    </div>`:"";
+  return `
+    ${scoreHTML}
+    <div class="card">
+      <div class="card-head"><span style="font-weight:700">Pronunciation Practice</span>
+        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">${state.pronIdx+1}/${PRON_WORDS.length}</span>
+      </div>
+      <div class="card-body" style="text-align:center">
+        <div class="pron-word">${pw.w}</div>
+        <div class="pron-ipa">${pw.ipa}</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">💡 Tip: ${pw.tip}</div>
+        <button class="btn btn-outline" onclick="speakWord('${pw.w}')" style="margin-bottom:20px">🔊 Hear native pronunciation</button>
+        <div class="rec-ring ${state.recState==="recording"?"recording":""}" id="recRing">
+          ${state.recState==="idle"?"🎙️":state.recState==="recording"?"⏺️":"✅"}
+        </div>
+        <div class="wave" id="waveform">${Array(12).fill(0).map(()=>`<div class="wave-bar" style="height:${Math.random()*26+4}px"></div>`).join("")}</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onmousedown="startRec()" onmouseup="stopRec()" ontouchstart="startRec()" ontouchend="stopRec()">
+            ${state.recState==="recording"?"⏹ Release to stop":"🎙️ Hold to speak"}
+          </button>
+          <button class="btn btn-outline" onclick="nextPron()">Next word →</button>
+        </div>
+      </div>
+      <div class="word-nav">
+        <div class="nav-row">
+          <button class="icon-btn" onclick="prevPron()">◀</button>
+          <button class="icon-btn" onclick="nextPron()">▶</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function nextPron(){ state.pronIdx=(state.pronIdx+1)%PRON_WORDS.length; state.recState="idle"; renderPanel(); }
+function prevPron(){ state.pronIdx=(state.pronIdx-1+PRON_WORDS.length)%PRON_WORDS.length; state.recState="idle"; renderPanel(); }
+
+let waveTimer=null;
+function startRec(){
+  if(state.recState==="recording") return;
+  state.recState="recording"; renderPanel(); animWave();
+  if(navigator.mediaDevices) navigator.mediaDevices.getUserMedia({audio:true}).then(s=>s.getTracks().forEach(t=>t.stop())).catch(()=>{});
+}
+function stopRec(){
+  if(state.recState!=="recording") return;
+  clearInterval(waveTimer); simulateScore();
+}
+function simulateScore(){
+  state.lastScore=Math.min(99,45+Math.floor(Math.random()*40)+(Math.random()>.4?Math.floor(Math.random()*14):0));
+  state.recState="scored"; saveProgress("speak",(state.progress.speak||0)+1);
+  renderPanel();
+  toast(state.lastScore>=70?"🎉 Excellent pronunciation!":state.lastScore>=40?"👍 Keep practising!":"🔄 Listen first, then try again");
+}
+function animWave(){
+  waveTimer=setInterval(()=>{
+    document.querySelectorAll(".wave-bar").forEach(b=>{
+      b.style.height=(Math.random()*30+4)+"px";
+      b.style.background=state.recState==="recording"?"var(--red)":"var(--muted)";
+    });
+  },110);
+}
+
+/* ═══════ MOCK TEST ═══════ */
+function buildTest(){
+  const pool=[...VOCAB].sort(()=>Math.random()-.5).slice(0,15);
+  state.testQ=pool.map(v=>{
+    const others=VOCAB.filter(x=>x.w!==v.w).sort(()=>Math.random()-.5).slice(0,3);
+    const opts=[...others.map(o=>o.def),v.def].sort(()=>Math.random()-.5);
+    return {prompt:v.w, answer:v.def, opts};
+  });
+  state.testIdx=0; state.testAnswered=false; state.testPicked=null; state.testScore=0; state.testDone=false;
+}
+
+function renderTest(){
+  if(state.testDone){
+    const pct=Math.round(state.testScore/state.testQ.length*100);
+    return `
+      <div class="card">
+        <div class="card-body" style="text-align:center;padding:30px">
+          <div style="font-size:52px;margin-bottom:12px">${pct>=80?"🏆":pct>=60?"🎖️":"📖"}</div>
+          <div style="font-size:28px;font-weight:800;margin-bottom:6px">${pct}%</div>
+          <div style="font-size:15px;color:var(--muted);margin-bottom:6px">${state.testScore}/${state.testQ.length} correct</div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:24px">${pct>=80?"Excellent result!":pct>=60?"Good work — keep studying!":"Review the vocabulary section and try again."}</div>
+          <button class="btn btn-primary" onclick="buildTest();setMode('test');renderPanel()">Take another test</button>
+        </div>
+      </div>`;
+  }
+  if(!state.testQ.length) return "<p style='color:var(--muted)'>Loading test...</p>";
+  const q=state.testQ[state.testIdx];
+  const optHTML=q.opts.map((o,i)=>{
+    let cls="opt";
+    if(state.testAnswered){
+      if(o===q.answer) cls+=" correct";
+      else if(i===state.testPicked && o!==q.answer) cls+=" wrong";
+    }
+    return `<button class="${cls}" ${state.testAnswered?"disabled":""} onclick="answerTest(${i},'${o.replace(/'/g,"&#39;")}')">${o}</button>`;
+  }).join("");
+  return `
+    <div class="card">
+      <div class="card-head">
+        <span style="font-weight:700;font-size:14px">Mock Vocabulary Test</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${state.testIdx+1}/${state.testQ.length} · Score: ${state.testScore}</span>
+      </div>
+      <div class="card-body">
+        <div class="quiz-hint">WHAT IS THE MEANING OF:</div>
+        <div class="quiz-q">${q.prompt}</div>
+        <div class="opts">${optHTML}</div>
+        <div id="testFb" class="feedback"></div>
+        ${state.testAnswered?`<button class="btn btn-primary" style="margin-top:12px" onclick="nextTestQ()">Next →</button>`:""}
+      </div>
+    </div>`;
+}
+
+function answerTest(i,o){
+  if(state.testAnswered) return;
+  state.testAnswered=true; state.testPicked=i;
+  const q=state.testQ[state.testIdx];
+  const correct=o===q.answer;
+  if(correct){ state.testScore++; saveProgress("quiz",state.testScore); }
+  renderPanel();
+  const el=document.getElementById("testFb");
+  if(el){ el.innerHTML=correct?"✅ Correct!":"❌ The answer was: <em style='color:var(--text)'>"+q.answer+"</em>"; el.style.color=correct?"var(--green)":"var(--red)"; }
+}
+
+function nextTestQ(){
+  if(state.testIdx>=state.testQ.length-1){ state.testDone=true; renderPanel(); return; }
+  state.testIdx++; state.testAnswered=false; state.testPicked=null;
+  renderPanel();
+}
+
+/* ═══════ PROGRESS ═══════ */
+function renderProgress(){
+  const p=state.progress;
+  const items=[
+    {icon:"📖",label:"Words Explored",val:p.vocab||0,total:VOCAB.length},
+    {icon:"📝",label:"Quiz Score",val:p.quiz||0,total:15},
+    {icon:"📄",label:"Questions Answered",val:p.reading||0,total:PASSAGES.reduce((a,b)=>a+b.questions.length,0)},
+    {icon:"🎙️",label:"Pronunciation Attempts",val:p.speak||0,total:PRON_WORDS.length},
+  ];
+  return `
+    <h3 style="margin-bottom:6px">Your Progress</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Track your WordMaster journey</p>
+    <div class="prog-grid">
+      ${items.map(it=>{
+        const pct=it.total?Math.round(it.val/it.total*100):0;
+        return `<div class="prog-card">
+          <div style="font-size:28px;margin-bottom:8px">${it.icon}</div>
+          <div class="prog-num">${it.val}</div>
+          <div class="prog-label">${it.label}</div>
+          <div style="margin-top:10px;height:5px;background:var(--card2);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;transition:.4s"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px">${pct}% complete</div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div style="margin-top:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <h4 style="margin-bottom:12px;font-size:14px">Library</h4>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div><span style="font-size:28px;font-weight:800;color:var(--accent)">${VOCAB.length}</span><div style="font-size:12px;color:var(--muted)">vocabulary words</div></div>
+        <div><span style="font-size:28px;font-weight:800;color:var(--blue)">${GRAMMAR.length}</span><div style="font-size:12px;color:var(--muted)">grammar rules</div></div>
+        <div><span style="font-size:28px;font-weight:800;color:var(--green)">${PASSAGES.length}</span><div style="font-size:12px;color:var(--muted)">reading passages</div></div>
+        <div><span style="font-size:28px;font-weight:800;color:var(--yellow)">${PRON_WORDS.length}</span><div style="font-size:12px;color:var(--muted)">pronunciation words</div></div>
+      </div>
+    </div>`;
+}
+
+/* ════════ HELPERS ════════ */
+function speakWord(w){
+  if(!window.speechSynthesis){ toast("TTS not supported"); return; }
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(w);
+  u.lang="en-GB"; u.rate=0.85;
+  window.speechSynthesis.speak(u);
+}
+
+function toast(msg,ms=2600){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"),ms);
+}
+
+/* ════════ INIT ════════ */
+buildTest();
+renderAll();
+</script>
+</body>
+</html>

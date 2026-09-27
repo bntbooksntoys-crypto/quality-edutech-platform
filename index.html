@@ -561,7 +561,7 @@ const state = {
   libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
   liveJoin: null, liveNotes: null,
   quiz:{i:0,picked:null,answers:[],done:false},
-  auth:{screen:"signin", error:"", loading:false},  /* signin | signup | app */
+  auth:{screen:(()=>{try{return localStorage.getItem('qe_token')&&localStorage.getItem('qe_user')?'app':'signin';}catch(e){return 'signin';}})(), error:"", loading:false},  /* signin | signup | app */
   user: JSON.parse(localStorage.getItem('qe_user')||'null'),
 };
 const T = () => STR[state.lang];

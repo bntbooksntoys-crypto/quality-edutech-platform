@@ -517,7 +517,7 @@ const API = 'http://localhost:4000'; // Change to your deployed server URL after
 const state = {
   view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,
   libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
-  liveJoin: null,
+  liveJoin: null, liveNotes: null,
   quiz:{i:0,picked:null,answers:[],done:false},
   auth:{screen:"signin", error:"", loading:false},  /* signin | signup | app */
   user: JSON.parse(localStorage.getItem('qe_user')||'null'),
@@ -719,23 +719,27 @@ function liveView(){
   const upcoming = LIVE_SCHEDULE.filter(s=>!s.live);
   const subColor = s => SC(s)||'var(--teal)';
 
-  /* ── join modal ── */
-  if(state.liveJoin){
-    const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveJoin);
-    return cls ? '<div style="max-width:640px;margin:0 auto">'+
-      card('<button onclick="state.liveJoin=null;render()" style="font-size:12px;color:var(--slate);background:none;border:none;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;gap:4px">'+I.chev(14)+' Back to Live Classes</button>'+
-        '<div class="livetag" style="margin-bottom:16px"><i></i>LIVE NOW</div>'+
-        '<h2 class="display" style="font-size:22px;font-weight:800;line-height:1.3;margin-bottom:6px">'+cls.t+'</h2>'+
-        '<p class="muted" style="margin-bottom:20px">'+cls.teacher+' · '+cls.sub+' · '+cls.dur+'</p>'+
-        '<div style="background:var(--ink);border-radius:16px;aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:20px">'+
-          '<div style="width:64px;height:64px;border-radius:99px;background:var(--teal);display:grid;place-items:center;color:#fff">'+I.radio(24)+'</div>'+
-          '<div style="color:#fff;font-size:16px;font-weight:700">'+cls.t+'</div>'+
-          '<div style="color:#9FB3BD;font-size:12px;font-family:var(--mono)">'+cls.teacher.toUpperCase()+' · LIVE</div>'+
+  /* ── notes modal ── */
+  if(state.liveNotes){
+    const cls=LIVE_SCHEDULE.find(s=>s.id===state.liveNotes);
+    const savedKey='qe_notes_'+state.liveNotes;
+    let saved=''; try{saved=localStorage.getItem(savedKey)||'';}catch(e){}
+    return cls ? '<div style="max-width:680px;margin:0 auto">'+
+      card(
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">'+
+          '<button onclick="state.liveNotes=null;render()" style="font-size:13px;color:var(--slate);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px">'+I.chev(14)+' Back</button>'+
+          '<div class="livetag"><i></i>LIVE</div>'+
         '</div>'+
-        '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
-          '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none;flex:1">'+btn('🎥 Join Video Call','teal','','style="width:100%"')+'</a>'+
-          btn('📝 Session Notes','ghost','clip','style="flex:1"')+
-        '</div>','p24 rise') : '';
+        eyebrow(cls.sub)+
+        '<h2 class="display" style="font-size:20px;font-weight:800;margin:6px 0 4px">'+cls.t+'</h2>'+
+        '<p class="muted" style="margin-bottom:20px">'+cls.teacher+' · '+cls.dur+'</p>'+
+        '<div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--slate)">📝 Your notes</div>'+
+        '<textarea id="cls_notes" style="width:100%;min-height:260px;border:1.5px solid var(--line);border-radius:12px;padding:14px;font-size:14px;font-family:var(--body);color:var(--ink);background:var(--canvas);resize:vertical;outline:none;box-sizing:border-box" placeholder="Type your notes here… key points, questions, formulas…" onchange="try{localStorage.setItem(\''+savedKey+'\',this.value)}catch(e){}">'+saved.replace(/</g,'&lt;')+'</textarea>'+
+        '<div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">'+
+          '<button onclick="try{localStorage.setItem(\''+savedKey+'\',document.getElementById(\'cls_notes\').value)}catch(e){};this.textContent=\'✓ Saved!\';setTimeout(()=>this.textContent=\'💾 Save notes\',1500)" style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">💾 Save notes</button>'+
+          '<button onclick="if(confirm(\'Clear all notes for this session?\')){try{localStorage.removeItem(\''+savedKey+'\')}catch(e){}document.getElementById(\'cls_notes\').value=\'\'}" style="background:var(--canvas);color:var(--slate);border:1.5px solid var(--line);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">🗑 Clear</button>'+
+        '</div>',
+      'p24 rise') : '';
   }
 
   /* ── live now banner ── */
@@ -752,7 +756,7 @@ function liveView(){
             '<a href="'+cls.meet+'" target="_blank" rel="noopener" style="text-decoration:none">'+
               '<button style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">'+I.radio(16)+'Join now</button>'+
             '</a>'+
-            '<button onclick="state.liveJoin=\''+cls.id+'\';render()" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">Session Notes</button>'+
+            '<button onclick="state.liveNotes=\''+cls.id+'\';render()" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">📝 Session Notes</button>'+
           '</div>'+
         '</div>'+
       '</div>'+

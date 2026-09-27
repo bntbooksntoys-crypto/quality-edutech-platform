@@ -680,8 +680,31 @@ const ROLES = [
   {id:"admin",label:"Administrator",who:"Principal's office",meta:"Kongu Vidyalaya"},
 ];
 
-/* ─────────── config ─────────── */
-const API = 'http://localhost:4000'; // Change to your deployed server URL after hosting
+/* ─────────── MongoDB Atlas Serverless Auth Config ─────────── */
+/* Fill in your Atlas App Services details below — no server needed! */
+const ATLAS = {
+  appId:      'YOUR_APP_ID',          // e.g. 'qeplatform-abcde'  (Atlas App Services → App ID)
+  apiKey:     'YOUR_API_KEY',         // Atlas Data API key  (App Services → Authentication → API Keys)
+  dataSource: 'Cluster0',             // Your cluster name
+  database:   'qe_platform',          // Database name
+  collection: 'users',                // Collection name
+  endpoint:   'https://data.mongodb-api.com/app/YOUR_APP_ID/endpoint/data/v1'
+};
+/* ── simple hash (SHA-256 via SubtleCrypto — runs in browser, no server) ── */
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function atlasRequest(action, body){
+  const url = ATLAS.endpoint+'/action/'+action;
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','api-key':ATLAS.apiKey},
+    body: JSON.stringify({dataSource:ATLAS.dataSource, database:ATLAS.database, collection:ATLAS.collection, ...body})
+  });
+  if(!res.ok){ const t=await res.text(); throw new Error('Atlas error: '+t); }
+  return res.json();
+}
 
 /* ─────────── state ─────────── */
 const state = {
@@ -1032,7 +1055,7 @@ const LABS = [
     sub:"Physics · Grades 8–12",
     desc:"Take real readings with virtual instruments — Vernier caliper, screw gauge, simple pendulum, metre scale, and measuring cylinder. Every trial logs error vs. reference just like a practical notebook.",
     tags:["Vernier Caliper","Screw Gauge","Pendulum","Metre Scale","Cylinder"],
-    url:"https://frolicking-conkies-0d1f67.netlify.app/labs/physics",
+    url:"https://bntbooksntoys-crypto.github.io/Quality-Education/",
     embedUrl:"https://bntbooksntoys-crypto.github.io/measure-lab/",
     color:"#0E7C6B",
     bg:"linear-gradient(135deg,#0E7C6B 0%,#0a5548 100%)",

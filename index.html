@@ -694,8 +694,8 @@ const state = {
   libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
   liveJoin: null, liveNotes: null, labOpen: null,
   quiz:{i:0,picked:null,answers:[],done:false},
-  auth:{screen:(()=>{try{return localStorage.getItem('qe_token')&&localStorage.getItem('qe_user')?'app':'signin';}catch(e){return 'signin';}})(), error:"", loading:false},  /* signin | signup | app */
-  user: JSON.parse(localStorage.getItem('qe_user')||'null'),
+  auth:{screen:'app', error:"", loading:false},  /* signin | signup | app */
+  user: (()=>{try{return JSON.parse(localStorage.getItem('qe_user')||'null');}catch(e){return null;}})() || {name:"Student",email:"guest@qe.app",grade:"Grade 8",age:14},
 };
 const T = () => STR[state.lang];
 const ME = () => ROLES.find(r=>r.id===state.role);

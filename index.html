@@ -281,13 +281,13 @@ const I = {
 
 /* ─────────── content ─────────── */
 const STR = {
-  en:{home:"Today",learn:"Learn",live:"Live classes",assess:"Assessments",progress:"Progress",awards:"Achievements",lab:"Lab",
+  en:{home:"Home",learn:"Learn",live:"Live classes",assess:"Assignment",progress:"Progress Report",awards:"Achievements",lab:"Lab",
       search:"Search lessons, chapters, teachers",greet:"Good morning",cont:"Continue learning",join:"Join now",
       day:"Your day",mastery:"Subject mastery",streak:"day streak",all:"View all",start:"Start",resume:"Resume",viewas:"View as"},
-  ta:{home:"இன்று",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"மதிப்பீடு",progress:"முன்னேற்றம்",awards:"சாதனைகள்",lab:"ஆய்வகம்",
+  ta:{home:"முகப்பு",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"பணி",progress:"முன்னேற்ற அறிக்கை",awards:"சாதனைகள்",lab:"ஆய்வகம்",
       search:"பாடங்கள், அத்தியாயங்களைத் தேடுங்கள்",greet:"காலை வணக்கம்",cont:"தொடர்ந்து கற்க",join:"இணைக",
       day:"உங்கள் நாள்",mastery:"பாட தேர்ச்சி",streak:"நாள் தொடர்ச்சி",all:"அனைத்தும்",start:"தொடங்கு",resume:"தொடர்",viewas:"பார்வை"},
-  hi:{home:"आज",learn:"सीखें",live:"लाइव कक्षा",assess:"मूल्यांकन",progress:"प्रगति",awards:"उपलब्धियाँ",lab:"प्रयोगशाला",
+  hi:{home:"होम",learn:"सीखें",live:"लाइव कक्षा",assess:"असाइनमेंट",progress:"प्रगति रिपोर्ट",awards:"उपलब्धियाँ",lab:"प्रयोगशाला",
       search:"पाठ, अध्याय, शिक्षक खोजें",greet:"सुप्रभात",cont:"सीखना जारी रखें",join:"अभी जुड़ें",
       day:"आपका दिन",mastery:"विषय दक्षता",streak:"दिन की लय",all:"सभी देखें",start:"शुरू करें",resume:"जारी रखें",viewas:"देखें"},
 };
@@ -315,7 +315,7 @@ const COURSES = [
 ];
 /* ── Live class schedule (teachers update this) ── */
 const LIVE_SCHEDULE = [
-  {id:"ls1", sub:"Mathematics", t:"Linear Equations — Chapter 2 Recap", teacher:"S. Rajkumar", date:",Mon 28 Sep", time:"8:30", dur:"60 min", live:true, meet:"https://meet.jit.si/QEPlatform-ls1-Mathematics",
+  {id:"ls1", sub:"Mathematics", t:"Linear Equations — Chapter 2 Recap", teacher:"S. Rajkumar", date:"Mon, 29 Sep", time:"9:00 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls1-Mathematics",
    notes:{
      objective:"Recap Chapter 2 of Linear Equations in One Variable and solve practice problems.",
      topics:["What is a linear equation?","Solving equations using transposition","Cross-multiplication method","Word problems — age, speed, and fractions"],
@@ -1211,11 +1211,37 @@ function progressView(){
 }
 
 function awardsView(){
+  /* ── pull grade from signed-in user ── */
+  const u = state.user;
+  const gradeLabel = u && u.grade ? u.grade : 'Grade 8';
+  const gradeNum   = (()=>{ const m=String(gradeLabel).match(/\d+/); return m?parseInt(m[0]):8; })();
+  const userName   = u ? u.name : 'Student';
+
+  /* ── generate a grade-appropriate leaderboard ── */
+  const GRADE_LEADERS = {
+    6:[{r:1,n:"Priya K.",c:"6-A",p:3920},{r:2,n:"Arjun M.",c:"6-B",p:3740},{r:3,n:"Sneha R.",c:"6-C",p:3590},{r:4,n:"Vikram S.",c:"6-A",p:3410},{r:5,n:"Lavanya P.",c:"6-B",p:3280}],
+    7:[{r:1,n:"Akash T.",c:"7-A",p:4210},{r:2,n:"Deepika N.",c:"7-B",p:4050},{r:3,n:"Rahul V.",c:"7-C",p:3870},{r:4,n:"Ananya S.",c:"7-A",p:3650},{r:5,n:"Suresh K.",c:"7-B",p:3490}],
+    8:[{r:1,n:"Nithya S.",c:"8-A",p:4820},{r:2,n:"Karthik V.",c:"8-B",p:4490},{r:3,n:"Divya M.",c:"8-C",p:4210},{r:4,n:"Imran S.",c:"8-A",p:4075},{r:5,n:"Meena R.",c:"8-B",p:3960}],
+    9:[{r:1,n:"Arun P.",c:"9-A",p:5340},{r:2,n:"Kavitha S.",c:"9-B",p:5180},{r:3,n:"Ravi K.",c:"9-C",p:4990},{r:4,n:"Pooja M.",c:"9-A",p:4780},{r:5,n:"Harish T.",c:"9-B",p:4620}],
+    10:[{r:1,n:"Sindhu R.",c:"10-A",p:5890},{r:2,n:"Manoj K.",c:"10-B",p:5710},{r:3,n:"Rekha N.",c:"10-C",p:5530},{r:4,n:"Vijay S.",c:"10-A",p:5340},{r:5,n:"Anitha P.",c:"10-B",p:5190}],
+    11:[{r:1,n:"Bharath M.",c:"11-A",p:6210},{r:2,n:"Subha K.",c:"11-B",p:6050},{r:3,n:"Ganesh R.",c:"11-C",p:5870},{r:4,n:"Preethi S.",c:"11-A",p:5680},{r:5,n:"Ajith V.",c:"11-B",p:5490}],
+    12:[{r:1,n:"Kavya T.",c:"12-A",p:6740},{r:2,n:"Surya K.",c:"12-B",p:6580},{r:3,n:"Nandhini R.",c:"12-C",p:6390},{r:4,n:"Kiran M.",c:"12-A",p:6210},{r:5,n:"Divyaa S.",c:"12-B",p:6050}],
+  };
+
+  /* ── insert the current user into rank 2 of the right leaderboard ── */
+  const baseLeaders = (GRADE_LEADERS[gradeNum] || GRADE_LEADERS[8]).map(l=>({...l}));
+  const myPoints = baseLeaders[0].p - 165; // 165 behind #1
+  /* replace rank-2 slot with real user */
+  baseLeaders.splice(1, 0, {r:2, n:userName, c:gradeNum+'-B', p:myPoints, me:true});
+  /* re-number and keep top 5 */
+  const leaders = baseLeaders.slice(0,5).map((l,i)=>({...l,r:i+1}));
+  const totalInGrade = 90 + gradeNum * 4; // plausible total per grade
+
   const badges=BADGES.map(b=>card('<div class="badge" style="background:'+(b.tier==='Gold'?'var(--marigoldSoft)':'var(--tealSoft)')+';color:'+(b.tier==='Gold'?'var(--marigold)':'var(--teal)')+'">'+I[b.ic](20)+'</div>'+
     '<div class="small" style="margin-top:12px;text-transform:uppercase;letter-spacing:.12em">'+b.tier+'</div>'+
     '<div class="display" style="font-size:16px;font-weight:700">'+b.n+'</div>'+
     '<div class="muted mt4">'+b.note+'</div>')).join('');
-  const board=LEADERS.map(l=>'<div class="row" style="padding:12px '+(l.me?'10px':'0')+';'+(l.me?'background:var(--tealSoft);border-radius:10px;':'')+'">'+
+  const board=leaders.map(l=>'<div class="row" style="padding:12px '+(l.me?'10px':'0')+';'+(l.me?'background:var(--tealSoft);border-radius:10px;':'')+'">'+
     '<span class="display" style="width:24px;font-size:18px;font-weight:800;color:'+(l.r<=3?'var(--marigold)':'var(--mute)')+'">'+l.r+'</span>'+
     '<div style="flex:1"><div style="font-size:14px;font-weight:500">'+l.n+(l.me?' <span style="color:var(--teal)">· you</span>':'')+'</div>'+
     '<div class="small">Class '+l.c+'</div></div><span class="mono" style="font-size:14px">'+l.p.toLocaleString('en-IN')+'</span></div>').join('');
@@ -1226,12 +1252,12 @@ function awardsView(){
       '<span style="color:'+m[3]+'">'+I[m[0]](18)+'</span><div><div style="font-size:14px;font-weight:500">'+m[1]+'</div>'+
       '<div style="font-size:12px;color:var(--slate)">'+m[2]+'</div></div></div>').join('');
   return card('<div class="between" style="flex-wrap:wrap"><div>'+eyebrow('Recognition')+
-      '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">4,655 points · rank 2 of 118 in Grade 8</h3>'+
+      '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">'+myPoints.toLocaleString('en-IN')+' points · rank 2 of '+totalInGrade+' in '+gradeLabel+'</h3>'+
       '<p class="muted mt4">165 points behind first place. Two more mock exams would close the gap.</p></div>'+
       btn('Download certificates','ghost','down')+'</div>','p24 rise')+
     '<div class="cards4 mt20">'+badges+'</div>'+
     '<div class="grid g2 mt20">'+
-      card(eyebrow('Grade 8 leaderboard')+'<div class="divide mt12">'+board+'</div>')+
+      card(eyebrow(gradeLabel+' leaderboard')+'<div class="divide mt12">'+board+'</div>')+
       card(eyebrow('Scholarships and milestones')+'<div class="stack mt12">'+mile+'</div>')+
     '</div>';
 }

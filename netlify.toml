@@ -2,6 +2,9 @@
   publish = "."
   ignore = "exit 0"
 
+[build.processing]
+  skip_processing = true
+
 [[redirects]]
   from = "/labs/language"
   to = "/labs/language.html"
@@ -17,3 +20,14 @@
   [headers.values]
     X-Frame-Options = "ALLOWALL"
     Content-Security-Policy = "frame-ancestors *"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/labs/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

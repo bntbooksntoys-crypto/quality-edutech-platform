@@ -248,6 +248,10 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 <div id="app"></div>
 
 <script>
+/* Load assignment data */
+window.ASSIGNMENTS={};
+fetch('assignments.json').then(r=>r.json()).then(d=>{window.ASSIGNMENTS=d;}).catch(()=>{});
+
 /* ─────────── icons ─────────── */
 const S = (p, sz) => '<svg width="'+(sz||18)+'" height="'+(sz||18)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
 const I = {
@@ -281,15 +285,18 @@ const I = {
 
 /* ─────────── content ─────────── */
 const STR = {
-  en:{home:"Today",learn:"Learn",live:"Live classes",assess:"Assessments",progress:"Progress",awards:"Achievements",lab:"Lab",
+  en:{home:"Home",learn:"Learn",live:"Live classes",assess:"Assignment",progress:"Progress Report",awards:"Achievements",lab:"Lab",
       search:"Search lessons, chapters, teachers",greet:"Good morning",cont:"Continue learning",join:"Join now",
-      day:"Your day",mastery:"Subject mastery",streak:"day streak",all:"View all",start:"Start",resume:"Resume",viewas:"View as"},
-  ta:{home:"இன்று",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"மதிப்பீடு",progress:"முன்னேற்றம்",awards:"சாதனைகள்",lab:"ஆய்வகம்",
+      day:"Your day",mastery:"Subject mastery",streak:"day streak",all:"View all",start:"Start",resume:"Resume",viewas:"View as",
+      submit:"Submit Assignment",viewAns:"View Answer Key",hideAns:"Hide Answers",pending:"Pending",submitted:"Submitted"},
+  ta:{home:"முகப்பு",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"பணி",progress:"முன்னேற்ற அறிக்கை",awards:"சாதனைகள்",lab:"ஆய்வகம்",
       search:"பாடங்கள், அத்தியாயங்களைத் தேடுங்கள்",greet:"காலை வணக்கம்",cont:"தொடர்ந்து கற்க",join:"இணைக",
-      day:"உங்கள் நாள்",mastery:"பாட தேர்ச்சி",streak:"நாள் தொடர்ச்சி",all:"அனைத்தும்",start:"தொடங்கு",resume:"தொடர்",viewas:"பார்வை"},
-  hi:{home:"आज",learn:"सीखें",live:"लाइव कक्षा",assess:"मूल्यांकन",progress:"प्रगति",awards:"उपलब्धियाँ",lab:"प्रयोगशाला",
+      day:"உங்கள் நாள்",mastery:"பாட தேர்ச்சி",streak:"நாள் தொடர்ச்சி",all:"அனைத்தும்",start:"தொடங்கு",resume:"தொடர்",viewas:"பார்வை",
+      submit:"பணி சமர்ப்பி",viewAns:"விடை காட்டு",hideAns:"விடை மறை",pending:"நிலுவை",submitted:"சமர்ப்பிக்கப்பட்டது"},
+  hi:{home:"होम",learn:"सीखें",live:"लाइव कक्षा",assess:"असाइनमेंट",progress:"प्रगति रिपोर्ट",awards:"उपलब्धियाँ",lab:"प्रयोगशाला",
       search:"पाठ, अध्याय, शिक्षक खोजें",greet:"सुप्रभात",cont:"सीखना जारी रखें",join:"अभी जुड़ें",
-      day:"आपका दिन",mastery:"विषय दक्षता",streak:"दिन की लय",all:"सभी देखें",start:"शुरू करें",resume:"जारी रखें",viewas:"देखें"},
+      day:"आपका दिन",mastery:"विषय दक्षता",streak:"दिन की लय",all:"सभी देखें",start:"शुरू करें",resume:"जारी रखें",viewas:"देखें",
+      submit:"असाइनमेंट जमा करें",viewAns:"उत्तर देखें",hideAns:"उत्तर छुपाएं",pending:"लंबित",submitted:"जमा किया"},
 };
 
 const SCHEDULE = [
@@ -1146,49 +1153,82 @@ function openLab(id){
   render();
 }
 
-function assessView(){
-  const q=state.quiz, cur=QUIZ[q.i], answered=q.answers.length===q.i+1;
-  const side=card(eyebrow('Scheduled')+'<div class="stack mt12">'+
-      [["Unit test — Social Studies","Today, 2:00 pm · 30 min","var(--vermilion)"],
-       ["Mock exam — Mathematics","Sat, 9:00 am · 3 hours","var(--marigold)"],
-       ["Science project checkpoint","Mon · Portfolio upload","var(--teal)"]]
-      .map(a=>'<div style="background:var(--canvas);border-left:3px solid '+a[2]+';border-radius:10px;padding:12px">'+
-        '<div style="font-size:14px;font-weight:500">'+a[0]+'</div><div class="small">'+a[1]+'</div></div>').join('')+'</div>')+
-    card(eyebrow('Competency profile')+radar(COMP),'p20 mt20');
+/* ── Assignment state ── */
+if(!state.assign) state.assign={grade:null,subject:null,showAnswers:false,submitted:{}};
 
-  if(q.done){
-    const score=q.answers.filter(Boolean).length, pct=Math.round(score/QUIZ.length*100);
-    return card(eyebrow('Practice set complete')+
-      '<div class="row mt16" style="align-items:center;gap:24px;flex-wrap:wrap">'+ring(pct,120,'score')+
-      '<div><h3 class="display" style="font-size:24px;font-weight:800">'+score+' of '+QUIZ.length+' correct</h3>'+
-      '<p class="muted mt12" style="max-width:520px">'+(pct>=80
-        ?'Strong across reasoning and recall. Mathematics mastery moves up 3 points and this counts towards your Term 4 record.'
-        :'Recorded in your portfolio. The platform has queued a short revision path on the questions you missed.')+'</p>'+
-      '<div class="wrap mt16">'+btn('Practise again','teal',null,'onclick="resetQuiz()"')+btn('Download report','ghost','down')+'</div></div></div>'+
-      '<div class="mt24" style="background:var(--marigoldSoft);border-radius:12px;padding:16px;display:flex;gap:8px;align-items:center">'+
-      '<span style="color:var(--marigold)">'+I.medal(18)+'</span><span style="font-size:14px;font-weight:500">Badge earned — Practice Streak, level 2</span></div>','p24 rise');
+function assessView(){
+  const t=T();
+  // Determine student grade number
+  const gradeStr = (state.user&&state.user.grade)||'Grade 8';
+  const gradeNum = String(parseInt(gradeStr.replace(/\D/g,''))||8);
+  const as = state.assign;
+  if(!as.grade) as.grade = gradeNum;
+
+  const gradeData = (window.ASSIGNMENTS||{})[as.grade]||{};
+  const subjects = Object.keys(gradeData);
+
+  // Subject selector pills
+  const pills = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">'+
+    subjects.map(s=>'<button onclick="asSub(\''+s.replace(/'/g,"\\'")+'\')" style="padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid '+(as.subject===s?'var(--teal)':'var(--line)')+';background:'+(as.subject===s?'var(--teal)':'var(--card)')+';color:'+(as.subject===s?'#fff':'var(--ink)')+'">'+s+'</button>').join('')+'</div>';
+
+  // Grade selector
+  const gradePicker = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">'+
+    '<span style="font-size:13px;color:var(--slate)">Grade:</span>'+
+    [1,2,3,4,5,6,7,8,9,10,11,12].map(g=>'<button onclick="asGrade(\''+g+'\')" style="width:32px;height:32px;border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid '+(as.grade==g?'var(--teal)':'var(--line)')+';background:'+(as.grade==g?'var(--teal)':'var(--card)')+';color:'+(as.grade==g?'#fff':'var(--ink)')+'">'+g+'</button>').join('')+'</div>';
+
+  if(!as.subject || !gradeData[as.subject]){
+    // Landing — subject list
+    const subCards = subjects.map(s=>{
+      const done = (as.submitted||{})[as.grade+'|'+s];
+      return '<div onclick="asSub(\''+s.replace(/'/g,"\\'")+'\')" style="background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'+
+        '<div><div style="font-size:15px;font-weight:600">'+s+'</div>'+
+        '<div class="small">'+gradeData[s].book+' · 10 questions · 20 marks</div></div>'+
+        '<span style="font-size:12px;padding:4px 10px;border-radius:20px;font-weight:500;background:'+(done?'var(--tealSoft)':'var(--marigoldSoft)')+';color:'+(done?'var(--teal)':'var(--marigold)')+'">'+
+        (done?t.submitted:t.pending)+'</span></div>';
+    }).join('');
+    return card(eyebrow('Assignment — Grade '+as.grade)+gradePicker+
+      '<h3 class="display" style="font-size:20px;font-weight:700;margin-bottom:16px">Select a Subject</h3>'+
+      '<div class="stack" style="gap:10px">'+subCards+'</div>','p24 rise');
   }
 
-  const opts=cur.o.map((o,n)=>{
-    const picked=q.picked===n, right=answered&&n===cur.a, wrong=answered&&picked&&n!==cur.a;
-    const cls='opt'+(right?' right':wrong?' wrong':picked?' on':'');
-    return '<button class="'+cls+'" onclick="pick('+n+')"><span class="key">'+String.fromCharCode(65+n)+'</span>'+
-      '<span style="flex:1">'+o+'</span>'+
-      (right?'<span style="color:var(--teal)">'+I.check(18)+'</span>':wrong?'<span style="color:var(--vermilion)">'+I.cross(18)+'</span>':'')+'</button>';
+  // Questions view
+  const subData = gradeData[as.subject];
+  const qs = subData.questions||[];
+  const key = as.grade+'|'+as.subject;
+  const done = (as.submitted||{})[key];
+
+  const qHTML = qs.map((q,i)=>{
+    const typeColor={'MCQ':'var(--teal)','Fill in the blank':'var(--marigold)','True/False':'var(--vermilion)',
+      'Short answer':'#7C5CBF','Long answer':'#1A6B6B','Match the following':'#B05E00',
+      'Activity':'#0E6B3D','Thinking (HOTS)':'#B00020'}[q.type]||'var(--slate)';
+    return '<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:12px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'+
+      '<span style="font-size:12px;font-weight:700;color:#fff;background:var(--ink);border-radius:6px;padding:2px 8px">Q'+(i+1)+'</span>'+
+      '<span style="font-size:11px;font-weight:600;color:'+typeColor+';background:'+typeColor+'22;border-radius:20px;padding:2px 8px">'+q.type+'</span>'+
+      '<span class="small">'+q.topic+'</span>'+
+      '<span style="margin-left:auto;font-size:12px;font-weight:600;color:var(--slate)">['+q.marks+' mark'+(q.marks>1?'s':'')+']</span></div>'+
+      '<p style="font-size:14px;line-height:1.6;white-space:pre-wrap">'+q.q+'</p>'+
+      (as.showAnswers?'<div style="margin-top:10px;background:var(--tealSoft);border-left:3px solid var(--teal);border-radius:8px;padding:10px 14px">'+
+        '<span style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em">Answer</span>'+
+        '<p style="font-size:13px;margin-top:4px;line-height:1.5;white-space:pre-wrap">'+q.answer+'</p></div>':'')+
+      '</div>';
   }).join('');
-  let steps=''; QUIZ.forEach((_,n)=>steps+='<i class="'+(n<=q.i?'on':'')+'"></i>');
 
-  const main=card('<div class="between">'+eyebrow(cur.sub,'teal')+'<span class="small">'+(q.i+1)+' / '+QUIZ.length+'</span></div>'+
-    '<div class="steps">'+steps+'</div>'+
-    '<h3 class="display" style="font-size:20px;font-weight:700;line-height:1.35;margin-top:20px">'+cur.q+'</h3>'+
-    '<div class="stack mt20" style="gap:10px">'+opts+'</div>'+
-    (answered?'<div class="rise" style="background:var(--canvas);border-radius:12px;padding:16px;margin-top:16px">'+
-      eyebrow('Why')+'<p style="font-size:14px;margin-top:4px">'+cur.why+'</p></div>':'')+
-    '<div class="mt20">'+(answered
-      ? btn(q.i+1===QUIZ.length?'See result':'Next question','teal','arrow','onclick="nextQ()"')
-      : btn('Check answer','solid',null,'onclick="checkQ()"'))+'</div>','p24');
-
-  return '<div class="grid g3">'+main+'<div>'+side+'</div></div>';
+  return '<div>'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'+
+    '<button onclick="asSub(null)" style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--teal);font-weight:500">'+I.chev(16)+' Back</button>'+
+    '<h2 class="display" style="font-size:20px;font-weight:700;flex:1">'+as.subject+'</h2>'+
+    '<span style="font-size:12px;color:var(--slate)">Grade '+as.grade+' · '+subData.book+'</span></div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">'+
+    (done
+      ? '<span style="padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;background:var(--tealSoft);color:var(--teal)">✓ '+t.submitted+'</span>'
+      : '<button onclick="asSubmit()" style="padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;background:var(--teal);color:#fff">'+t.submit+'</button>')+
+    '<button onclick="asToggleAns()" style="padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid var(--line);background:var(--card)">'+
+    (as.showAnswers?t.hideAns:t.viewAns)+'</button></div>'+
+    qHTML+
+    (!done?'<div style="text-align:center;margin-top:8px">'+
+      '<button onclick="asSubmit()" style="padding:12px 32px;border-radius:12px;font-size:15px;font-weight:700;background:var(--teal);color:#fff">'+t.submit+'</button></div>':'')+
+    '</div>';
 }
 
 function progressView(){
@@ -1400,6 +1440,11 @@ function pick(n){if(state.quiz.answers.length===state.quiz.i+1)return;state.quiz
 function checkQ(){const q=state.quiz;if(q.picked===null)return;q.answers.push(q.picked===QUIZ[q.i].a);render();}
 function nextQ(){const q=state.quiz;q.picked=null;if(q.i+1<QUIZ.length)q.i++;else q.done=true;render();}
 function resetQuiz(){state.quiz={i:0,picked:null,answers:[],done:false};render();}
+/* ── Assignment helpers ── */
+function asSub(s){if(!state.assign)state.assign={grade:null,subject:null,showAnswers:false,submitted:{}};state.assign.subject=s;state.assign.showAnswers=false;render();window.scrollTo(0,0);}
+function asGrade(g){if(!state.assign)state.assign={grade:null,subject:null,showAnswers:false,submitted:{}};state.assign.grade=String(g);state.assign.subject=null;render();}
+function asToggleAns(){state.assign.showAnswers=!state.assign.showAnswers;render();}
+function asSubmit(){const k=state.assign.grade+'|'+state.assign.subject;state.assign.submitted[k]=true;render();}
 
 render();
 </script>

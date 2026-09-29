@@ -243,16 +243,77 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--mute);font-size:12px;font-family:var(--mono)}
 .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--line)}
 </style>
+<!-- Google Translate -->
+<style>
+.goog-te-banner-frame,.goog-te-balloon-frame,.goog-te-ftab-frame{display:none!important;}
+.goog-text-highlight{background:none!important;box-shadow:none!important;}
+body{top:0!important;position:static!important;}
+#gt-picker{position:fixed;top:8px;right:56px;z-index:99999;
+  display:flex;align-items:center;gap:4px;background:#1a3344;
+  border:1px solid rgba(255,255,255,.2);border-radius:9px;padding:3px 8px;}
+#gt-picker select{font-size:12px;color:#fff;background:transparent;
+  border:none;outline:none;cursor:pointer;font-family:Inter,sans-serif;padding:2px 0;}
+#gt-picker select option{color:#000;background:#fff;}
+#gt-picker span{font-size:14px;}
+/* Hide Google's own widget but keep engine running */
+#_gt_root{position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden;}
+</style>
 </head>
 <body>
 <div id="app"></div>
+<div id="_gt_root"></div>
+<div id="gt-picker">
+  <span>🌐</span>
+  <select onchange="gtSet(this.value)" id="gt-sel">
+    <option value="">English</option>
+    <option value="ta">தமிழ்</option>
+    <option value="hi">हिन्दी</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+    <option value="es">Español</option>
+    <option value="zh-CN">中文</option>
+    <option value="ar">العربية</option>
+    <option value="ja">日本語</option>
+    <option value="ko">한국어</option>
+  </select>
+</div>
+<script>
+function googleTranslateElementInit(){
+  new google.translate.TranslateElement({pageLanguage:'en',autoDisplay:false},'_gt_root');
+}
+function gtSet(lang){
+  // Try to use the live Google Translate engine if loaded
+  var el=document.querySelector('.goog-te-combo');
+  if(el){
+    el.value=lang||'en';
+    el.dispatchEvent(new Event('change'));
+    return;
+  }
+  // Fallback: set cookie and reload so Google picks it up on load
+  if(!lang){
+    document.cookie='googtrans=; path=/; expires=Thu,01 Jan 1970 00:00:00 GMT';
+    document.cookie='googtrans=; path=/; domain=.'+location.hostname+'; expires=Thu,01 Jan 1970 00:00:00 GMT';
+  } else {
+    var v='/en/'+lang;
+    document.cookie='googtrans='+v+'; path=/';
+    document.cookie='googtrans='+v+'; path=/; domain=.'+location.hostname;
+  }
+  location.reload();
+}
+// Pre-select dropdown from cookie on load
+(function(){
+  var m=document.cookie.match(/googtrans=\/en\/([^;]+)/);
+  if(m){var s=document.getElementById('gt-sel');if(s)s.value=decodeURIComponent(m[1]);}
+})();
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 
 <script>
 /* Load assignment and quiz data */
 window.ASSIGNMENTS={};
 fetch('assignments.json').then(r=>r.json()).then(d=>{window.ASSIGNMENTS=d;}).catch(()=>{});
 window.QUIZZES={};
-fetch('quizzes.json').then(r=>r.json()).then(d=>{window.QUIZZES=d;if(state.view==='quiz')render();}).catch(()=>{});
+fetch('quizzes.json').then(r=>r.json()).then(d=>{window.QUIZZES=d;if(state&&state.view==='quiz')render();}).catch(()=>{});
 
 /* ─────────── icons ─────────── */
 const S = (p, sz) => '<svg width="'+(sz||18)+'" height="'+(sz||18)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -292,17 +353,17 @@ const STR = {
       search:"Search lessons, chapters, teachers",greet:"Good morning",cont:"Continue learning",join:"Join now",
       day:"Your day",mastery:"Subject mastery",streak:"day streak",all:"View all",start:"Start",resume:"Resume",viewas:"View as",
       submit:"Submit Assignment",viewAns:"View Answer Key",hideAns:"Hide Answers",pending:"Pending",submitted:"Submitted",
-      startQuiz:"Start Quiz",nextQ:"Next",checkQ:"Check Answer",retake:"Retake",finish:"Finish",score:"Your Score",correct:"Correct",wrong:"Wrong"},
+      startQuiz:"Start Quiz",nextQ:"Next",checkQ:"Check Answer",retake:"Retake",finish:"Finish"},
   ta:{home:"முகப்பு",learn:"கற்க",live:"நேரடி வகுப்பு",assess:"பணி",quiz:"வினாடி வினா",progress:"முன்னேற்ற அறிக்கை",awards:"சாதனைகள்",lab:"ஆய்வகம்",
       search:"பாடங்கள், அத்தியாயங்களைத் தேடுங்கள்",greet:"காலை வணக்கம்",cont:"தொடர்ந்து கற்க",join:"இணைக",
       day:"உங்கள் நாள்",mastery:"பாட தேர்ச்சி",streak:"நாள் தொடர்ச்சி",all:"அனைத்தும்",start:"தொடங்கு",resume:"தொடர்",viewas:"பார்வை",
       submit:"பணி சமர்ப்பி",viewAns:"விடை காட்டு",hideAns:"விடை மறை",pending:"நிலுவை",submitted:"சமர்ப்பிக்கப்பட்டது",
-      startQuiz:"வினாவை தொடங்கு",nextQ:"அடுத்து",checkQ:"சரிபார்",retake:"மீண்டும்",finish:"முடி",score:"மதிப்பெண்",correct:"சரி",wrong:"தவறு"},
+      startQuiz:"வினாவை தொடங்கு",nextQ:"அடுத்து",checkQ:"சரிபார்",retake:"மீண்டும்",finish:"முடி"},
   hi:{home:"होम",learn:"सीखें",live:"लाइव कक्षा",assess:"असाइनमेंट",quiz:"क्विज़",progress:"प्रगति रिपोर्ट",awards:"उपलब्धियाँ",lab:"प्रयोगशाला",
       search:"पाठ, अध्याय, शिक्षक खोजें",greet:"सुप्रभात",cont:"सीखना जारी रखें",join:"अभी जुड़ें",
       day:"आपका दिन",mastery:"विषय दक्षता",streak:"दिन की लय",all:"सभी देखें",start:"शुरू करें",resume:"जारी रखें",viewas:"देखें",
       submit:"असाइनमेंट जमा करें",viewAns:"उत्तर देखें",hideAns:"उत्तर छुपाएं",pending:"लंबित",submitted:"जमा किया",
-      startQuiz:"क्विज़ शुरू करें",nextQ:"अगला",checkQ:"जाँचें",retake:"फिर से",finish:"समाप्त करें",score:"स्कोर",correct:"सही",wrong:"गलत"},
+      startQuiz:"क्विज़ शुरू करें",nextQ:"अगला",checkQ:"जाँचें",retake:"फिर से",finish:"समाप्त करें"},
 };
 
 const SCHEDULE = [
@@ -1323,13 +1384,13 @@ function progressView(){
   const total=days.length;
   const pct=total?Math.round(present/total*100):0;
 
-  // Quiz results from state
-  const q=state.quiz;
-  const attempted=q.answers.length;
-  const correct=q.answers.filter(Boolean).length;
-  const wrong=attempted-correct;
-  const unattempted=QUIZ.length-attempted;
-  const quizDone=q.done;
+  // Quiz results from state.qz (new quiz system)
+  const qzAnswers=state.qz?state.qz.answers:{};
+  const allEntries=Object.entries(qzAnswers);
+  const totalAttempted=allEntries.length;
+  const totalCorrect=allEntries.filter(([,v])=>v===true).length;
+  const totalWrong=allEntries.filter(([,v])=>v===false).length;
+  const quizDone=totalAttempted>0;
 
   // Study hours — derive from WEEK data (convert minutes→hours)
   const totalMins=WEEK.reduce((s,d)=>s+d.v,0);
@@ -1352,15 +1413,18 @@ function progressView(){
     return '<span title="'+label+(d.present?' · Present':' · Absent')+'" style="display:inline-block;width:10px;height:10px;border-radius:3px;margin:2px;background:'+(d.present?'var(--teal)':'var(--vermilion)')+'"></span>';
   }).join('');
 
-  // Quiz results table
-  const subjectRows = quizDone ? QUIZ.reduce((acc,q,i)=>{
-    const subj=q.sub||'General';
-    if(!acc[subj])acc[subj]={correct:0,wrong:0,total:0};
-    acc[subj].total++;
-    if(state.quiz.answers[i]===true)acc[subj].correct++;
-    else if(state.quiz.answers[i]===false)acc[subj].wrong++;
-    return acc;
-  },{}) : {};
+  // Quiz results table — group by grade|subject from qz.answers keys
+  const subjectRows={};
+  allEntries.forEach(([k,v])=>{
+    // key format: "grade|subject|questionIndex"
+    const parts=k.split('|');
+    if(parts.length<3)return;
+    const subj=parts[1];
+    if(!subjectRows[subj])subjectRows[subj]={correct:0,wrong:0,total:0};
+    subjectRows[subj].total++;
+    if(v===true)subjectRows[subj].correct++;
+    else subjectRows[subj].wrong++;
+  });
 
   const quizTable=quizDone
     ? '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:12px">'+
@@ -1368,31 +1432,30 @@ function progressView(){
       '<th style="text-align:left;padding:8px 0;color:var(--slate);font-weight:600">Subject</th>'+
       '<th style="text-align:center;padding:8px;color:var(--teal);font-weight:600">Correct</th>'+
       '<th style="text-align:center;padding:8px;color:var(--vermilion);font-weight:600">Wrong</th>'+
-      '<th style="text-align:center;padding:8px;color:var(--slate);font-weight:600">Unattempted</th>'+
+      '<th style="text-align:center;padding:8px;color:var(--slate);font-weight:600">Total</th>'+
       '<th style="text-align:right;padding:8px 0;color:var(--ink);font-weight:600">Score</th>'+
       '</tr></thead><tbody>'+
       Object.entries(subjectRows).map(([s,r])=>{
-        const unattp=r.total-r.correct-r.wrong;
         const pctS=Math.round(r.correct/r.total*100);
         return '<tr style="border-bottom:1px solid var(--line)">'+
           '<td style="padding:10px 0;font-weight:500">'+s+'</td>'+
           '<td style="text-align:center;color:var(--teal);font-weight:600">'+r.correct+'</td>'+
           '<td style="text-align:center;color:var(--vermilion);font-weight:600">'+r.wrong+'</td>'+
-          '<td style="text-align:center;color:var(--slate)">'+unattp+'</td>'+
-          '<td style="text-align:right"><span style="font-weight:700">'+pctS+'%</span></td></tr>';
+          '<td style="text-align:center;color:var(--slate)">'+r.total+'</td>'+
+          '<td style="text-align:right"><span style="font-weight:700;color:'+(pctS>=60?'var(--teal)':'var(--vermilion)')+'">'+pctS+'%</span></td></tr>';
       }).join('')+'</tbody></table>'
     : '<div style="text-align:center;padding:24px 0;color:var(--slate)">'+
       '<p style="font-size:14px">No quiz results yet.</p>'+
-      '<button onclick="go(\'assess\')" style="margin-top:12px;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;background:var(--teal);color:#fff">Take a Quiz</button></div>';
+      '<button onclick="go(\'quiz\')" style="margin-top:12px;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;background:var(--teal);color:#fff">Take a Quiz</button></div>';
 
   // Overall quiz summary bar
-  const quizSummary=attempted>0?'<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">'+
+  const quizSummary=quizDone?'<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">'+
     '<div style="flex:1;min-width:80px;text-align:center;background:var(--tealSoft);border-radius:10px;padding:12px">'+
-      '<div style="font-size:22px;font-weight:700;color:var(--teal)">'+correct+'</div><div style="font-size:11px;color:var(--teal);font-weight:600;text-transform:uppercase">Correct</div></div>'+
+      '<div style="font-size:22px;font-weight:700;color:var(--teal)">'+totalCorrect+'</div><div style="font-size:11px;color:var(--teal);font-weight:600;text-transform:uppercase">Correct</div></div>'+
     '<div style="flex:1;min-width:80px;text-align:center;background:var(--redSoft);border-radius:10px;padding:12px">'+
-      '<div style="font-size:22px;font-weight:700;color:var(--vermilion)">'+wrong+'</div><div style="font-size:11px;color:var(--vermilion);font-weight:600;text-transform:uppercase">Wrong</div></div>'+
+      '<div style="font-size:22px;font-weight:700;color:var(--vermilion)">'+totalWrong+'</div><div style="font-size:11px;color:var(--vermilion);font-weight:600;text-transform:uppercase">Wrong</div></div>'+
     '<div style="flex:1;min-width:80px;text-align:center;background:var(--canvas);border-radius:10px;padding:12px">'+
-      '<div style="font-size:22px;font-weight:700;color:var(--slate)">'+unattempted+'</div><div style="font-size:11px;color:var(--slate);font-weight:600;text-transform:uppercase">Unattempted</div></div>'+
+      '<div style="font-size:22px;font-weight:700;color:var(--slate)">'+totalAttempted+'</div><div style="font-size:11px;color:var(--slate);font-weight:600;text-transform:uppercase">Attempted</div></div>'+
     '</div>':'';
 
   return '<div>'+filterBar+
@@ -1453,23 +1516,17 @@ function awardsView(){
 /* ─────────── Quiz view ─────────── */
 function saveQz(){try{localStorage.setItem('qe_qz',JSON.stringify(state.qz));}catch(e){}}
 function quizView(){
-  const t=T();
-  const qz=state.qz;
-  /* Auto-set grade from signed-in user */
+  const t=T(), qz=state.qz;
   if(!qz.grade){
-    const u=state.user;
-    const m=String((u&&u.grade)||'8').match(/\d+/);
-    qz.grade=m?String(parseInt(m[0])):'8';
-    saveQz();
+    const m=String((state.user&&state.user.grade)||'8').match(/\d+/);
+    qz.grade=m?String(parseInt(m[0])):'8'; saveQz();
   }
   const gradeData=(window.QUIZZES||{})[qz.grade]||{};
   const subjects=Object.keys(gradeData);
-
-  /* ── Subject picker ── */
+  /* Subject picker */
   if(!qz.subject||!qz.active){
     const subjCards=subjects.map(s=>{
-      const qs=gradeData[s];
-      const prefix=qz.grade+'|'+s+'|';
+      const qs=gradeData[s], prefix=qz.grade+'|'+s+'|';
       const attempted=Object.keys(qz.answers).filter(k=>k.startsWith(prefix)).length;
       const cCount=Object.entries(qz.answers).filter(([k,v])=>k.startsWith(prefix)&&v===true).length;
       const done=attempted>=10;
@@ -1489,26 +1546,20 @@ function quizView(){
         (done?t.retake+' Quiz':attempted>0?'Continue ('+attempted+'/10)':t.startQuiz)+'</button>'
       );
     }).join('');
-    return card(
-      eyebrow('Quiz · Grade '+qz.grade,true)+
+    return card(eyebrow('Quiz · Grade '+qz.grade,true)+
       '<h2 class="display" style="font-size:22px;font-weight:800;margin-top:4px">Choose a Subject</h2>'+
       '<p class="muted" style="margin-top:4px">10 MCQs · auto-graded with explanations</p>','p24 rise')+
       (subjects.length?'<div class="cards4 mt20">'+subjCards+'</div>':
         '<div style="text-align:center;padding:48px;color:var(--slate)">'+I.bolt(32)+'<p style="margin-top:12px">Loading quizzes…</p></div>');
   }
-
-  /* ── Active quiz ── */
+  /* Active quiz */
   const qs=(gradeData[qz.subject]||{}).questions||[];
   const book=(gradeData[qz.subject]||{}).book||'';
-  const qi=qz.i;
-  const q=qs[qi];
+  const qi=qz.i, q=qs[qi];
   if(!q){qz.active=false;saveQz();return quizView();}
   const key=qz.grade+'|'+qz.subject+'|'+qi;
-  const answered=qz.answers[key];
-  const hasAnswered=answered!==undefined;
-  const isCorrect=answered===true;
-  const opts=['a','b','c','d'];
-  const letters=['A','B','C','D'];
+  const answered=qz.answers[key], hasAnswered=answered!==undefined, isCorrect=answered===true;
+  const opts=['a','b','c','d'], letters=['A','B','C','D'];
   const prefix=qz.grade+'|'+qz.subject+'|';
   const correctSoFar=Object.entries(qz.answers).filter(([k,v])=>k.startsWith(prefix)&&v===true).length;
   const attemptedSoFar=Object.keys(qz.answers).filter(k=>k.startsWith(prefix)).length;
@@ -1540,7 +1591,7 @@ function quizView(){
     '<div style="height:6px;background:var(--canvas);border-radius:4px;margin-bottom:20px;overflow:hidden">'+
       '<div style="height:100%;width:'+(Math.round((Math.max(qi,attemptedSoFar)/qs.length)*100))+'%;background:var(--teal);border-radius:4px;transition:width .3s"></div></div>'+
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">'+
-      '<span style="font-size:12px;font-weight:700;color:#fff;background:var(--ink);border-radius:6px;padding:2px 9px">Q'+(qi+1)+' / '+qs.length+'</span>'+
+      '<span style="font-size:12px;font-weight:700;color:#fff;background:var(--ink);border-radius:6px;padding:2px 9px">Q'+(qi+1)+'/'+qs.length+'</span>'+
       '<span style="font-size:11px;font-weight:600;color:'+levelCol+';background:'+levelCol+'22;border-radius:20px;padding:2px 8px">'+q.level+'</span>'+
       '<span class="small" style="flex:1">'+q.topic+'</span></div>'+
     '<p style="font-size:15px;line-height:1.65;font-weight:500;margin-bottom:16px">'+q.q.replace(/\n/g,'<br>')+'</p>'+
@@ -1553,43 +1604,37 @@ function quizView(){
         '<button onclick="qzFinish()" style="padding:10px 28px;border-radius:10px;font-size:14px;font-weight:600;background:var(--marigold);color:var(--ink)">'+t.finish+' 🎉</button>'))+
     '</div>','p24 rise');
 }
-/* ── Quiz helpers ── */
 function qzStart(s){
   const qz=state.qz;
-  const qs=((window.QUIZZES||{})[qz.grade]||{})[s]||{};
-  const questions=(qs.questions||[]);
-  // Resume from first unanswered
-  let startI=0;
-  for(let i=0;i<questions.length;i++){if(qz.answers[qz.grade+'|'+s+'|'+i]===undefined){startI=i;break;}}
-  // If all answered, start fresh retake
-  const allDone=questions.every((_,i)=>qz.answers[qz.grade+'|'+s+'|'+i]!==undefined);
-  if(allDone){
-    // clear this subject's answers
-    Object.keys(qz.answers).forEach(k=>{if(k.startsWith(qz.grade+'|'+s+'|'))delete qz.answers[k];});
-    startI=0;
+  const questions=(((window.QUIZZES||{})[qz.grade]||{})[s]||{}).questions||[];
+  // If all 10 answered → retake (clear answers for this subject)
+  const prefix=qz.grade+'|'+s+'|';
+  const attempted=Object.keys(qz.answers).filter(k=>k.startsWith(prefix)).length;
+  if(attempted>=questions.length){
+    Object.keys(qz.answers).forEach(k=>{if(k.startsWith(prefix))delete qz.answers[k];});
   }
+  // Find first unanswered
+  let startI=0;
+  for(let i=0;i<questions.length;i++){if(qz.answers[prefix+i]===undefined){startI=i;break;}}
   qz.subject=s; qz.active=true; qz.i=startI; qz.picked=null;
   saveQz(); render(); window.scrollTo(0,0);
 }
-function qzBack(){state.qz.active=false;state.qz.subject=null;state.qz.picked=null;saveQz();render();window.scrollTo(0,0);}
+function qzBack(){state.qz.active=false;state.qz.picked=null;saveQz();render();window.scrollTo(0,0);}
 function qzPick(n){if(state.qz.answers[state.qz.grade+'|'+state.qz.subject+'|'+state.qz.i]!==undefined)return;state.qz.picked=n;render();}
 function qzCheck(){
   const qz=state.qz;
   if(qz.picked===null)return;
-  const q=((window.QUIZZES||{})[qz.grade]||{})[qz.subject];
-  const question=(q&&q.questions||[])[qz.i];
+  const question=(((window.QUIZZES||{})[qz.grade]||{})[qz.subject]||{questions:[]}).questions[qz.i];
   if(!question)return;
-  qz.answers[qz.grade+'|'+qz.subject+'|'+qz.i]=(question.ans===(['A','B','C','D'][qz.picked]));
+  qz.answers[qz.grade+'|'+qz.subject+'|'+qz.i]=(question.ans===['A','B','C','D'][qz.picked]);
   saveQz(); render();
 }
 function qzNext(){state.qz.picked=null;state.qz.i++;saveQz();render();window.scrollTo(0,0);}
 function qzFinish(){
   const qz=state.qz;
-  // save current if picked but not checked
   if(qz.picked!==null&&qz.answers[qz.grade+'|'+qz.subject+'|'+qz.i]===undefined){
-    const q=((window.QUIZZES||{})[qz.grade]||{})[qz.subject];
-    const question=(q&&q.questions||[])[qz.i];
-    if(question) qz.answers[qz.grade+'|'+qz.subject+'|'+qz.i]=(question.ans===(['A','B','C','D'][qz.picked]));
+    const question=(((window.QUIZZES||{})[qz.grade]||{})[qz.subject]||{questions:[]}).questions[qz.i];
+    if(question) qz.answers[qz.grade+'|'+qz.subject+'|'+qz.i]=(question.ans===['A','B','C','D'][qz.picked]);
   }
   qz.active=false; qz.subject=null; qz.picked=null;
   saveQz(); render(); window.scrollTo(0,0);
@@ -1647,8 +1692,6 @@ function render(){
 
   const t=T(), me=ME();
   const u=state.user;
-  const langs=[["en","EN"],["ta","தமிழ்"],["hi","हिं"]].map(l=>
-    '<button class="'+(state.lang===l[0]?'on':'')+'" onclick="setLang(\''+l[0]+'\')">'+l[1]+'</button>').join('');
   const roles=ROLES.map(r=>'<button class="chip'+(state.role===r.id?' on':'')+'" onclick="setRole(\''+r.id+'\')">'+r.label+'</button>').join('');
 
   document.getElementById('app').innerHTML =
@@ -1667,7 +1710,6 @@ function render(){
       '<header class="top"><div class="toprow">'+
         '<button class="iconbtn burger" onclick="toggleNav()">'+(state.navOpen?I.close(18):I.menu(18))+'</button>'+
         '<div class="search">'+I.search(16)+'<input placeholder="'+t.search+'" /></div>'+
-        '<div class="seg">'+langs+'</div>'+
         '<button class="iconbtn">'+I.bell(16)+'<span class="dot"></span></button>'+
       '</div>'+
       '<div class="roles"><span class="eyebrow" style="flex-shrink:0">'+t.viewas+'</span>'+roles+'</div>'+

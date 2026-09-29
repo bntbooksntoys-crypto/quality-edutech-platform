@@ -750,16 +750,17 @@ const BADGES = [
   {n:"Consistent Learner",tier:"Gold",note:"24-day unbroken streak",ic:"spark"},
   {n:"Peer Helper",tier:"Bronze",note:"18 forum answers marked useful",ic:"users"},
 ];
-const LEADERS = [
-  {r:1,n:"Nithya S.",c:"8-A",p:4820},{r:2,n:"Aarthi R.",c:"8-B",p:4655,me:true},
-  {r:3,n:"Karthik V.",c:"8-B",p:4490},{r:4,n:"Divya M.",c:"8-C",p:4210},{r:5,n:"Imran S.",c:"8-A",p:4075},
-];
-const ROLES = [
-  {id:"student",label:"Student",who:"Aarthi R.",meta:"Grade 8-B · Coimbatore"},
-  {id:"parent",label:"Parent",who:"Ramesh R.",meta:"Guardian of Aarthi R."},
-  {id:"teacher",label:"Teacher",who:"S. Rajkumar",meta:"Mathematics · 4 sections"},
-  {id:"admin",label:"Administrator",who:"Principal's office",meta:"Kongu Vidyalaya"},
-];
+// LEADERS now generated dynamically in awardsView() using real user data
+function ROLES(){
+  const u=state&&state.user?state.user:{name:'Student',grade:''};
+  const n=u.name, g=u.grade||'';
+  return [
+    {id:"student",label:"Student",who:n,meta:g+' · Student'},
+    {id:"parent",label:"Parent",who:"Guardian",meta:"Guardian of "+n},
+    {id:"teacher",label:"Teacher",who:"S. Rajkumar",meta:"Mathematics · 4 sections"},
+    {id:"admin",label:"Administrator",who:"Principal's office",meta:"Kongu Vidyalaya"},
+  ];
+}
 
 /* ─────────── Local Auth (localStorage — no server needed) ─────────── */
 async function sha256(str){
@@ -780,7 +781,7 @@ const state = {
   user: (()=>{try{return JSON.parse(localStorage.getItem('qe_user')||'null');}catch(e){return null;}})() || {name:"Student",email:"guest@qe.app",grade:"Grade 8",age:14},
 };
 const T = () => STR[state.lang];
-const ME = () => ROLES.find(r=>r.id===state.role);
+const ME = () => ROLES().find(r=>r.id===state.role);
 
 /* ─────────── chart helpers ─────────── */
 function ring(v,size,label){
@@ -883,12 +884,14 @@ function parentHome(){
   const tiles=[["Attendance","96%","2 absences this term"],["Assignments","22/24","2 pending, both due Friday"],
     ["Term average","86","Class median 79"],["Screen time","7h 40m","This week, across devices"]]
     .map(x=>'<div class="tile">'+eyebrow(x[0])+'<div class="v">'+x[1]+'</div><div class="n">'+x[2]+'</div></div>').join('');
+  const childName=(state.user&&state.user.name)||'Your child';
+  const childFirst=childName.split(' ')[0];
   return card(eyebrow('Guardian view')+
-    '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">Aarthi is on track this term</h3>'+
-    '<p class="muted mt12" style="max-width:640px">Attendance is steady, assessment scores have risen for three terms in a row, and one subject is falling behind the class median. Her Mathematics teacher has left a note.</p>'+
+    '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">'+childFirst+' is on track this term</h3>'+
+    '<p class="muted mt12" style="max-width:640px">Attendance is steady, assessment scores have risen for three terms in a row, and one subject is falling behind the class median. The Mathematics teacher has left a note.</p>'+
     '<div class="grid g4 mt20">'+tiles+'</div>','p24 rise')+
     '<div class="grid g2 mt20">'+
-      card(eyebrow('Note from the teacher')+'<div class="note mt12">"Aarthi solves equations confidently but rushes word problems. Fifteen minutes of the Financial Literacy practice set, three times a week, would close the gap before the term exam."'+
+      card(eyebrow('Note from the teacher')+'<div class="note mt12">"'+childFirst+' solves equations confidently but rushes word problems. Fifteen minutes of the Financial Literacy practice set, three times a week, would close the gap before the term exam."'+
         '<div class="small mt12">S. RAJKUMAR · MATHEMATICS · 2 DAYS AGO</div></div>'+
         '<div class="wrap mt16">'+btn('Reply','ghost')+btn('Book a meeting','ghost')+'</div>')+
       card(eyebrow('Term scores')+bars(TERMS))+
@@ -1488,27 +1491,44 @@ function progressView(){
 }
 
 function awardsView(){
+  const u=state.user||{};
+  const uName=u.name||'You';
+  const uFirst=uName.split(' ')[0];
+  const uGrade=String(u.grade||'').replace(/[^0-9]/g,'')||'?';
+  // Compute quiz score for points
+  const qzAnswers=state.qz?state.qz.answers:{};
+  const correct=Object.values(qzAnswers).filter(v=>v===true).length;
+  const points=correct*50; // 50 pts per correct answer
   const badges=BADGES.map(b=>card('<div class="badge" style="background:'+(b.tier==='Gold'?'var(--marigoldSoft)':'var(--tealSoft)')+';color:'+(b.tier==='Gold'?'var(--marigold)':'var(--teal)')+'">'+I[b.ic](20)+'</div>'+
     '<div class="small" style="margin-top:12px;text-transform:uppercase;letter-spacing:.12em">'+b.tier+'</div>'+
     '<div class="display" style="font-size:16px;font-weight:700">'+b.n+'</div>'+
     '<div class="muted mt4">'+b.note+'</div>')).join('');
-  const board=LEADERS.map(l=>'<div class="row" style="padding:12px '+(l.me?'10px':'0')+';'+(l.me?'background:var(--tealSoft);border-radius:10px;':'')+'">'+
+  // Leaderboard: user is always shown, others are placeholders for their grade
+  const lboard=[
+    {r:1,n:'Nithya S.',c:uGrade+'-A',p:points+820},
+    {r:2,n:uName,c:uGrade+'-B',p:points,me:true},
+    {r:3,n:'Karthik V.',c:uGrade+'-B',p:Math.max(0,points-165)},
+    {r:4,n:'Divya M.',c:uGrade+'-C',p:Math.max(0,points-445)},
+    {r:5,n:'Imran S.',c:uGrade+'-A',p:Math.max(0,points-580)},
+  ];
+  const board=lboard.map(l=>'<div class="row" style="padding:12px '+(l.me?'10px':'0')+';'+(l.me?'background:var(--tealSoft);border-radius:10px;':'')+'">'+
     '<span class="display" style="width:24px;font-size:18px;font-weight:800;color:'+(l.r<=3?'var(--marigold)':'var(--mute)')+'">'+l.r+'</span>'+
     '<div style="flex:1"><div style="font-size:14px;font-weight:500">'+l.n+(l.me?' <span style="color:var(--teal)">· you</span>':'')+'</div>'+
     '<div class="small">Class '+l.c+'</div></div><span class="mono" style="font-size:14px">'+l.p.toLocaleString('en-IN')+'</span></div>').join('');
-  const mile=[["cap","STEM Merit Scholarship","Applications open until 20 Sept · you qualify","var(--marigold)"],
-    ["star","100 lessons completed","Milestone reached on 12 August","var(--teal)"],
+  const mile=[["cap","STEM Merit Scholarship","Applications open · you qualify","var(--marigold)"],
+    ["star","Keep completing quizzes","Earn points with every correct answer","var(--teal)"],
     ["trophy","District coding olympiad","Shortlisted · practice set assigned","var(--teal)"]]
     .map(m=>'<div class="row" style="align-items:flex-start;background:var(--canvas);border-left:3px solid '+m[3]+';border-radius:12px;padding:16px">'+
       '<span style="color:'+m[3]+'">'+I[m[0]](18)+'</span><div><div style="font-size:14px;font-weight:500">'+m[1]+'</div>'+
       '<div style="font-size:12px;color:var(--slate)">'+m[2]+'</div></div></div>').join('');
+  const ptLabel=points>0?points.toLocaleString('en-IN')+' points · rank 2 in Grade '+uGrade:'Start quizzes to earn points';
   return card('<div class="between" style="flex-wrap:wrap"><div>'+eyebrow('Recognition')+
-      '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">4,655 points · rank 2 of 118 in Grade 8</h3>'+
-      '<p class="muted mt4">165 points behind first place. Two more mock exams would close the gap.</p></div>'+
+      '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">'+ptLabel+'</h3>'+
+      '<p class="muted mt4">'+uFirst+', complete more quizzes to climb the leaderboard!</p></div>'+
       btn('Download certificates','ghost','down')+'</div>','p24 rise')+
     '<div class="cards4 mt20">'+badges+'</div>'+
     '<div class="grid g2 mt20">'+
-      card(eyebrow('Grade 8 leaderboard')+'<div class="divide mt12">'+board+'</div>')+
+      card(eyebrow('Grade '+uGrade+' leaderboard')+'<div class="divide mt12">'+board+'</div>')+
       card(eyebrow('Scholarships and milestones')+'<div class="stack mt12">'+mile+'</div>')+
     '</div>';
 }
@@ -1692,7 +1712,7 @@ function render(){
 
   const t=T(), me=ME();
   const u=state.user;
-  const roles=ROLES.map(r=>'<button class="chip'+(state.role===r.id?' on':'')+'" onclick="setRole(\''+r.id+'\')">'+r.label+'</button>').join('');
+  const roles=ROLES().map(r=>'<button class="chip'+(state.role===r.id?' on':'')+'" onclick="setRole(\''+r.id+'\')">'+r.label+'</button>').join('');
 
   document.getElementById('app').innerHTML =
   '<div class="shell">'+

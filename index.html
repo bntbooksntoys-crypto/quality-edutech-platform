@@ -1154,7 +1154,7 @@ function openLab(id){
 }
 
 /* ── Assignment state ── */
-if(!state.assign) state.assign={grade:null,subject:null,showAnswers:false,submitted:{}};
+if(!state.assign) state.assign={grade:null,subject:null,showAnswers:false,submitted:{},answers:{},photos:{}};
 
 /* Due dates per subject index (cycling pattern: 7-day windows from today) */
 function asDueDate(idx){
@@ -1231,24 +1231,92 @@ function assessView(){
   const subIdx = subjects.indexOf(as.subject);
   const due = asDueDate(subIdx);
   const overdue = !done && now > due;
+  if(!as.answers) as.answers={};
+  if(!as.photos) as.photos={};
+
+  function parseOpts(qtext){
+    // Extract (a) (b) (c) (d) options from question text
+    const m=qtext.match(/\(([a-d])\)\s*([^(]+)/gi);
+    return m?m.map(s=>s.replace(/^\([a-d]\)\s*/,'').trim()):null;
+  }
 
   const qHTML = qs.map((q,i)=>{
     const typeColor={'MCQ':'var(--teal)','Fill in the blank':'var(--marigold)','True/False':'var(--vermilion)',
       'Short answer':'#7C5CBF','Long answer':'#1A6B6B','Match the following':'#B05E00',
       'Activity':'#0E6B3D','Thinking (HOTS)':'#B00020'}[q.type]||'var(--slate)';
+    const answered = as.answers[key+'|'+i];
+    const photoId = 'asPhoto_'+key.replace(/\|/g,'_')+'_'+i;
+
+    // Question text: strip options from MCQ display (show them as buttons instead)
+    const isMCQ = q.type==='MCQ';
+    const isFill = q.type==='Fill in the blank';
+    const isTF = q.type==='True/False';
+    const isMatch = q.type==='Match the following';
+    const isActivity = q.type==='Activity';
+    const isWritten = ['Short answer','Long answer','Thinking (HOTS)'].includes(q.type);
+
+    // Clean question text — remove trailing options list for MCQ
+    let qText = q.q;
+    if(isMCQ) qText = qText.replace(/\n?\(a\)[\s\S]*/i,'').trim();
+    if(isFill) qText = qText.replace(/_{3,}/g,'<span style="display:inline-block;min-width:80px;border-bottom:2px solid var(--ink);margin:0 4px"> </span>');
+
+    const opts = isMCQ ? parseOpts(q.q) : null;
+
+    let inputHTML = '';
+    if(isMCQ && opts){
+      inputHTML = '<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">'+
+        opts.map((o,n)=>{
+          const letter=String.fromCharCode(97+n);
+          const sel = answered===letter;
+          return '<button onclick="asAns(\''+key+'|'+i+'\',\''+letter+'\')" '+(done?'disabled':'')+
+            ' style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1.5px solid '+(sel?'var(--teal)':'var(--line)')+
+            ';background:'+(sel?'var(--tealSoft)':'var(--card)')+';cursor:'+(done?'default':'pointer')+';text-align:left;width:100%">'+
+            '<span style="width:28px;height:28px;border-radius:8px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(sel?'var(--teal)':'var(--canvas)')+';color:'+(sel?'#fff':'var(--slate)')+'">'+letter.toUpperCase()+'</span>'+
+            '<span style="font-size:14px">'+o+'</span></button>';
+        }).join('')+'</div>';
+    } else if(isTF){
+      inputHTML = '<div style="display:flex;gap:10px;margin-top:12px">'+
+        ['True','False'].map(v=>{
+          const sel=answered===v;
+          return '<button onclick="asAns(\''+key+'|'+i+'\',\''+v+'\')" '+(done?'disabled':'')+
+            ' style="flex:1;padding:12px;border-radius:10px;border:1.5px solid '+(sel?(v==='True'?'var(--teal)':'var(--vermilion)'):'var(--line)')+
+            ';background:'+(sel?(v==='True'?'var(--tealSoft)':'var(--redSoft)'):'var(--card)')+
+            ';font-size:15px;font-weight:600;color:'+(sel?(v==='True'?'var(--teal)':'var(--vermilion)'):'var(--slate)')+'">'+v+'</button>';
+        }).join('')+'</div>';
+    } else if(isFill){
+      inputHTML = '<input type="text" placeholder="Type your answer here…" value="'+(answered||'')+'" '+(done?'disabled':'')+
+        ' oninput="asAns(\''+key+'|'+i+'\',this.value)"'+
+        ' style="margin-top:12px;width:100%;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;background:var(--card);color:var(--ink)">';
+    } else if(isWritten || isMatch){
+      inputHTML = '<textarea placeholder="Write your answer here…" '+(done?'disabled':'')+
+        ' oninput="asAns(\''+key+'|'+i+'\',this.value)"'+
+        ' style="margin-top:12px;width:100%;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;background:var(--card);color:var(--ink);resize:vertical;min-height:'+(q.marks>=4?'120':'72')+'px">'+(answered||'')+'</textarea>';
+    } else if(isActivity){
+      const hasPhoto = as.photos[photoId];
+      inputHTML = '<div style="margin-top:12px">'+
+        '<textarea placeholder="Describe your activity or write your response…" '+(done?'disabled':'')+
+        ' oninput="asAns(\''+key+'|'+i+'\',this.value)"'+
+        ' style="width:100%;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;background:var(--card);color:var(--ink);resize:vertical;min-height:80px">'+(answered||'')+'</textarea>'+
+        (!done?'<label style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 16px;border:1.5px dashed var(--line);border-radius:10px;cursor:pointer;font-size:13px;color:var(--slate)">'+
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'+
+        (hasPhoto?'📷 Photo attached':'Attach photo / Take a picture')+
+        '<input type="file" accept="image/*" capture="environment" style="display:none" onchange="asPhoto(\''+photoId+'\',this)"></label>':
+        (hasPhoto?'<div style="margin-top:8px;font-size:12px;color:var(--teal)">📷 Photo attached</div>':''))+
+        '</div>';
+    }
+
     return '<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:12px">'+
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">'+
       '<span style="font-size:12px;font-weight:700;color:#fff;background:var(--ink);border-radius:6px;padding:2px 8px">Q'+(i+1)+'</span>'+
       '<span style="font-size:11px;font-weight:600;color:'+typeColor+';background:'+typeColor+'22;border-radius:20px;padding:2px 8px">'+q.type+'</span>'+
-      '<span class="small" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+q.topic+'</span>'+
+      '<span class="small" style="flex:1;min-width:0">'+q.topic+'</span>'+
       '<span style="font-size:12px;font-weight:600;color:var(--slate)">['+q.marks+' mark'+(q.marks>1?'s':'')+']</span></div>'+
-      '<p style="font-size:14px;line-height:1.6;white-space:pre-wrap">'+q.q+'</p>'+
-      (as.showAnswers?'<div style="margin-top:10px;background:var(--tealSoft);border-left:3px solid var(--teal);border-radius:8px;padding:10px 14px">'+
-        '<span style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em">Answer</span>'+
-        '<p style="font-size:13px;margin-top:4px;line-height:1.5;white-space:pre-wrap">'+q.answer+'</p></div>':'')+
+      '<p style="font-size:14px;line-height:1.65" '+(isFill?'':'')+'>'+(isFill?qText:q.q.replace(/\n/g,'<br>'))+'</p>'+
+      inputHTML+
       '</div>';
   }).join('');
 
+  const answeredCount = qs.filter((_,i)=>as.answers[key+'|'+i]).length;
   const dueLine = done
     ? '<span style="font-size:13px;color:var(--teal)">✓ Submitted</span>'
     : overdue
@@ -1261,16 +1329,18 @@ function assessView(){
     '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8l4 4" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>'+
     '<h2 class="display" style="font-size:18px;font-weight:700;flex:1">'+as.subject+'</h2></div>'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">'+
-    '<div style="display:flex;align-items:center;gap:12px">'+dueLine+
-    '<span style="font-size:12px;color:var(--mute)">'+subData.book+' · 10 Q · 20 marks</span></div>'+
+    '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">'+dueLine+
+    '<span style="font-size:12px;color:var(--mute)">'+subData.book+' · 10 Q · 20 marks</span>'+
+    (!done?'<span style="font-size:12px;color:var(--slate)">'+answeredCount+'/'+qs.length+' answered</span>':'')+
+    '</div>'+
     '<div style="display:flex;gap:8px">'+
     (done
       ? '<span style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;background:var(--tealSoft);color:var(--teal)">✓ '+t.submitted+'</span>'
       : '<button onclick="asSubmit()" style="padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;background:var(--teal);color:#fff">'+t.submit+'</button>')+
-    '<button onclick="asToggleAns()" style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--line);background:var(--card)">'+
-    (as.showAnswers?t.hideAns:t.viewAns)+'</button></div></div>'+
+    '</div></div>'+
     qHTML+
     (!done?'<div style="text-align:center;padding:16px 0 8px">'+
+      '<p style="font-size:13px;color:var(--slate);margin-bottom:12px">'+answeredCount+' of '+qs.length+' questions answered</p>'+
       '<button onclick="asSubmit()" style="padding:12px 40px;border-radius:12px;font-size:15px;font-weight:700;background:var(--teal);color:#fff">'+t.submit+'</button></div>':'')+
     '</div>';
 }
@@ -1617,6 +1687,8 @@ function asSub(s,idx){if(!state.assign)state.assign={grade:null,subject:null,sho
 function asGrade(g){if(!state.assign)state.assign={grade:null,subject:null,showAnswers:false,submitted:{}};state.assign.grade=String(g);state.assign.subject=null;render();}
 function asToggleAns(){state.assign.showAnswers=!state.assign.showAnswers;render();}
 function asSubmit(){const k=state.assign.grade+'|'+state.assign.subject;state.assign.submitted[k]=true;render();}
+function asAns(k,v){if(!state.assign.answers)state.assign.answers={};state.assign.answers[k]=v;render();}
+function asPhoto(id,input){if(!state.assign.photos)state.assign.photos={};if(input&&input.files&&input.files[0]){state.assign.photos[id]=true;render();}}
 
 render();
 </script>

@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEASURE — A Virtual Instrument Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg-void:#0a0f1c;
+  --bg-deep:#0d1424;
+  --panel:#121a2e;
+  --panel-2:#161f38;
+  --line: rgba(230,224,204,0.09);
+  --line-strong: rgba(230,224,204,0.16);
+
+  --brass:#c9944f;
+  --brass-light:#e7bd7c;
+  --brass-dark:#8e6530;
+
+  --amber:#e8935b;
+  --amber-light:#f5b587;
+
+  --phosphor:#7fe8a8;
+  --phosphor-dim: rgba(127,232,168,0.28);
+
+  --blue:#84aecf;
+  --blue-light:#aecbe4;
+
+  --paper:#f1e9d3;
+  --paper-2:#e9dfc2;
+  --paper-line:#d9caa0;
+  --ink:#2a2013;
+  --ink-dim:#6b5c3f;
+
+  --text:#e9e4d6;
+  --text-dim:#a89e88;
+  --text-faint:#6f6653;
+
+  --danger:#e2665c;
+
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 7px;
+
+  --font-display:'Fraunces', 'Iowan Old Style', serif;
+  --font-body:'Inter', -apple-system, sans-serif;
+  --font-mono:'IBM Plex Mono', 'SF Mono', monospace;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse 1200px 700px at 15% -10%, rgba(201,148,79,0.08), transparent 60%),
+    radial-gradient(ellipse 900px 600px at 100% 10%, rgba(127,232,168,0.05), transparent 55%),
+    var(--bg-void);
+  color:var(--text);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+::selection{ background:var(--brass); color:var(--ink); }
+:focus-visible{ outline:2px solid var(--phosphor); outline-offset:3px; border-radius:4px; }
+
+/* subtle grain overlay */
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:1;
+  opacity:0.035; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.wrap{ max-width:1300px; margin:0 auto; padding:0 28px 80px; position:relative; z-index:2; }
+
+/* ============ HEADER ============ */
+header.hero{
+  padding:56px 0 34px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:34px;
+}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--phosphor);
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:18px;
+}
+.eyebrow::before{
+  content:"";
+  width:7px; height:7px; border-radius:50%;
+  background:var(--phosphor);
+  box-shadow:0 0 10px 2px var(--phosphor-dim);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+h1.title{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(42px, 7vw, 84px);
+  line-height:0.96;
+  margin:0 0 18px;
+  letter-spacing:-0.01em;
+  background:linear-gradient(180deg, #fbf3e2 0%, var(--brass-light) 55%, var(--brass) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+h1.title em{ font-style:italic; font-weight:400; color:var(--text-dim); background:none; -webkit-text-fill-color:var(--text-dim); }
+
+.hero-sub{
+  max-width:620px;
+  font-size:17px;
+  line-height:1.6;
+  color:var(--text-dim);
+  margin:0 0 22px;
+}
+.hero-instruments{
+  display:flex; flex-wrap:wrap; gap:8px 22px;
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:var(--text-faint);
+}
+.hero-instruments span{ color:var(--brass-light); }
+
+/* ============ DIAL SELECTOR ============ */
+nav.dial{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:30px;
+}
+.dial-tab{
+  position:relative;
+  font-family:var(--font-body);
+  font-weight:600;
+  font-size:14px;
+  color:var(--text-dim);
+  background:linear-gradient(180deg, var(--panel-2), var(--panel));
+  border:1px solid var(--line-strong);
+  border-radius:999px;
+  padding:11px 20px 11px 16px;
+  cursor:pointer;
+  display:flex; align-items:center; gap:10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4);
+  transition: color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .2s ease;
+}
+.dial-tab .dot{
+  width:9px; height:9px; border-radius:50%;
+  background: var(--dot, var(--brass));
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
+}
+.dial-tab .n{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  color:var(--text-faint);
+  border:1px solid var(--line-strong);
+  border-radius:4px;
+  padding:1px 5px;
+}
+.dial-tab:hover{ color:var(--text); border-color:rgba(230,224,204,0.28); transform:translateY(-1px); }
+.dial-tab.active{
+  color:var(--ink);
+  background: linear-gradient(180deg, var(--brass-light), var(--brass));
+  border-color:var(--brass-light);
+  box-shadow: 0 4px 18px -4px rgba(201,148,79,0.55), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.dial-tab.active .n{ color:var(--ink); border-color:rgba(42,32,19,0.35); }
+.dial-tab.active .dot{ background:var(--ink); }
+
+/* ============ LAYOUT ============ */
+.experiment{ display:none; }
+.experiment.active{ display:block; animation: fadeUp .45s ease; }
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+.exp-head{ margin-bottom:20px; }
+.exp-head h2{
+  font-family:var(--font-display);
+  font-size:clamp(26px,3.4vw,36px);
+  font-weight:600;
+  margin:0 0 6px;
+  color:var(--text);
+}
+.exp-head p{ margin:0; color:var(--text-dim); font-size:14.5px; max-width:640px; line-height:1.55; }
+
+.bench{
+  display:grid;
+  grid-template-columns: 1.28fr 1fr;
+  gap:22px;
+  align-items:start;
+}
+@media (max-width:980px){ .bench{ grid-template-columns:1fr; } }
+
+/* ============ STAGE (instrument panel) ============ */
+.stage{
+  background: linear-gradient(180deg, var(--panel-2), var(--bg-deep));
+  border:1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding:22px;
+  position:relative;
+  overflow:hidden;
+}
+.stage::before{
+  content:"";
+  position:absolute; inset:0;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 34px);
+  pointer-events:none;
+}
+.stage-svg-holder{
+  width:100%;
+  border-radius: var(--radius-md);
+  background: radial-gradient(ellipse at 50% 30%, #0f1729, #0a1120 75%);
+  border:1px solid var(--line);
+  padding:6px 4px;
+  touch-action:none;
+}
+.stage-svg-holder svg{ width:100%; height:auto; display:block; }
+
+.controls-row{
+  display:flex; flex-wrap:wrap; gap:10px;
+  margin-top:16px;
+  align-items:center;
+}
+
+/* LCD readout */
+.lcd{
+  font-family:var(--font-mono);
+  background: linear-gradient(180deg, #071009, #050b06);
+  border:1px solid rgba(127,232,168,0.25);
+  border-radius: var(--radius-md);
+  padding:14px 18px;
+  margin-top:16px;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.6), 0 0 22px -8px var(--phosphor-dim);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.lcd-label{
+  font-size:10.5px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color: rgba(127,232,168,0.55);
+  margin-bottom:6px;
+}
+.lcd-value{
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight:600;
+  color: var(--phosphor);
+  text-shadow: 0 0 16px var(--phosphor-dim);
+  letter-spacing:0.01em;
+}
+.lcd-value .unit{ font-size:0.5em; color:rgba(127,232,168,0.65); margin-left:4px; }
+.lcd-sub{ font-size:12px; color:rgba(127,232,168,0.55); }
+
+/* Buttons */
+.btn{
+  font-family:var(--font-body);
+  font-weight:600;
+  font-size:13.5px;
+  border-radius:999px;
+  padding:10px 18px;
+  border:1px solid var(--line-strong);
+  background: var(--panel-2);
+  color:var(--text);
+  cursor:pointer;
+  transition: transform .12s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.btn:hover{ transform:translateY(-1px); border-color:rgba(230,224,204,0.3); }
+.btn:active{ transform:translateY(0); }
+.btn-primary{
+  background: linear-gradient(180deg, var(--brass-light), var(--brass));
+  color: var(--ink);
+  border-color: var(--brass-light);
+  box-shadow: 0 4px 16px -5px rgba(201,148,79,0.6);
+}
+.btn-primary:hover{ box-shadow: 0 6px 20px -5px rgba(201,148,79,0.8); }
+.btn-ghost{ background:transparent; color:var(--text-dim); }
+.btn-ghost:hover{ color:var(--text); }
+.btn-danger-outline{ border-color: rgba(226,102,92,0.4); color:#f0a49d; background:transparent;}
+.btn:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+
+/* slider */
+.field{ display:flex; flex-direction:column; gap:6px; flex:1; min-width:180px; }
+.field label{ font-size:12px; color:var(--text-dim); display:flex; justify-content:space-between; font-family:var(--font-mono); }
+.field label b{ color:var(--brass-light); font-weight:600; }
+input[type=range]{
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:5px; border-radius:3px;
+  background: linear-gradient(90deg, var(--brass) var(--fill,50%), rgba(255,255,255,0.08) var(--fill,50%));
+  outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:18px; height:18px; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, var(--brass-light), var(--brass-dark));
+  border:2px solid #fff2de1a;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,0.5);
+}
+input[type=range]::-moz-range-thumb{
+  width:18px; height:18px; border-radius:50%; border:none;
+  background: radial-gradient(circle at 35% 30%, var(--brass-light), var(--brass-dark));
+  cursor:pointer;
+}
+
+/* caption plaque */
+.plaque{
+  margin-top:16px;
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent, var(--brass));
+  background: rgba(255,255,255,0.02);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  padding:11px 14px;
+  font-size:12.5px;
+  line-height:1.55;
+  color:var(--text-dim);
+}
+.plaque b{ color:var(--text); }
+
+/* ============ NOTEBOOK ============ */
+.notebook{
+  background: linear-gradient(180deg, var(--paper), var(--paper-2));
+  border-radius: var(--radius-lg);
+  padding:22px 22px 20px;
+  color:var(--ink);
+  position:relative;
+  box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  background-image:
+    linear-gradient(180deg, var(--paper), var(--paper-2)),
+    repeating-linear-gradient(180deg, transparent 0 33px, rgba(42,32,19,0.06) 33px 34px);
+}
+.notebook::before{
+  content:"";
+  position:absolute; left:38px; top:0; bottom:0; width:1px;
+  background: rgba(200,80,70,0.25);
+}
+.nb-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; padding-left:14px;}
+.nb-head h3{
+  font-family:var(--font-display);
+  font-size:20px; font-weight:600; margin:0; color:var(--ink);
+}
+.nb-head span{ font-family:var(--font-mono); font-size:11px; color:var(--ink-dim); }
+
+.table-wrap{ padding-left:14px; margin-top:12px; max-height:230px; overflow-y:auto; }
+table{ width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:12.5px; }
+thead th{
+  text-align:left; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;
+  font-size:10px; color:var(--ink-dim); padding:0 8px 8px 0; border-bottom:1px solid var(--paper-line);
+  position:sticky; top:0; background:var(--paper);
+}
+tbody td{ padding:6px 8px 6px 0; border-bottom:1px dashed var(--paper-line); color:var(--ink); }
+tbody tr:last-child td{ font-weight:700; }
+.empty-row td{ color:var(--ink-dim); font-style:italic; font-family:var(--font-body); padding:14px 0; }
+.err-cell{ font-weight:600; }
+.err-good{ color:#3f7d4f; }
+.err-mid{ color:#a8791f; }
+.err-bad{ color:#b3453b; }
+
+.stats-row{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(110px,1fr));
+  gap:10px; margin:16px 14px 4px 14px;
+}
+.stat-plate{
+  background: linear-gradient(180deg, var(--brass-light), var(--brass));
+  border-radius:10px;
+  padding:10px 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 3px 8px rgba(94,63,20,0.25);
+}
+.stat-plate .k{ font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; letter-spacing:0.08em; color:rgba(42,32,19,0.65); }
+.stat-plate .v{ font-family:var(--font-mono); font-size:17px; font-weight:700; color:var(--ink); margin-top:2px; }
+
+.nb-foot{ display:flex; gap:10px; margin:16px 14px 0; flex-wrap:wrap; }
+.nb-foot .btn{ font-size:12.5px; padding:8px 14px; }
+.reveal-note{
+  margin:12px 14px 0; font-size:12px; color:var(--ink-dim); padding-top:10px; border-top:1px dashed var(--paper-line);
+}
+.reveal-note b{ color:#7a4a2e; }
+
+footer.site{
+  text-align:center; color:var(--text-faint); font-size:12px; padding-top:50px;
+  font-family:var(--font-mono);
+}
+footer.site a{ color:var(--brass-light); }
+
+/* draggable cursor affordance */
+.grabbable{ cursor:grab; }
+.grabbable:active{ cursor:grabbing; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Virtual Instrument Bench</div>
+    <h1 class="title">Measure <em>everything.</em></h1>
+    <p class="hero-sub">Pick up each instrument, take a real reading off its scale, and log it in your notebook. Every trial computes its own error against a hidden reference — just like a real physics lab, minus the risk of dropping the vernier calipers.</p>
+    <div class="hero-instruments">
+      <div><span>01</span> Vernier Caliper</div>
+      <div><span>02</span> Screw Gauge</div>
+      <div><span>03</span> Simple Pendulum</div>
+      <div><span>04</span> Metre Scale</div>
+    </div>
+  </header>
+
+  <nav class="dial" id="dial">
+    <button class="dial-tab active" data-target="caliper" style="--dot:var(--brass)"><span class="dot"></span>Vernier Caliper<span class="n">01</span></button>
+    <button class="dial-tab" data-target="screw" style="--dot:var(--amber)"><span class="dot"></span>Screw Gauge<span class="n">02</span></button>
+    <button class="dial-tab" data-target="pendulum" style="--dot:var(--phosphor)"><span class="dot"></span>Simple Pendulum<span class="n">03</span></button>
+    <button class="dial-tab" data-target="ruler" style="--dot:var(--blue)"><span class="dot"></span>Metre Scale<span class="n">04</span></button>
+  </nav>
+
+  <!-- ======================= CALIPER ======================= -->
+  <section class="experiment active" id="exp-caliper">
+    <div class="exp-head">
+      <h2>Vernier Caliper</h2>
+      <p>Drag the movable jaw until it just touches the cylinder's edge. The vernier scale reads to 0.1&nbsp;mm — find the one line where the main and vernier scales coincide.</p>
+    </div>
+    <div class="bench">
+      <div class="stage">
+        <div class="stage-svg-holder"><svg id="svg-caliper" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <div class="lcd">
+          <div>
+            <div class="lcd-label">Reading</div>
+            <div class="lcd-value" id="cal-lcd">0.0<span class="unit">mm</span></div>
+          </div>
+          <div class="lcd-sub" id="cal-lcd-sub">MSR 0 mm &nbsp;+&nbsp; VSR 0 × 0.1 mm</div>
+        </div>
+        <div class="controls-row">
+          <button class="btn btn-primary" id="cal-record">Record reading</button>
+          <button class="btn btn-ghost" id="cal-new">New object</button>
+        </div>
+        <div class="plaque" style="--accent:var(--brass)"><b>How to read it —</b> find the main-scale mark just before the jaw (MSR). Then find which vernier division lines up with a main-scale line (VSR). Reading = MSR + VSR × 0.1&nbsp;mm.</div>
+      </div>
+      <div class="notebook">
+        <div class="nb-head"><h3>Lab Notebook</h3><span>Least count 0.1 mm</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>MSR</th><th>VSR</th><th>Reading</th><th>Error</th></tr></thead>
+            <tbody id="cal-tbody"><tr class="empty-row"><td colspan="5">No trials recorded yet — drag the jaw and hit Record.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="stats-row" id="cal-stats"></div>
+        <div class="reveal-note" id="cal-reveal" style="display:none;"></div>
+        <div class="nb-foot">
+          <button class="btn btn-ghost" id="cal-reset">Clear trials</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= SCREW GAUGE ======================= -->
+  <section class="experiment" id="exp-screw">
+    <div class="exp-head">
+      <h2>Screw Gauge (Micrometer)</h2>
+      <p>Drag the thimble left to close the gap onto the wire — it stops the instant it makes contact. Pitch scale reads in 0.5&nbsp;mm steps; the circular scale reads to 0.01&nbsp;mm.</p>
+    </div>
+    <div class="bench">
+      <div class="stage">
+        <div class="stage-svg-holder"><svg id="svg-screw" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <div class="lcd">
+          <div>
+            <div class="lcd-label">Reading</div>
+            <div class="lcd-value" id="screw-lcd">0.00<span class="unit">mm</span></div>
+          </div>
+          <div class="lcd-sub" id="screw-lcd-sub">PSR 0.00 mm &nbsp;+&nbsp; CSR 0 × 0.01 mm</div>
+        </div>
+        <div class="controls-row">
+          <button class="btn btn-primary" id="screw-record">Record reading</button>
+          <button class="btn btn-ghost" id="screw-new">New wire</button>
+        </div>
+        <div class="plaque" style="--accent:var(--amber)"><b>How to read it —</b> the pitch scale (PSR) is the last mark not yet covered by the thimble sleeve. The circular scale (CSR) is the division aligned with the index line. Reading = PSR + CSR × 0.01&nbsp;mm.</div>
+      </div>
+      <div class="notebook">
+        <div class="nb-head"><h3>Lab Notebook</h3><span>Least count 0.01 mm</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>PSR</th><th>CSR</th><th>Reading</th><th>Error</th></tr></thead>
+            <tbody id="screw-tbody"><tr class="empty-row"><td colspan="5">No trials recorded yet — close the jaws on the wire and hit Record.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="stats-row" id="screw-stats"></div>
+        <div class="reveal-note" id="screw-reveal" style="display:none;"></div>
+        <div class="nb-foot">
+          <button class="btn btn-ghost" id="screw-reset">Clear trials</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= PENDULUM ======================= -->
+  <section class="experiment" id="exp-pendulum">
+    <div class="exp-head">
+      <h2>Simple Pendulum — finding <em style="font-style:italic;">g</em></h2>
+      <p>Set a string length, start the bob swinging, and stop the watch after counting a good number of oscillations. Your own reaction time is the error source here — just like in a real lab.</p>
+    </div>
+    <div class="bench">
+      <div class="stage">
+        <div class="stage-svg-holder"><svg id="svg-pendulum" viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <div class="controls-row">
+          <div class="field">
+            <label>String length L <b id="pend-L-val">60 cm</b></label>
+            <input type="range" id="pend-L" min="20" max="100" step="1" value="60">
+          </div>
+        </div>
+        <div class="lcd">
+          <div>
+            <div class="lcd-label">Stopwatch</div>
+            <div class="lcd-value" id="pend-lcd">0.00<span class="unit">s</span></div>
+          </div>
+          <div class="lcd-sub" id="pend-lcd-sub">Oscillations counted: 0</div>
+        </div>
+        <div class="controls-row">
+          <button class="btn btn-primary" id="pend-start">Start</button>
+          <button class="btn btn-danger-outline" id="pend-stop" disabled>Stop</button>
+          <button class="btn btn-ghost" id="pend-record" disabled>Record trial</button>
+        </div>
+        <div class="plaque" style="--accent:var(--phosphor)"><b>How it works —</b> g = 4π²L / T², where T is the period (time ÷ oscillations). Click Stop as close as you can to a whole number of swings — your timing precision shows up directly in the error column.</div>
+      </div>
+      <div class="notebook">
+        <div class="nb-head"><h3>Lab Notebook</h3><span>Standard g = 9.8 m/s²</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>L (cm)</th><th>n</th><th>t (s)</th><th>T (s)</th><th>g</th><th>Error</th></tr></thead>
+            <tbody id="pend-tbody"><tr class="empty-row"><td colspan="7">No trials recorded yet — start the pendulum and time it.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="stats-row" id="pend-stats"></div>
+        <div class="nb-foot">
+          <button class="btn btn-ghost" id="pend-reset">Clear trials</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= RULER ======================= -->
+  <section class="experiment" id="exp-ruler">
+    <div class="exp-head">
+      <h2>Metre Scale — length &amp; parallax</h2>
+      <p>Drag the sighting line to the block's right edge and record its length. Then move your eye off-centre and watch how parallax quietly throws your reading off.</p>
+    </div>
+    <div class="bench">
+      <div class="stage">
+        <div class="stage-svg-holder"><svg id="svg-ruler" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <div class="controls-row">
+          <div class="field">
+            <label>Your eye position <b id="ruler-eye-val">centred</b></label>
+            <input type="range" id="ruler-eye" min="-100" max="100" step="1" value="0">
+          </div>
+        </div>
+        <div class="lcd">
+          <div>
+            <div class="lcd-label">Reading</div>
+            <div class="lcd-value" id="ruler-lcd">0.0<span class="unit">cm</span></div>
+          </div>
+          <div class="lcd-sub" id="ruler-lcd-sub">Least count 0.1 cm</div>
+        </div>
+        <div class="controls-row">
+          <button class="btn btn-primary" id="ruler-record">Record reading</button>
+          <button class="btn btn-ghost" id="ruler-new">New block</button>
+        </div>
+        <div class="plaque" style="--accent:var(--blue)"><b>Watch for —</b> the scale sits slightly above the block. Unless your eye is directly overhead, the edge appears to line up with the wrong mark. That's parallax error, and it's systematic, not random.</div>
+      </div>
+      <div class="notebook">
+        <div class="nb-head"><h3>Lab Notebook</h3><span>Least count 0.1 cm</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Reading</th><th>Eye pos.</th><th>Error</th></tr></thead>
+            <tbody id="ruler-tbody"><tr class="empty-row"><td colspan="4">No trials recorded yet — align the cursor and hit Record.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="stats-row" id="ruler-stats"></div>
+        <div class="reveal-note" id="ruler-reveal" style="display:none;"></div>
+        <div class="nb-foot">
+          <button class="btn btn-ghost" id="ruler-reset">Clear trials</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">Virtual Instrument Bench — built for looking closely. No real glassware was harmed.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   SHARED HELPERS
+   ============================================================ */
+const $ = (sel, root) => (root||document).querySelector(sel);
+const $all = (sel, root) => Array.from((root||document).querySelectorAll(sel));
+const clamp = (v,a,b) => Math.max(a, Math.min(b,v));
+const rand = (a,b) => a + Math.random()*(b-a);
+const fmt = (v,d) => Number(v).toFixed(d);
+const SVGNS = "http://www.w3.org/2000/svg";
+
+function svgPointerX(evt, svgEl, viewBoxWidth){
+  const rect = svgEl.getBoundingClientRect();
+  const scale = viewBoxWidth / rect.width;
+  return (evt.clientX - rect.left) * scale;
+}
+
+function errClass(pct){
+  if (pct <= 1.5) return "err-good";
+  if (pct <= 5) return "err-mid";
+  return "err-bad";
+}
+
+function meanOf(arr){ return arr.reduce((a,b)=>a+b,0) / (arr.length||1); }
+
+/* ============================================================
+   TAB SWITCHING
+   ============================================================ */
+$all(".dial-tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    $all(".dial-tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    const target = tab.dataset.target;
+    $all(".experiment").forEach(e=>e.classList.remove("active"));
+    $("#exp-"+target).classList.add("active");
+  });
+});
+
+/* ============================================================
+   1) VERNIER CALIPER
+   ============================================================ */
+(function(){
+  const svg = $("#svg-caliper");
+  const PX0 = 90, PXPERMM = 11.5, MMMAX = 62;
+  const mmToX = mm => PX0 + mm*PXPERMM;
+
+  const state = { trueWidth: +rand(15,42).toFixed(1), jawMm: 45, trials: [], revealed:false, dragging:false };
+
+  function render(){
+    const j = state.jawMm;
+    const frac = j - Math.floor(j);
+    const msr = Math.floor(j);
+    const vsr = clamp(Math.round(frac*10), 0, 9);
+    const reading = msr + vsr*0.1;
+    state.lastReading = { msr, vsr, reading };
+
+    let ticks = "";
+    for(let mm=0; mm<=MMMAX; mm++){
+      const x = mmToX(mm);
+      const tall = mm % 10 === 0;
+      const med = mm % 5 === 0;
+      const h = tall ? 26 : med ? 18 : 11;
+      ticks += `<line x1="${x}" y1="150" x2="${x}" y2="${150-h}" stroke="${tall?'#e7bd7c':'#a5895f'}" stroke-width="${tall?1.6:1}"/>`;
+      if(tall) ticks += `<text x="${x}" y="168" font-family="IBM Plex Mono" font-size="10" fill="#a5895f" text-anchor="middle">${mm/10}</text>`;
+    }
+
+    let vticks = "";
+    for(let i=0;i<=10;i++){
+      const x = mmToX(j) + i*0.9*PXPERMM;
+      const isHit = i===vsr;
+      vticks += `<line x1="${x}" y1="182" x2="${x}" y2="${182+(isHit?18:12)}" stroke="${isHit?'#7fe8a8':'#e8935b'}" stroke-width="${isHit?2.4:1.2}"/>`;
+      if(i===0||i===5||i===10) vticks += `<text x="${x}" y="210" font-family="IBM Plex Mono" font-size="9" fill="${isHit?'#7fe8a8':'#c98a6a'}" text-anchor="middle">${i}</text>`;
+    }
+
+    const objX1 = mmToX(0)+6, objX2 = mmToX(state.trueWidth)-6;
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="calMetal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8fa3b8"/><stop offset="0.5" stop-color="#dbe4ec"/><stop offset="1" stop-color="#7c8fa3"/>
+        </linearGradient>
+        <linearGradient id="calBrass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e7bd7c"/><stop offset="1" stop-color="#8e6530"/>
+        </linearGradient>
+      </defs>
+      <line x1="${PX0}" y1="150" x2="${mmToX(MMMAX)}" y2="150" stroke="#3a3220" stroke-width="2"/>
+      ${ticks}
+      <!-- object -->
+      <rect x="${objX1}" y="70" width="${objX2-objX1}" height="46" rx="10" fill="url(#calMetal)" stroke="#5a6b7d" stroke-width="1"/>
+      <text x="${(objX1+objX2)/2}" y="98" font-family="IBM Plex Mono" font-size="10" fill="#3a4551" text-anchor="middle" opacity="0.6">specimen</text>
+      <!-- fixed jaw -->
+      <rect x="${mmToX(0)-7}" y="55" width="10" height="140" rx="2" fill="url(#calBrass)" stroke="#5c4423" />
+      <!-- moving jaw group -->
+      <g id="cal-jaw" class="grabbable" style="cursor:grab;">
+        <rect x="${mmToX(j)-3}" y="55" width="10" height="145" rx="2" fill="url(#calBrass)" stroke="#5c4423"/>
+        <rect x="${mmToX(j)-3}" y="192" width="70" height="34" rx="4" fill="#1a2436" opacity="0.001"/>
+        ${vticks}
+      </g>
+    `;
+
+    const lcd = $("#cal-lcd"), sub = $("#cal-lcd-sub");
+    lcd.innerHTML = fmt(reading,1) + '<span class="unit">mm</span>';
+    sub.textContent = `MSR ${msr} mm  +  VSR ${vsr} × 0.1 mm`;
+
+    // drag handling
+    const jawEl = $("#cal-jaw");
+    jawEl.addEventListener("pointerdown", startDrag);
+  }
+
+  function startDrag(evt){
+    state.dragging = true;
+    evt.target.setPointerCapture(evt.pointerId);
+  }
+  svg.addEventListener("pointermove", evt=>{
+    if(!state.dragging) return;
+    const x = svgPointerX(evt, svg, 900);
+    let mm = (x - PX0)/PXPERMM;
+    mm = clamp(mm, 0, MMMAX-2);
+    state.jawMm = mm;
+    render();
+  });
+  window.addEventListener("pointerup", ()=>{ state.dragging=false; });
+
+  function renderTable(){
+    const tb = $("#cal-tbody");
+    if(state.trials.length===0){
+      tb.innerHTML = `<tr class="empty-row"><td colspan="5">No trials recorded yet — drag the jaw and hit Record.</td></tr>`;
+    } else {
+      tb.innerHTML = state.trials.map((t,i)=>{
+        const pct = Math.abs(t.reading-state.trueWidth)/state.trueWidth*100;
+        return `<tr><td>${i+1}</td><td>${t.msr}</td><td>${t.vsr}</td><td>${fmt(t.reading,1)} mm</td><td class="err-cell ${errClass(pct)}">${fmt(pct,2)}%</td></tr>`;
+      }).join("");
+    }
+    const stats = $("#cal-stats");
+    if(state.trials.length){
+      const mean = meanOf(state.trials.map(t=>t.reading));
+      const meanErr = meanOf(state.trials.map(t=>Math.abs(t.reading-state.trueWidth)/state.trueWidth*100));
+      stats.innerHTML = `
+        <div class="stat-plate"><div class="k">Mean</div><div class="v">${fmt(mean,2)}</div></div>
+        <div class="stat-plate"><div class="k">Least count</div><div class="v">0.1 mm</div></div>
+        <div class="stat-plate"><div class="k">Mean error</div><div class="v">${fmt(meanErr,2)}%</div></div>
+      `;
+    } else stats.innerHTML = "";
+    const rev = $("#cal-reveal");
+    if(state.revealed){
+      rev.style.display = "block";
+      rev.innerHTML = `Reference (standard) diameter: <b>${fmt(state.trueWidth,1)} mm</b>`;
+    } else rev.style.display = "none";
+  }
+
+  $("#cal-record").addEventListener("click", ()=>{
+    const r = state.lastReading;
+    state.trials.push(r);
+    state.revealed = true;
+    renderTable();
+  });
+  $("#cal-new").addEventListener("click", ()=>{
+    state.trueWidth = +rand(15,42).toFixed(1);
+    state.trials = []; state.revealed = false; state.jawMm = 45;
+    render(); renderTable();
+  });
+  $("#cal-reset").addEventListener("click", ()=>{ state.trials=[]; state.revealed=false; renderTable(); });
+
+  render(); renderTable();
+})();
+
+/* ============================================================
+   2) SCREW GAUGE
+   ============================================================ */
+(function(){
+  const svg = $("#svg-screw");
+  const PITCH = 0.5, MAXRANGE = 6.0, PXPERMM = 90;
+  const originX = 130;
+
+  const state = { trueDiameter: +rand(0.5,4.5).toFixed(2), turns: 0, trials: [], revealed:false, dragging:false, dragStartX:0, dragStartTurns:0 };
+
+  function gapMm(){
+    return clamp(MAXRANGE - state.turns*PITCH, state.trueDiameter, MAXRANGE);
+  }
+
+  function render(){
+    const gap = gapMm();
+    const psr = Math.floor(gap/0.5)*0.5;
+    let frac = gap - psr;
+    let csr = Math.round(frac/0.01);
+    if(csr>=50){ csr=0; }
+    const reading = psr + csr*0.01;
+    state.lastReading = { psr, csr, reading };
+
+    const wireX1 = originX, wireX2 = originX + state.trueDiameter*PXPERMM;
+    const spindleX = originX + gap*PXPERMM;
+    const sleeveEdgeX = spindleX; // sleeve reveals scale up to this point
+
+    // pitch scale ticks (from originX to originX+MAXRANGE*PXPERMM), mark every 0.5mm
+    let pticks = "";
+    for(let i=0;i<=MAXRANGE*2;i++){
+      const mm = i*0.5;
+      const x = originX + mm*PXPERMM;
+      const tall = i%2===0;
+      pticks += `<line x1="${x}" y1="90" x2="${x}" y2="${90-(tall?20:12)}" stroke="${tall?'#f5b587':'#c98a6a'}" stroke-width="${tall?1.6:1}"/>`;
+      if(tall) pticks += `<text x="${x}" y="72" font-family="IBM Plex Mono" font-size="9" fill="#c98a6a" text-anchor="middle">${mm}</text>`;
+    }
+
+    // circular scale strip (unrolled), 50 divisions across a strip width, scrolls with frac
+    const stripW = 460, stripFull = stripW; // represents one pitch (0.5mm = 50 divisions)
+    const scrollX = -(frac/0.5)*stripFull;
+    let cticks = "";
+    for(let i=0;i<=50;i++){
+      const x = i*(stripFull/50);
+      const isHit = i===csr;
+      const tall = i%5===0;
+      cticks += `<line x1="${x}" y1="0" x2="${x}" y2="${isHit?26:(tall?18:11)}" stroke="${isHit?'#7fe8a8':(tall?'#f5b587':'#c98a6a')}" stroke-width="${isHit?2.4:1}"/>`;
+      if(tall) cticks += `<text x="${x}" y="40" font-family="IBM Plex Mono" font-size="9" fill="${isHit?'#7fe8a8':'#c98a6a'}" text-anchor="middle">${i}</text>`;
+    }
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="wireGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f5b587"/><stop offset="0.5" stop-color="#fbdcc0"/><stop offset="1" stop-color="#c9784a"/>
+        </linearGradient>
+        <linearGradient id="sleeveGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#3a4560"/><stop offset="1" stop-color="#232c42"/>
+        </linearGradient>
+      </defs>
+
+      <!-- anvil -->
+      <rect x="${originX-24}" y="60" width="24" height="60" rx="3" fill="#8e6530"/>
+      <!-- wire -->
+      <rect x="${wireX1}" y="78" width="${Math.max(2,wireX2-wireX1)}" height="24" rx="6" fill="url(#wireGrad)" stroke="#a8622f"/>
+      <!-- pitch scale barrel -->
+      <rect x="${originX-4}" y="60" width="${MAXRANGE*PXPERMM+40}" height="60" rx="6" fill="#141c30" stroke="#2a3550"/>
+      ${pticks}
+      <line x1="${originX}" y1="60" x2="${originX}" y2="120" stroke="#e8935b" stroke-width="1" stroke-dasharray="2 2"/>
+
+      <!-- thimble sleeve covering from sleeveEdgeX rightwards -->
+      <rect x="${sleeveEdgeX}" y="52" width="${(MAXRANGE*PXPERMM+40)-(sleeveEdgeX-originX)}" height="76" fill="url(#sleeveGrad)" stroke="#4a5578" rx="8"/>
+      <g id="screw-knob" class="grabbable" style="cursor:grab;">
+        <circle cx="${sleeveEdgeX+34}" cy="90" r="30" fill="#2c3552" stroke="#5a688f" stroke-width="2"/>
+        <circle cx="${sleeveEdgeX+34}" cy="90" r="30" fill="none" stroke="#7fe8a8" stroke-width="1.4" stroke-dasharray="4 4" opacity="0.5" transform="rotate(${state.turns*360} ${sleeveEdgeX+34} 90)"/>
+        <line x1="${sleeveEdgeX+34}" y1="90" x2="${sleeveEdgeX+34}" y2="66" stroke="#7fe8a8" stroke-width="2" transform="rotate(${state.turns*360} ${sleeveEdgeX+34} 90)"/>
+        <text x="${sleeveEdgeX+34}" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#93a1c4">drag</text>
+      </g>
+      <!-- index line for pitch reading -->
+      <line x1="${sleeveEdgeX}" y1="45" x2="${sleeveEdgeX}" y2="128" stroke="#7fe8a8" stroke-width="1.4"/>
+
+      <!-- circular scale strip below -->
+      <text x="${originX}" y="170" font-family="IBM Plex Mono" font-size="10" fill="#93a1c4">Circular scale (unrolled) —</text>
+      <line x1="${originX+140}" y1="150" x2="${originX+140}" y2="196" stroke="#e8935b" stroke-width="1.4"/>
+      <g transform="translate(${originX},178)">
+        <clipPath id="stripClip"><rect x="0" y="-24" width="${stripW}" height="60"/></clipPath>
+        <g clip-path="url(#stripClip)">
+          <g transform="translate(${140+scrollX},0)">${cticks}</g>
+        </g>
+      </g>
+    `;
+
+    const lcd = $("#screw-lcd"), sub = $("#screw-lcd-sub");
+    lcd.innerHTML = fmt(reading,2) + '<span class="unit">mm</span>';
+    sub.textContent = `PSR ${fmt(psr,2)} mm  +  CSR ${csr} × 0.01 mm`;
+
+    $("#screw-knob").addEventListener("pointerdown", evt=>{
+      state.dragging = true;
+      state.dragStartX = evt.clientX;
+      state.dragStartTurns = state.turns;
+      evt.target.setPointerCapture(evt.pointerId);
+    });
+  }
+
+  svg.addEventListener("pointermove", evt=>{
+    if(!state.dragging) return;
+    const dx = evt.clientX - state.dragStartX;
+    // dragging left (negative dx) closes the gap -> increases turns
+    const dTurns = -dx/44;
+    state.turns = clamp(state.dragStartTurns + dTurns, 0, MAXRANGE/PITCH + 2);
+    render();
+  });
+  window.addEventListener("pointerup", ()=>{ state.dragging=false; });
+
+  function renderTable(){
+    const tb = $("#screw-tbody");
+    if(state.trials.length===0){
+      tb.innerHTML = `<tr class="empty-row"><td colspan="5">No trials recorded yet — close the jaws on the wire and hit Record.</td></tr>`;
+    } else {
+      tb.innerHTML = state.trials.map((t,i)=>{
+        const pct = Math.abs(t.reading-state.trueDiameter)/state.trueDiameter*100;
+        return `<tr><td>${i+1}</td><td>${fmt(t.psr,2)}</td><td>${t.csr}</td><td>${fmt(t.reading,2)} mm</td><td class="err-cell ${errClass(pct)}">${fmt(pct,2)}%</td></tr>`;
+      }).join("");
+    }
+    const stats = $("#screw-stats");
+    if(state.trials.length){
+      const mean = meanOf(state.trials.map(t=>t.reading));
+      const meanErr = meanOf(state.trials.map(t=>Math.abs(t.reading-state.trueDiameter)/state.trueDiameter*100));
+      stats.innerHTML = `
+        <div class="stat-plate"><div class="k">Mean</div><div class="v">${fmt(mean,3)}</div></div>
+        <div class="stat-plate"><div class="k">Least count</div><div class="v">0.01 mm</div></div>
+        <div class="stat-plate"><div class="k">Mean error</div><div class="v">${fmt(meanErr,2)}%</div></div>
+      `;
+    } else stats.innerHTML = "";
+    const rev = $("#screw-reveal");
+    if(state.revealed){
+      rev.style.display="block";
+      rev.innerHTML = `Reference (standard) diameter: <b>${fmt(state.trueDiameter,2)} mm</b>`;
+    } else rev.style.display="none";
+  }
+
+  $("#screw-record").addEventListener("click", ()=>{
+    state.trials.push(state.lastReading);
+    state.revealed = true;
+    renderTable();
+  });
+  $("#screw-new").addEventListener("click", ()=>{
+    state.trueDiameter = +rand(0.5,4.5).toFixed(2);
+    state.trials=[]; state.revealed=false; state.turns=0;
+    render(); renderTable();
+  });
+  $("#screw-reset").addEventListener("click", ()=>{ state.trials=[]; state.revealed=false; renderTable(); });
+
+  render(); renderTable();
+})();
+
+/* ============================================================
+   3) SIMPLE PENDULUM
+   ============================================================ */
+(function(){
+  const svg = $("#svg-pendulum");
+  const G_STD = 9.8;
+  const pivotX = 450, pivotY = 40;
+
+  const state = { L_cm: 60, running:false, t0:0, rafId:null, trials:[], liveElapsed:0, liveOsc:0, lastStop:null };
+
+  function T_true(){ const Lm = state.L_cm/100; return 2*Math.PI*Math.sqrt(Lm/G_STD); }
+  function pxLen(){ return 60 + (state.L_cm-20)*1.7; } // 20-100cm -> ~60-196px
+
+  function draw(angleDeg){
+    const len = pxLen();
+    const rad = angleDeg*Math.PI/180;
+    const bobX = pivotX + len*Math.sin(rad);
+    const bobY = pivotY + len*Math.cos(rad);
+    svg.innerHTML = `
+      <defs>
+        <radialGradient id="bobGrad" cx="35%" cy="30%" r="70%">
+          <stop offset="0" stop-color="#e7bd7c"/><stop offset="1" stop-color="#8e6530"/>
+        </radialGradient>
+      </defs>
+      <!-- stand -->
+      <rect x="${pivotX-140}" y="20" width="280" height="10" rx="3" fill="#232c42" stroke="#3a4560"/>
+      <line x1="${pivotX-110}" y1="30" x2="${pivotX-110}" y2="270" stroke="#232c42" stroke-width="10"/>
+      <line x1="${pivotX+110}" y1="30" x2="${pivotX+110}" y2="270" stroke="#232c42" stroke-width="10"/>
+      <circle cx="${pivotX}" cy="${pivotY}" r="5" fill="#7fe8a8"/>
+      <line x1="${pivotX}" y1="${pivotY}" x2="${bobX}" y2="${bobY}" stroke="#93a1c4" stroke-width="2"/>
+      <circle cx="${bobX}" cy="${bobY}" r="18" fill="url(#bobGrad)" stroke="#5c4423" stroke-width="1.5"/>
+      <line x1="${pivotX}" y1="270" x2="${pivotX}" y2="${pivotY}" stroke="#3a4560" stroke-width="1" stroke-dasharray="3 4" opacity="0.5"/>
+      <text x="${pivotX}" y="292" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#6f7999">equilibrium</text>
+    `;
+  }
+
+  function tick(){
+    const now = performance.now();
+    const elapsed = (now - state.t0)/1000;
+    const T = T_true();
+    const angle = 20*Math.cos(2*Math.PI*elapsed/T);
+    draw(angle);
+    state.liveElapsed = elapsed;
+    state.liveOsc = Math.floor(elapsed/T);
+    $("#pend-lcd").innerHTML = fmt(elapsed,2)+'<span class="unit">s</span>';
+    $("#pend-lcd-sub").textContent = `Oscillations counted: ${state.liveOsc}`;
+    state.rafId = requestAnimationFrame(tick);
+  }
+
+  $("#pend-L").addEventListener("input", e=>{
+    state.L_cm = +e.target.value;
+    $("#pend-L-val").textContent = state.L_cm+" cm";
+    if(!state.running) draw(20);
+  });
+
+  $("#pend-start").addEventListener("click", ()=>{
+    state.running = true;
+    state.t0 = performance.now();
+    $("#pend-start").disabled = true;
+    $("#pend-stop").disabled = false;
+    $("#pend-record").disabled = true;
+    $("#pend-L").disabled = true;
+    state.rafId = requestAnimationFrame(tick);
+  });
+
+  $("#pend-stop").addEventListener("click", ()=>{
+    state.running = false;
+    cancelAnimationFrame(state.rafId);
+    $("#pend-start").disabled = false;
+    $("#pend-stop").disabled = true;
+    $("#pend-L").disabled = false;
+    const n = state.liveOsc;
+    if(n < 1){
+      $("#pend-lcd-sub").textContent = `Not enough swings counted (${n}) — try timing more oscillations.`;
+      $("#pend-record").disabled = true;
+      state.lastStop = null;
+      return;
+    }
+    const t = state.liveElapsed;
+    const T = t/n;
+    const Lm = state.L_cm/100;
+    const g = 4*Math.PI*Math.PI*Lm/(T*T);
+    state.lastStop = { L: state.L_cm, n, t, T, g };
+    $("#pend-lcd-sub").textContent = `Stopped at n=${n} oscillations — ready to record.`;
+    $("#pend-record").disabled = false;
+  });
+
+  $("#pend-record").addEventListener("click", ()=>{
+    if(!state.lastStop) return;
+    state.trials.push(state.lastStop);
+    state.lastStop = null;
+    $("#pend-record").disabled = true;
+    renderTable();
+  });
+
+  function renderTable(){
+    const tb = $("#pend-tbody");
+    if(state.trials.length===0){
+      tb.innerHTML = `<tr class="empty-row"><td colspan="7">No trials recorded yet — start the pendulum and time it.</td></tr>`;
+    } else {
+      tb.innerHTML = state.trials.map((r,i)=>{
+        const pct = Math.abs(r.g-G_STD)/G_STD*100;
+        return `<tr><td>${i+1}</td><td>${r.L}</td><td>${r.n}</td><td>${fmt(r.t,2)}</td><td>${fmt(r.T,3)}</td><td>${fmt(r.g,2)}</td><td class="err-cell ${errClass(pct)}">${fmt(pct,2)}%</td></tr>`;
+      }).join("");
+    }
+    const stats = $("#pend-stats");
+    if(state.trials.length){
+      const meanG = meanOf(state.trials.map(r=>r.g));
+      const meanErr = meanOf(state.trials.map(r=>Math.abs(r.g-G_STD)/G_STD*100));
+      stats.innerHTML = `
+        <div class="stat-plate"><div class="k">Mean g</div><div class="v">${fmt(meanG,2)}</div></div>
+        <div class="stat-plate"><div class="k">Standard g</div><div class="v">9.80</div></div>
+        <div class="stat-plate"><div class="k">Mean error</div><div class="v">${fmt(meanErr,2)}%</div></div>
+      `;
+    } else stats.innerHTML = "";
+  }
+
+  $("#pend-reset").addEventListener("click", ()=>{ state.trials=[]; renderTable(); });
+
+  $("#pend-L-val").textContent = state.L_cm+" cm";
+  draw(20);
+  renderTable();
+})();
+
+/* ============================================================
+   4) METRE SCALE / RULER
+   ============================================================ */
+(function(){
+  const svg = $("#svg-ruler");
+  const PX0 = 60, PXPERCM = 38, CMMAX = 20;
+  const cmToX = cm => PX0 + cm*PXPERCM;
+  const GAP_PX = 26;
+
+  const state = { trueLength: +rand(3,17).toFixed(1), cursorCm: 10, eye: 0, trials: [], revealed:false, dragging:false };
+
+  function parallaxOffsetPx(){
+    // shifts the rendered object, not the true scale
+    return (state.eye/100) * GAP_PX * 1.6;
+  }
+
+  function render(){
+    const cm = state.cursorCm;
+    const reading = Math.round(cm*10)/10;
+    state.lastReading = reading;
+
+    let ticks = "";
+    for(let mm=0; mm<=CMMAX*10; mm++){
+      const c = mm/10;
+      const x = PX0 + c*PXPERCM;
+      const tall = mm%10===0;
+      const med = mm%5===0;
+      const h = tall?24:med?15:9;
+      ticks += `<line x1="${x}" y1="150" x2="${x}" y2="${150-h}" stroke="${tall?'#aecbe4':'#6f7f95'}" stroke-width="${tall?1.5:0.8}"/>`;
+      if(tall) ticks += `<text x="${x}" y="168" font-family="IBM Plex Mono" font-size="9.5" fill="#8ea3bb" text-anchor="middle">${c}</text>`;
+    }
+
+    const objOffset = parallaxOffsetPx();
+    const objX1 = cmToX(0), objX2 = cmToX(state.trueLength);
+    const cursorX = cmToX(cm);
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="rulerGlass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1c2740"/><stop offset="1" stop-color="#121a2e"/>
+        </linearGradient>
+        <linearGradient id="blockGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#aecbe4"/><stop offset="1" stop-color="#5f7f9c"/>
+        </linearGradient>
+      </defs>
+      <rect x="20" y="95" width="860" height="60" rx="8" fill="url(#rulerGlass)" stroke="#2a3550"/>
+      ${ticks}
+      <line x1="${PX0}" y1="150" x2="${cmToX(CMMAX)}" y2="150" stroke="#aecbe4" stroke-width="1.5"/>
+
+      <!-- elevated block, visually offset by parallax -->
+      <g transform="translate(${objOffset},0)">
+        <rect x="${objX1}" y="${150+GAP_PX}" width="${objX2-objX1}" height="34" rx="6" fill="url(#blockGrad)" stroke="#3d5872"/>
+        <text x="${(objX1+objX2)/2}" y="${150+GAP_PX+22}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1f2c3d" opacity="0.7">block</text>
+      </g>
+      <line x1="${objX1}" y1="${150}" x2="${objX1}" y2="${150+GAP_PX}" stroke="#4a5a70" stroke-width="1" stroke-dasharray="2 2"/>
+      <text x="30" y="${150+GAP_PX+16}" font-family="IBM Plex Mono" font-size="8.5" fill="#5a6b82">gap</text>
+
+      <!-- cursor / sighting line -->
+      <g id="ruler-cursor" class="grabbable" style="cursor:grab;">
+        <line x1="${cursorX}" y1="80" x2="${cursorX}" y2="200" stroke="#7fe8a8" stroke-width="2"/>
+        <polygon points="${cursorX-7},80 ${cursorX+7},80 ${cursorX},92" fill="#7fe8a8"/>
+        <rect x="${cursorX-24}" y="80" width="48" height="120" fill="#000" opacity="0.001"/>
+      </g>
+    `;
+
+    const lcd = $("#ruler-lcd");
+    lcd.innerHTML = fmt(reading,1)+'<span class="unit">cm</span>';
+
+    $("#ruler-cursor").addEventListener("pointerdown", evt=>{
+      state.dragging = true; evt.target.setPointerCapture(evt.pointerId);
+    });
+  }
+
+  svg.addEventListener("pointermove", evt=>{
+    if(!state.dragging) return;
+    const x = svgPointerX(evt, svg, 900);
+    let cm = (x-PX0)/PXPERCM;
+    cm = clamp(Math.round(cm*10)/10, 0, CMMAX);
+    state.cursorCm = cm;
+    render();
+  });
+  window.addEventListener("pointerup", ()=>{ state.dragging=false; });
+
+  $("#ruler-eye").addEventListener("input", e=>{
+    state.eye = +e.target.value;
+    const v = state.eye;
+    $("#ruler-eye-val").textContent = v===0 ? "centred" : (v<0 ? `${Math.abs(v)}% left` : `${v}% right`);
+    render();
+  });
+
+  function renderTable(){
+    const tb = $("#ruler-tbody");
+    if(state.trials.length===0){
+      tb.innerHTML = `<tr class="empty-row"><td colspan="4">No trials recorded yet — align the cursor and hit Record.</td></tr>`;
+    } else {
+      tb.innerHTML = state.trials.map((t,i)=>{
+        const pct = Math.abs(t.reading-state.trueLength)/state.trueLength*100;
+        const eyeLabel = t.eye===0 ? "centred" : (t.eye<0 ? `${Math.abs(t.eye)}% L` : `${t.eye}% R`);
+        return `<tr><td>${i+1}</td><td>${fmt(t.reading,1)} cm</td><td>${eyeLabel}</td><td class="err-cell ${errClass(pct)}">${fmt(pct,2)}%</td></tr>`;
+      }).join("");
+    }
+    const stats = $("#ruler-stats");
+    if(state.trials.length){
+      const mean = meanOf(state.trials.map(t=>t.reading));
+      const meanErr = meanOf(state.trials.map(t=>Math.abs(t.reading-state.trueLength)/state.trueLength*100));
+      stats.innerHTML = `
+        <div class="stat-plate"><div class="k">Mean</div><div class="v">${fmt(mean,2)}</div></div>
+        <div class="stat-plate"><div class="k">Least count</div><div class="v">0.1 cm</div></div>
+        <div class="stat-plate"><div class="k">Mean error</div><div class="v">${fmt(meanErr,2)}%</div></div>
+      `;
+    } else stats.innerHTML = "";
+    const rev = $("#ruler-reveal");
+    if(state.revealed){
+      rev.style.display="block";
+      rev.innerHTML = `Reference (standard) length: <b>${fmt(state.trueLength,1)} cm</b>`;
+    } else rev.style.display="none";
+  }
+
+  $("#ruler-record").addEventListener("click", ()=>{
+    state.trials.push({ reading: state.lastReading, eye: state.eye });
+    state.revealed = true;
+    renderTable();
+  });
+  $("#ruler-new").addEventListener("click", ()=>{
+    state.trueLength = +rand(3,17).toFixed(1);
+    state.trials=[]; state.revealed=false; state.cursorCm=10;
+    render(); renderTable();
+  });
+  $("#ruler-reset").addEventListener("click", ()=>{ state.trials=[]; state.revealed=false; renderTable(); });
+
+  render(); renderTable();
+})();
+
+})();
+</script>
+</body>
+</html>

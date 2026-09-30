@@ -1,727 +1,1152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>WordMaster — English Lab</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WordMaster — Vocabulary &amp; Pronunciation Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
-:root{
-  --bg:#0f172a;--card:#1e293b;--card2:#273548;--border:#334155;
-  --accent:#C6362F;--accent2:#dc2626;--green:#22c55e;--red:#ef4444;
-  --blue:#3b82f6;--yellow:#f59e0b;
-  --text:#f1f5f9;--muted:#94a3b8;--mono:'IBM Plex Mono',monospace;
-  --body:'Inter',system-ui,sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh}
-button{font:inherit;cursor:pointer;border:none}
+  :root{
+    --ink:#150F27;
+    --ink-2:#1E1638;
+    --ink-3:#291F49;
+    --ink-4:#352A5C;
+    --paper:#F7F2E9;
+    --paper-dim:#CFC8DC;
+    --citrus:#D4F04C;
+    --citrus-dim:#a8c33c;
+    --coral:#FF6F91;
+    --sky:#7FD9FF;
+    --muted:#A79ACB;
+    --line: rgba(247,242,233,0.10);
+    --font-display:'Fraunces', serif;
+    --font-body:'Space Grotesk', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+    --radius: 20px;
+    --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
 
-/* layout */
-.app{display:flex;flex-direction:column;min-height:100vh}
-.header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px}
-.logo-icon{width:36px;height:36px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-size:18px}
-.logo h1{font-size:16px;font-weight:700}
-.logo p{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.body{flex:1;padding:20px;max-width:900px;margin:0 auto;width:100%}
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(212,240,76,0.08), transparent 40%),
+      radial-gradient(circle at 90% 15%, rgba(127,217,255,0.08), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(255,111,145,0.07), transparent 50%),
+      var(--ink);
+    color:var(--paper);
+    font-family:var(--font-body);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--citrus); color:var(--ink); }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  :focus-visible{ outline:2px solid var(--sky); outline-offset:3px; border-radius:6px; }
 
-/* streak */
-.streak-bar{background:linear-gradient(135deg,#7f1d1d,#9a3412);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
-.streak-bar h3{font-size:15px;font-weight:700}
-.streak-bar p{font-size:12px;color:#fde68a;font-family:var(--mono);margin-top:2px}
-.streak-bar .num{margin-left:auto;font-size:28px;font-weight:800;color:#fde68a}
-.streak-bar .lbl{font-size:10px;color:#fcd34d;font-family:var(--mono);text-align:right}
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
 
-/* mode bar */
-.mode-bar{display:flex;gap:4px;background:var(--card);border-radius:12px;padding:4px;margin-bottom:20px;border:1px solid var(--border);flex-wrap:wrap}
-.mode-btn{flex:1;min-width:80px;padding:8px 6px;border-radius:9px;background:none;color:var(--muted);font-size:12px;font-weight:500;text-align:center;transition:.15s}
-.mode-btn.active{background:var(--accent);color:#fff;font-weight:700}
+  /* ---------- decorative background glyphs ---------- */
+  .bg-glyphs{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .bg-glyphs span{
+    position:absolute; font-family:var(--font-mono); color:var(--paper);
+    opacity:0.045; font-weight:600; user-select:none;
+  }
 
-/* cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
-.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-body{padding:18px}
-.section-title{font-size:18px;font-weight:700;margin-bottom:4px}
-.section-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+  /* ---------- layout shell ---------- */
+  .app{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 24px 80px; }
 
-/* vocab */
-.word-display{text-align:center;padding:24px 0}
-.word-main{font-size:38px;font-weight:800;color:var(--accent);margin-bottom:6px}
-.word-type{font-size:12px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
-.word-def{font-size:17px;line-height:1.6;color:var(--text);max-width:420px;margin:0 auto 12px}
-.word-ex{font-size:14px;color:var(--muted);font-style:italic;max-width:420px;margin:0 auto}
-.word-nav{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-top:1px solid var(--border);background:var(--card2)}
-.word-counter{font-family:var(--mono);font-size:13px;color:var(--muted)}
-.nav-row{display:flex;gap:8px}
-.icon-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1.5px solid var(--border);color:var(--text);font-size:15px;display:grid;place-items:center}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+  /* ---------- navbar ---------- */
+  header.navbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; padding:18px 24px;
+    background:rgba(21,15,39,0.78); backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{ display:flex; align-items:baseline; gap:2px; font-family:var(--font-display); font-size:1.4rem; font-weight:700; letter-spacing:-0.01em; white-space:nowrap; }
+  .logo .accent{ color:var(--citrus); font-style:italic; font-weight:500; }
 
-/* quiz opts */
-.quiz-q{font-size:19px;font-weight:700;margin-bottom:18px;line-height:1.4}
-.quiz-hint{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:14px}
-.opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
-.opt{padding:12px 14px;border-radius:11px;border:2px solid var(--border);background:var(--card2);text-align:left;color:var(--text);font-size:14px;font-weight:500;transition:.15s;line-height:1.4}
-.opt:hover:not(:disabled){border-color:var(--accent)}
-.opt.correct{border-color:var(--green);background:#14532d44;color:var(--green)}
-.opt.wrong{border-color:var(--red);background:#7f1d1d44;color:var(--red)}
-.feedback{min-height:34px;font-size:14px;font-weight:600}
+  nav.tabs{ display:flex; gap:4px; background:var(--ink-2); border:1px solid var(--line); border-radius:999px; padding:4px; overflow-x:auto; scrollbar-width:none; }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  .tab-btn{
+    position:relative; border:none; background:transparent; color:var(--muted);
+    font-family:var(--font-body); font-weight:600; font-size:0.85rem;
+    padding:9px 16px; border-radius:999px; cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:7px; transition:color .2s ease;
+  }
+  .tab-btn svg{ width:15px; height:15px; opacity:.85; }
+  .tab-btn.active{ color:var(--ink); background:var(--citrus); }
+  .tab-btn:not(.active):hover{ color:var(--paper); }
 
-/* grammar */
-.rule-card{background:var(--card2);border-radius:12px;padding:16px;margin-bottom:12px;border-left:3px solid var(--blue)}
-.rule-title{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--blue)}
-.rule-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px}
-.rule-ex{font-family:var(--mono);font-size:13px;background:var(--card);padding:8px 12px;border-radius:8px;color:var(--text)}
-.rule-ex .good{color:var(--green)}
-.rule-ex .bad{color:var(--red)}
+  .streak-pill{
+    display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:0.78rem;
+    color:var(--muted); border:1px solid var(--line); padding:8px 14px; border-radius:999px;
+    white-space:nowrap;
+  }
+  .streak-pill b{ color:var(--sky); font-weight:600; }
 
-/* fill-in drill */
-.fill-q{font-size:18px;font-weight:600;margin-bottom:14px;line-height:1.6}
-.blank{display:inline-block;min-width:100px;border-bottom:2px solid var(--accent);padding:2px 8px;font-weight:700;color:var(--accent)}
-.fill-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid var(--border);background:var(--card2);color:var(--text);font-size:15px;outline:none;font-family:var(--body);margin-bottom:10px}
-.fill-input:focus{border-color:var(--accent)}
+  @media (max-width:760px){
+    header.navbar{ flex-wrap:wrap; padding:14px 16px; }
+    .streak-pill{ order:3; width:100%; justify-content:center; }
+  }
 
-/* reading */
-.passage{background:var(--card2);border-radius:12px;padding:18px;margin-bottom:14px;font-size:14px;line-height:1.9;color:var(--text)}
-.passage-title{font-size:16px;font-weight:700;margin-bottom:10px;color:var(--accent)}
+  /* ---------- hero ---------- */
+  .hero{ padding:56px 4px 28px; position:relative; }
+  .hero-wave{ position:absolute; top:10px; right:0; width:260px; opacity:.5; pointer-events:none; }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:0.75rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--sky); display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .eyebrow::before{ content:''; width:26px; height:1px; background:var(--sky); }
+  h1.hero-title{
+    font-family:var(--font-display); font-weight:600; font-size:clamp(2.1rem,5vw,3.4rem);
+    line-height:1.05; margin:0 0 14px; max-width:720px; letter-spacing:-0.01em;
+  }
+  h1.hero-title em{ font-style:italic; color:var(--citrus); font-weight:500; }
+  .hero-sub{ font-size:1rem; color:var(--paper-dim); max-width:560px; line-height:1.6; margin:0; }
 
-/* pronunciation */
-.pron-word{font-size:42px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px}
-.pron-ipa{font-size:18px;color:var(--muted);text-align:center;font-family:var(--mono);margin-bottom:16px}
-.score-bar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
-.score-track{flex:1;min-width:100px;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
-.score-fill{height:100%;border-radius:4px;transition:width .4s}
-.rec-ring{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;font-size:24px;border:2px solid var(--border)}
-.rec-ring.recording{animation:pulse .8s ease-in-out infinite;border-color:var(--red);background:#7f1d1d33}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
-.wave{height:32px;display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:10px}
-.wave-bar{width:4px;border-radius:2px;background:var(--muted);transition:height .1s}
+  /* ---------- generic section panel ---------- */
+  .panel{ display:none; animation:fadeUp .5s ease; }
+  .panel.active{ display:block; }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
-/* progress section */
-.prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:14px}
-.prog-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
-.prog-num{font-size:32px;font-weight:800;color:var(--accent);margin-bottom:4px}
-.prog-label{font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+  .section-head h2{ font-family:var(--font-display); font-size:clamp(1.5rem,3vw,2rem); margin:0; font-weight:600; }
+  .section-head p{ margin:6px 0 0; color:var(--muted); font-size:0.92rem; max-width:460px; }
 
-/* category btns */
-.cat-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
-.cat-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;font-family:var(--mono);transition:.15s}
-.cat-btn.active{background:rgba(198,54,47,.18);border-color:var(--accent);color:var(--accent)}
-.cat-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+  .wave-divider{ display:flex; align-items:center; gap:3px; height:14px; margin:6px 0 26px; opacity:.7; }
+  .wave-divider i{ display:block; width:3px; background:linear-gradient(180deg,var(--citrus),var(--coral)); border-radius:2px; }
 
-/* buttons */
-.btn{padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:var(--accent2)}
-.btn-outline{background:var(--card2);border:1.5px solid var(--border);color:var(--text)}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+  /* ---------- chips ---------- */
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+  .chip{
+    border:1px solid var(--line); background:var(--ink-2); color:var(--paper-dim);
+    padding:8px 16px; border-radius:999px; font-size:0.82rem; font-weight:600; cursor:pointer;
+    transition:all .18s ease;
+  }
+  .chip:hover{ border-color:var(--muted); color:var(--paper); }
+  .chip.active{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
 
-/* toast */
-#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:999;transition:transform .3s;pointer-events:none}
-#toast.show{transform:translateX(-50%) translateY(0)}
+  /* ---------- progress bar ---------- */
+  .progress-track{ width:100%; height:8px; border-radius:999px; background:var(--ink-2); border:1px solid var(--line); overflow:hidden; margin-bottom:28px; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg,var(--sky),var(--citrus)); border-radius:999px; transition:width .4s ease; }
+
+  /* ---------- flashcard (Learn) ---------- */
+  .learn-wrap{ display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .card-stage{ perspective:1600px; width:100%; max-width:560px; }
+  .flashcard{
+    position:relative; width:100%; min-height:340px; border-radius:var(--radius);
+    transform-style:preserve-3d; transition:transform .55s cubic-bezier(.2,.9,.25,1);
+    cursor:pointer;
+  }
+  .flashcard.flipped{ transform:rotateY(180deg); }
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:var(--radius);
+    background:linear-gradient(155deg,var(--ink-2),var(--ink-3));
+    border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:34px 32px; display:flex; flex-direction:column;
+  }
+  .face.back{ transform:rotateY(180deg); justify-content:center; }
+  .badge-row{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .pos-badge{ font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:.08em; background:rgba(212,240,76,0.14); color:var(--citrus); padding:5px 10px; border-radius:6px; border:1px solid rgba(212,240,76,0.3); }
+  .diff-badge{ font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:.08em; padding:5px 10px; border-radius:6px; border:1px solid var(--line); color:var(--muted); }
+  .diff-Easy{ color:var(--sky); }
+  .diff-Medium{ color:var(--citrus); }
+  .diff-Hard{ color:var(--coral); }
+
+  .word-display{ font-family:var(--font-display); font-size:clamp(2.2rem,6vw,3.2rem); font-weight:600; margin:0 0 6px; line-height:1.05; }
+  .ipa-display{ font-family:var(--font-mono); color:var(--sky); font-size:1.05rem; margin:0 0 22px; }
+  .listen-btn{
+    align-self:flex-start; display:flex; align-items:center; gap:10px;
+    background:transparent; border:1px solid var(--line); color:var(--paper);
+    padding:10px 18px; border-radius:999px; font-weight:600; font-size:0.85rem; cursor:pointer;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .listen-btn:hover{ border-color:var(--citrus); background:rgba(212,240,76,0.06); }
+  .eq{ display:flex; align-items:flex-end; gap:2px; height:14px; }
+  .eq i{ width:3px; background:var(--citrus); border-radius:2px; height:4px; transition:height .15s ease; }
+  .eq.playing i{ animation:eqbounce 0.9s ease-in-out infinite; }
+  .eq i:nth-child(1){ animation-delay:0s; } .eq i:nth-child(2){ animation-delay:.12s; }
+  .eq i:nth-child(3){ animation-delay:.24s; } .eq i:nth-child(4){ animation-delay:.06s; }
+  @keyframes eqbounce{ 0%,100%{ height:4px;} 50%{ height:14px;} }
+
+  .flip-hint{ margin-top:auto; padding-top:18px; font-size:0.78rem; color:var(--muted); display:flex; align-items:center; gap:8px; }
+
+  .back .def-label{ font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:8px; }
+  .back .definition{ font-size:1.08rem; line-height:1.55; margin:0 0 18px; }
+  .back .example{ font-family:var(--font-display); font-style:italic; color:var(--paper-dim); font-size:1rem; line-height:1.5; margin:0; border-left:2px solid var(--coral); padding-left:14px; }
+
+  .card-controls{ display:flex; align-items:center; justify-content:space-between; width:100%; max-width:560px; gap:12px; }
+  .nav-arrow{
+    width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:var(--ink-2);
+    color:var(--paper); display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:border-color .2s ease, transform .15s ease;
+  }
+  .nav-arrow:hover{ border-color:var(--citrus); transform:translateY(-2px); }
+  .know-actions{ display:flex; gap:10px; }
+  .btn{
+    font-family:var(--font-body); font-weight:700; font-size:0.85rem; border-radius:999px;
+    padding:11px 20px; cursor:pointer; border:1px solid transparent; transition:transform .15s ease, opacity .15s ease;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn:active{ transform:translateY(0); }
+  .btn-primary{ background:var(--citrus); color:var(--ink); }
+  .btn-ghost{ background:transparent; border-color:var(--line); color:var(--paper); }
+  .btn-ghost:hover{ border-color:var(--sky); }
+  .btn-coral{ background:var(--coral); color:var(--ink); }
+  .btn-outline-sky{ background:transparent; border-color:var(--sky); color:var(--sky); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+
+  .deck-count{ font-family:var(--font-mono); font-size:0.78rem; color:var(--muted); text-align:center; }
+
+  /* ---------- pronounce ---------- */
+  .pronounce-wrap{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:28px; align-items:start; }
+  @media (max-width:820px){ .pronounce-wrap{ grid-template-columns:1fr; } }
+
+  .p-word-card{
+    background:linear-gradient(155deg,var(--ink-2),var(--ink-3)); border:1px solid var(--line);
+    border-radius:var(--radius); padding:36px 32px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+  }
+  .p-word-card::after{
+    content:''; position:absolute; right:-40px; bottom:-40px; width:180px; height:180px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,111,145,0.16), transparent 70%);
+  }
+  .shuffle-btn{ display:flex; align-items:center; gap:8px; background:none; border:none; color:var(--muted); font-size:0.78rem; font-weight:600; cursor:pointer; margin-bottom:18px; }
+  .shuffle-btn:hover{ color:var(--sky); }
+
+  .record-zone{
+    background:var(--ink-2); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 28px; display:flex; flex-direction:column; align-items:center; gap:18px; text-align:center;
+    box-shadow:var(--shadow);
+  }
+  .mic-btn{
+    width:92px; height:92px; border-radius:50%; border:2px solid var(--coral); background:rgba(255,111,145,0.08);
+    color:var(--coral); display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:transform .2s ease, box-shadow .2s ease; position:relative;
+  }
+  .mic-btn svg{ width:32px; height:32px; }
+  .mic-btn:hover{ transform:scale(1.04); }
+  .mic-btn.recording{ background:var(--coral); color:var(--ink); box-shadow:0 0 0 10px rgba(255,111,145,0.14); animation:pulseRing 1.4s ease-in-out infinite; }
+  @keyframes pulseRing{ 0%{ box-shadow:0 0 0 0 rgba(255,111,145,0.35);} 70%{ box-shadow:0 0 0 18px rgba(255,111,145,0);} 100%{ box-shadow:0 0 0 0 rgba(255,111,145,0);} }
+  .mic-label{ font-size:0.82rem; color:var(--muted); font-weight:600; }
+
+  .rec-eq{ display:flex; align-items:flex-end; gap:3px; height:26px; }
+  .rec-eq i{ width:4px; background:var(--sky); border-radius:2px; height:5px; }
+  .rec-eq.active i{ animation:eqbounce2 1s ease-in-out infinite; }
+  .rec-eq i:nth-child(1){animation-delay:0s;} .rec-eq i:nth-child(2){animation-delay:.1s;}
+  .rec-eq i:nth-child(3){animation-delay:.2s;} .rec-eq i:nth-child(4){animation-delay:.3s;}
+  .rec-eq i:nth-child(5){animation-delay:.15s;} .rec-eq i:nth-child(6){animation-delay:.25s;}
+  .rec-eq i:nth-child(7){animation-delay:.05s;}
+  @keyframes eqbounce2{ 0%,100%{height:5px;} 50%{height:26px;} }
+
+  .score-result{ width:100%; display:none; flex-direction:column; align-items:center; gap:14px; }
+  .score-result.show{ display:flex; }
+  .gauge-wrap{ position:relative; width:140px; height:140px; }
+  .gauge-wrap svg{ transform:rotate(-90deg); width:140px; height:140px; }
+  .gauge-bg{ fill:none; stroke:var(--ink-4); stroke-width:10; }
+  .gauge-fg{ fill:none; stroke:var(--citrus); stroke-width:10; stroke-linecap:round; transition:stroke-dasharray .8s ease, stroke .3s ease; }
+  .gauge-num{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .gauge-num .n{ font-family:var(--font-display); font-size:2rem; font-weight:700; }
+  .gauge-num .l{ font-family:var(--font-mono); font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+  .heard-line{ font-size:0.86rem; color:var(--paper-dim); }
+  .heard-line b{ color:var(--paper); font-family:var(--font-mono); }
+  .feedback-msg{ font-family:var(--font-display); font-style:italic; font-size:1.05rem; margin:0; }
+  .tip-box{ font-size:0.8rem; color:var(--muted); background:var(--ink); border:1px solid var(--line); border-radius:12px; padding:12px 14px; text-align:left; }
+  .unsupported-note{ display:none; font-size:0.82rem; color:var(--coral); background:rgba(255,111,145,0.08); border:1px solid rgba(255,111,145,0.3); border-radius:12px; padding:12px 14px; }
+
+  /* ---------- test ---------- */
+  .test-start{ background:linear-gradient(155deg,var(--ink-2),var(--ink-3)); border:1px solid var(--line); border-radius:var(--radius); padding:40px 34px; text-align:center; box-shadow:var(--shadow); }
+  .test-start h3{ font-family:var(--font-display); font-size:1.6rem; margin:0 0 8px; }
+  .test-start p{ color:var(--muted); max-width:440px; margin:0 auto 26px; }
+  .opt-group{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:26px; }
+
+  .quiz-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:16px; flex-wrap:wrap; }
+  .q-progress{ font-family:var(--font-mono); font-size:0.8rem; color:var(--muted); }
+  .timer-bar{ width:160px; height:6px; border-radius:999px; background:var(--ink-2); overflow:hidden; border:1px solid var(--line); }
+  .timer-fill{ height:100%; background:linear-gradient(90deg,var(--sky),var(--coral)); width:100%; }
+
+  .quiz-card{ background:linear-gradient(155deg,var(--ink-2),var(--ink-3)); border:1px solid var(--line); border-radius:var(--radius); padding:32px; box-shadow:var(--shadow); }
+  .q-type{ font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--sky); margin-bottom:14px; display:inline-block; }
+  .q-prompt{ font-family:var(--font-display); font-size:1.4rem; margin:0 0 24px; line-height:1.35; }
+  .q-prompt .hi{ color:var(--citrus); }
+
+  .options-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .options-grid{ grid-template-columns:1fr; } }
+  .opt-btn{
+    text-align:left; background:var(--ink); border:1px solid var(--line); color:var(--paper);
+    padding:14px 16px; border-radius:12px; cursor:pointer; font-size:0.92rem; line-height:1.4;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt-btn:hover{ border-color:var(--muted); }
+  .opt-btn.correct{ border-color:var(--sky); background:rgba(127,217,255,0.1); color:var(--sky); }
+  .opt-btn.wrong{ border-color:var(--coral); background:rgba(255,111,145,0.1); color:var(--coral); }
+  .opt-btn:disabled{ cursor:default; }
+
+  .quiz-pron{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+
+  .results-card{ background:linear-gradient(155deg,var(--ink-2),var(--ink-3)); border:1px solid var(--line); border-radius:var(--radius); padding:40px 34px; text-align:center; box-shadow:var(--shadow); }
+  .results-score{ font-family:var(--font-display); font-size:3.4rem; font-weight:700; margin:6px 0; }
+  .results-score span{ font-size:1.4rem; color:var(--muted); font-weight:400; }
+  .stat-mini-row{ display:flex; justify-content:center; gap:26px; flex-wrap:wrap; margin:22px 0 28px; }
+  .stat-mini{ text-align:center; }
+  .stat-mini .n{ font-family:var(--font-mono); font-size:1.3rem; font-weight:600; }
+  .stat-mini .l{ font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+  .review-list{ text-align:left; max-width:420px; margin:0 auto 26px; display:flex; flex-direction:column; gap:8px; }
+  .review-item{ display:flex; justify-content:space-between; background:var(--ink); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:0.86rem; }
+  .review-item b{ font-family:var(--font-display); }
+  .review-item span{ color:var(--muted); font-family:var(--font-mono); font-size:0.78rem; }
+
+  /* ---------- progress dashboard ---------- */
+  .stat-cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+  @media (max-width:760px){ .stat-cards{ grid-template-columns:1fr 1fr; } }
+  .stat-card{ background:var(--ink-2); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .stat-card .icon{ width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+  .stat-card .icon svg{ width:16px; height:16px; }
+  .stat-card .val{ font-family:var(--font-display); font-size:1.9rem; font-weight:700; margin:0; }
+  .stat-card .lab{ font-size:0.78rem; color:var(--muted); margin-top:4px; }
+
+  .dash-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; }
+  @media (max-width:820px){ .dash-grid{ grid-template-columns:1fr; } }
+  .dash-panel{ background:var(--ink-2); border:1px solid var(--line); border-radius:var(--radius); padding:26px; }
+  .dash-panel h3{ font-family:var(--font-display); font-size:1.15rem; margin:0 0 18px; }
+
+  .bars{ display:flex; align-items:flex-end; gap:10px; height:150px; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px; }
+  .bar-col .bar{ width:100%; border-radius:6px 6px 3px 3px; background:linear-gradient(180deg,var(--citrus),var(--sky)); min-height:4px; }
+  .bar-col .bl{ font-family:var(--font-mono); font-size:0.66rem; color:var(--muted); }
+  .empty-msg{ color:var(--muted); font-size:0.86rem; text-align:center; padding:30px 10px; }
+
+  .review-mini{ display:flex; flex-direction:column; gap:10px; max-height:280px; overflow:auto; }
+  .review-mini::-webkit-scrollbar{ width:6px; }
+  .review-mini::-webkit-scrollbar-thumb{ background:var(--ink-4); border-radius:4px; }
+  .review-mini-item{ display:flex; align-items:center; justify-content:space-between; background:var(--ink); border:1px solid var(--line); border-radius:10px; padding:9px 12px; }
+  .review-mini-item b{ font-family:var(--font-display); font-size:0.95rem; }
+  .mini-play{ background:none; border:1px solid var(--line); color:var(--sky); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .mini-play svg{ width:12px; height:12px; }
+
+  footer{ text-align:center; padding:30px 0 10px; color:var(--muted); font-family:var(--font-mono); font-size:0.72rem; }
 </style>
 </head>
 <body>
+
+<div class="bg-glyphs" id="bgGlyphs" aria-hidden="true"></div>
+
+<header class="navbar">
+  <div class="logo">Word<span class="accent">Master</span></div>
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="learn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Learn
+    </button>
+    <button class="tab-btn" data-tab="pronounce">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+      Pronounce
+    </button>
+    <button class="tab-btn" data-tab="test">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Mock Test
+    </button>
+    <button class="tab-btn" data-tab="progress">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+      Progress
+    </button>
+  </nav>
+  <div class="streak-pill">● <b id="navLearned">0</b>&nbsp;learned&nbsp;·&nbsp;<b id="navAvg">—</b>&nbsp;avg score</div>
+</header>
+
 <div class="app">
 
-<div class="header">
-  <div class="logo-icon">📚</div>
-  <div class="logo">
-    <h1>WordMaster</h1>
-    <p>ENGLISH LAB · QE PLATFORM</p>
-  </div>
+  <section class="hero">
+    <div class="eyebrow">Vocabulary · Pronunciation · Practice</div>
+    <h1 class="hero-title">Learn words. <em>Hear</em> them.<br>Say them right.</h1>
+    <p class="hero-sub">Fifty words to master, real-time listening with your browser's voice, and a mic that scores how close you get. Pick a tab above to start.</p>
+  </section>
+
+  <!-- ============ LEARN ============ -->
+  <section class="panel active" id="panel-learn">
+    <div class="section-head">
+      <div>
+        <h2>Learn the deck</h2>
+        <p>Flip each card to reveal the meaning. Mark what you know — the rest will follow you into Progress.</p>
+      </div>
+    </div>
+    <div class="chip-row" id="learnFilters">
+      <button class="chip active" data-diff="All">All words</button>
+      <button class="chip" data-diff="Easy">Easy</button>
+      <button class="chip" data-diff="Medium">Medium</button>
+      <button class="chip" data-diff="Hard">Hard</button>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="learnProgressFill" style="width:0%"></div></div>
+
+    <div class="learn-wrap">
+      <div class="card-stage">
+        <div class="flashcard" id="flashcard">
+          <div class="face front">
+            <div class="badge-row">
+              <span class="pos-badge" id="posBadge">adj</span>
+              <span class="diff-badge" id="diffBadge">Easy</span>
+            </div>
+            <h3 class="word-display" id="wordDisplay">Serene</h3>
+            <p class="ipa-display" id="ipaDisplay">/səˈriːn/</p>
+            <button class="listen-btn" id="listenBtnFront" type="button">
+              <span class="eq" id="eqFront"><i></i><i></i><i></i><i></i></span>
+              Listen
+            </button>
+            <div class="flip-hint">↻ Tap card to reveal meaning</div>
+          </div>
+          <div class="face back">
+            <div class="def-label">Definition</div>
+            <p class="definition" id="defDisplay">Calm, peaceful, and untroubled.</p>
+            <div class="def-label">Example</div>
+            <p class="example" id="exDisplay">The lake was serene at dawn.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="deck-count" id="deckCount">Card 1 of 50</div>
+
+      <div class="card-controls">
+        <button class="nav-arrow" id="prevBtn" aria-label="Previous word">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="know-actions">
+          <button class="btn btn-ghost" id="stillLearningBtn">Still learning</button>
+          <button class="btn btn-primary" id="knownBtn">I know this ✓</button>
+        </div>
+        <button class="nav-arrow" id="nextBtn" aria-label="Next word">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRONOUNCE ============ -->
+  <section class="panel" id="panel-pronounce">
+    <div class="section-head">
+      <div>
+        <h2>Pronunciation practice</h2>
+        <p>Listen, then record yourself. WordMaster compares what it heard against the target word.</p>
+      </div>
+    </div>
+
+    <div class="pronounce-wrap">
+      <div class="p-word-card">
+        <button class="shuffle-btn" id="shuffleBtn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>
+          Shuffle word
+        </button>
+        <div class="badge-row">
+          <span class="pos-badge" id="pPosBadge">adj</span>
+          <span class="diff-badge" id="pDiffBadge">Easy</span>
+        </div>
+        <h3 class="word-display" id="pWordDisplay">Serene</h3>
+        <p class="ipa-display" id="pIpaDisplay">/səˈriːn/</p>
+        <button class="listen-btn" id="listenBtnP" type="button">
+          <span class="eq" id="eqP"><i></i><i></i><i></i><i></i></span>
+          Hear it said
+        </button>
+        <p class="def-label" style="margin-top:22px;color:var(--muted);font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;">Meaning</p>
+        <p style="margin:6px 0 0;line-height:1.55;color:var(--paper-dim);" id="pDefDisplay">Calm, peaceful, and untroubled.</p>
+      </div>
+
+      <div class="record-zone">
+        <div class="unsupported-note" id="unsupportedNote">Live speech scoring needs Chrome, Edge, or another Web-Speech-enabled browser. You can still use Learn and Listen everywhere.</div>
+
+        <button class="mic-btn" id="micBtn" type="button" aria-label="Record your pronunciation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+        </button>
+        <div class="mic-label" id="micLabel">Tap to record yourself saying the word</div>
+        <div class="rec-eq" id="recEq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+        <div class="score-result" id="scoreResult">
+          <div class="gauge-wrap">
+            <svg viewBox="0 0 140 140">
+              <circle class="gauge-bg" cx="70" cy="70" r="60"/>
+              <circle class="gauge-fg" id="gaugeFg" cx="70" cy="70" r="60" stroke-dasharray="0 377"/>
+            </svg>
+            <div class="gauge-num"><span class="n" id="gaugeNum">0</span><span class="l">score</span></div>
+          </div>
+          <p class="feedback-msg" id="feedbackMsg">Give it a try!</p>
+          <p class="heard-line">We heard: <b id="heardText">—</b></p>
+          <div class="tip-box" id="tipBox">Speak clearly and try to match the stressed syllable.</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" id="retryBtn">Try again</button>
+            <button class="btn btn-outline-sky" id="nextWordBtn">Next word →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEST ============ -->
+  <section class="panel" id="panel-test">
+    <div class="section-head">
+      <div>
+        <h2>Mock test</h2>
+        <p>A timed mix of meaning-matching and pronunciation questions.</p>
+      </div>
+    </div>
+
+    <div id="testStartScreen">
+      <div class="test-start">
+        <h3>Ready when you are</h3>
+        <p>Pick a difficulty and a length. Each pronunciation question uses your mic; every other question is multiple choice.</p>
+        <div style="margin-bottom:18px;">
+          <div class="chip-row" id="testDiffGroup" style="justify-content:center;">
+            <button class="chip active" data-diff="All">All levels</button>
+            <button class="chip" data-diff="Easy">Easy</button>
+            <button class="chip" data-diff="Medium">Medium</button>
+            <button class="chip" data-diff="Hard">Hard</button>
+          </div>
+        </div>
+        <div class="opt-group" id="testLenGroup">
+          <button class="chip active" data-len="10">10 questions</button>
+          <button class="chip" data-len="15">15 questions</button>
+          <button class="chip" data-len="20">20 questions</button>
+        </div>
+        <button class="btn btn-primary" id="startTestBtn" style="padding:13px 28px;font-size:0.92rem;">Start test →</button>
+      </div>
+    </div>
+
+    <div id="testQuizScreen" style="display:none;">
+      <div class="quiz-head">
+        <div class="q-progress" id="qProgress">Question 1 of 10</div>
+        <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+      </div>
+      <div class="quiz-card" id="quizCard"></div>
+    </div>
+
+    <div id="testResultsScreen" style="display:none;">
+      <div class="results-card">
+        <div class="def-label" style="color:var(--muted);font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;">Test complete</div>
+        <div class="results-score" id="resultsScore">0<span>/10</span></div>
+        <div class="stat-mini-row" id="resultsStatRow"></div>
+        <div id="resultsReviewWrap">
+          <div class="def-label" style="color:var(--muted);font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Words to review</div>
+          <div class="review-list" id="reviewList"></div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-ghost" id="backToMenuBtn">Back to menu</button>
+          <button class="btn btn-primary" id="retakeBtn">Retake test</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROGRESS ============ -->
+  <section class="panel" id="panel-progress">
+    <div class="section-head">
+      <div>
+        <h2>Your progress</h2>
+        <p>A snapshot of this session — practice more to grow every number here.</p>
+      </div>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="icon" style="background:rgba(212,240,76,0.14);color:var(--citrus);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <p class="val" id="statLearned">0</p>
+        <div class="lab">Words learned</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon" style="background:rgba(127,217,255,0.14);color:var(--sky);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+        </div>
+        <p class="val" id="statAvgScore">—</p>
+        <div class="lab">Avg. pronunciation score</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon" style="background:rgba(255,111,145,0.14);color:var(--coral);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <p class="val" id="statTests">0</p>
+        <div class="lab">Tests taken</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon" style="background:rgba(167,154,203,0.18);color:var(--muted);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg>
+        </div>
+        <p class="val" id="statBest">—</p>
+        <div class="lab">Best test score</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-panel">
+        <h3>Recent pronunciation scores</h3>
+        <div class="bars" id="barsWrap">
+          <div class="empty-msg">Practice a few words in the Pronounce tab to see your trend here.</div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <h3>Words to review</h3>
+        <div class="review-mini" id="reviewMini">
+          <div class="empty-msg">Nothing to review yet — mark words "Still learning" or miss them in a test.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
-<div class="body">
-  <div class="streak-bar" id="streakBar"></div>
-
-  <div class="mode-bar">
-    <button class="mode-btn active" id="m-vocab" onclick="setMode('vocab')">📖 Vocabulary</button>
-    <button class="mode-btn" id="m-grammar" onclick="setMode('grammar')">✏️ Grammar</button>
-    <button class="mode-btn" id="m-reading" onclick="setMode('reading')">📄 Reading</button>
-    <button class="mode-btn" id="m-speak" onclick="setMode('speak')">🎙️ Pronunciation</button>
-    <button class="mode-btn" id="m-test" onclick="setMode('test')">📝 Mock Test</button>
-    <button class="mode-btn" id="m-progress" onclick="setMode('progress')">📊 Progress</button>
-  </div>
-
-  <div id="panel"></div>
-</div>
-</div>
-<div id="toast"></div>
+<footer>WordMaster · built entirely in your browser · practice resets when you reload</footer>
 
 <script>
-/* ════════════════════════════════════════
-   VOCABULARY DATA (110+ words)
-════════════════════════════════════════ */
-const VOCAB = [
-  // Basic
-  {w:"Persevere",type:"verb",def:"Continue in a course of action despite difficulty.",ex:"She persevered through all the challenges to achieve her goal.",cat:"Academic"},
-  {w:"Eloquent",type:"adjective",def:"Fluent or persuasive in speaking or writing.",ex:"The eloquent speaker captivated the audience for hours.",cat:"Academic"},
-  {w:"Diligent",type:"adjective",def:"Having or showing care and conscientiousness in one's work.",ex:"A diligent student always completes assignments on time.",cat:"Academic"},
-  {w:"Ambiguous",type:"adjective",def:"Open to more than one interpretation; unclear.",ex:"The ambiguous instructions confused the students.",cat:"Academic"},
-  {w:"Concise",type:"adjective",def:"Giving much information clearly in few words.",ex:"His concise report covered all the key points in two pages.",cat:"Academic"},
-  {w:"Infer",type:"verb",def:"Deduce or conclude from evidence and reasoning.",ex:"From the clues, we can infer that the suspect was left-handed.",cat:"Academic"},
-  {w:"Analyze",type:"verb",def:"Examine in detail to understand the nature or structure.",ex:"We will analyze the poem's themes and literary devices.",cat:"Academic"},
-  {w:"Hypothesis",type:"noun",def:"A proposed explanation made on the basis of limited evidence.",ex:"The scientist's hypothesis was tested through experiments.",cat:"Science"},
-  {w:"Phenomenon",type:"noun",def:"A fact or situation that is observed to exist or happen.",ex:"The rainbow is a natural optical phenomenon.",cat:"Science"},
-  {w:"Substantial",type:"adjective",def:"Of considerable importance, size, or worth.",ex:"The team made substantial progress on the project.",cat:"Academic"},
-  {w:"Inevitable",type:"adjective",def:"Certain to happen; unavoidable.",ex:"Change is inevitable; we must learn to adapt.",cat:"Academic"},
-  {w:"Versatile",type:"adjective",def:"Able to adapt or be adapted to many different functions.",ex:"A versatile athlete can play multiple sports well.",cat:"General"},
-  {w:"Resilient",type:"adjective",def:"Able to withstand or recover quickly from difficulties.",ex:"The resilient community rebuilt after the flood.",cat:"General"},
-  {w:"Meticulous",type:"adjective",def:"Showing great attention to detail; very careful.",ex:"The meticulous editor caught every typo in the manuscript.",cat:"Academic"},
-  {w:"Collaborate",type:"verb",def:"Work jointly on an activity with others.",ex:"The two companies agreed to collaborate on the research.",cat:"Academic"},
-  {w:"Criterion",type:"noun",def:"A principle or standard by which something is judged.",ex:"Excellence is the main criterion for this award.",cat:"Academic"},
-  {w:"Elaborate",type:"verb",def:"Develop or present in further detail.",ex:"Please elaborate on your main argument.",cat:"Academic"},
-  {w:"Fundamental",type:"adjective",def:"Forming the base or essence; essential.",ex:"Reading is a fundamental skill for all subjects.",cat:"Academic"},
-  {w:"Implication",type:"noun",def:"A likely consequence of something.",ex:"What are the implications of this new law?",cat:"Academic"},
-  {w:"Paradox",type:"noun",def:"A seemingly absurd statement that when investigated may prove true.",ex:"It is a paradox that silence can be so loud.",cat:"Literary"},
-  {w:"Metaphor",type:"noun",def:"A figure of speech comparing two unlike things without 'like' or 'as'.",ex:"\"Time is a thief\" is a common metaphor.",cat:"Literary"},
-  {w:"Simile",type:"noun",def:"A comparison of two unlike things using 'like' or 'as'.",ex:"\"Fast as lightning\" is a simile.",cat:"Literary"},
-  {w:"Irony",type:"noun",def:"Expression of meaning opposite to what is literally stated.",ex:"The firehouse burning down is an example of situational irony.",cat:"Literary"},
-  {w:"Protagonist",type:"noun",def:"The main character in a story.",ex:"Harry Potter is the protagonist of the series.",cat:"Literary"},
-  {w:"Antagonist",type:"noun",def:"A character who opposes the protagonist.",ex:"The antagonist creates conflict for the main character.",cat:"Literary"},
-  {w:"Narrative",type:"noun",def:"A spoken or written account of events; a story.",ex:"The novel's narrative spans three generations.",cat:"Literary"},
-  {w:"Symbolism",type:"noun",def:"The use of symbols to represent ideas or qualities.",ex:"The dove is a symbol of peace in this poem.",cat:"Literary"},
-  {w:"Tone",type:"noun",def:"The author's attitude toward the subject expressed in writing.",ex:"The tone of the letter was formal and respectful.",cat:"Literary"},
-  {w:"Theme",type:"noun",def:"The central topic or idea explored in a work of literature.",ex:"The theme of justice runs through the entire novel.",cat:"Literary"},
-  {w:"Syntax",type:"noun",def:"The arrangement of words and phrases to create sentences.",ex:"His unusual syntax gave the poem a distinctive rhythm.",cat:"Grammar"},
-  {w:"Prefix",type:"noun",def:"A word part placed before a root word to change its meaning.",ex:"'Un-' is a prefix meaning not, as in unhappy.",cat:"Grammar"},
-  {w:"Suffix",type:"noun",def:"A word part placed after a root word to change its meaning.",ex:"'-ful' is a suffix meaning full of, as in joyful.",cat:"Grammar"},
-  {w:"Connotation",type:"noun",def:"An idea or feeling associated with a word beyond its literal meaning.",ex:"'Home' has warm connotations beyond just a building.",cat:"Literary"},
-  {w:"Denotation",type:"noun",def:"The literal, dictionary definition of a word.",ex:"The denotation of 'snake' is a legless reptile.",cat:"Literary"},
-  {w:"Alliteration",type:"noun",def:"Repetition of the same consonant sound at the start of words.",ex:"\"Peter Piper picked a peck\" uses alliteration.",cat:"Literary"},
-  {w:"Onomatopoeia",type:"noun",def:"A word that phonetically imitates the sound it describes.",ex:"Buzz, sizzle, and crash are examples of onomatopoeia.",cat:"Literary"},
-  {w:"Inference",type:"noun",def:"A conclusion reached by reasoning from evidence.",ex:"From the dark clouds, we drew the inference that rain was coming.",cat:"Academic"},
-  {w:"Summarize",type:"verb",def:"Give a brief statement of the main points.",ex:"Can you summarize the chapter in three sentences?",cat:"Academic"},
-  {w:"Paraphrase",type:"verb",def:"Express the meaning of something in different words.",ex:"Please paraphrase this paragraph in your own words.",cat:"Academic"},
-  {w:"Evaluate",type:"verb",def:"Form an idea about the amount, number, or quality of.",ex:"We will evaluate the evidence before drawing conclusions.",cat:"Academic"},
-  {w:"Exaggerate",type:"verb",def:"Represent something as larger or greater than it is.",ex:"He tends to exaggerate the size of the fish he catches.",cat:"General"},
-  {w:"Tentative",type:"adjective",def:"Not certain or fixed; provisional.",ex:"We made tentative plans to visit next month.",cat:"General"},
-  {w:"Redundant",type:"adjective",def:"Not or no longer needed; superfluous.",ex:"The phrase 'free gift' is redundant since gifts are always free.",cat:"Grammar"},
-  {w:"Coherent",type:"adjective",def:"Logical and consistent; easy to understand.",ex:"Please write a coherent paragraph with a clear main idea.",cat:"Academic"},
-  {w:"Relevant",type:"adjective",def:"Closely connected or appropriate to what is being considered.",ex:"Include only relevant details in your essay.",cat:"Academic"},
-  {w:"Explicit",type:"adjective",def:"Stated clearly and in detail, leaving no room for confusion.",ex:"The instructions were explicit about the deadline.",cat:"Academic"},
-  {w:"Implicit",type:"adjective",def:"Suggested though not directly expressed.",ex:"There was an implicit understanding that we would share costs.",cat:"Academic"},
-  {w:"Chronological",type:"adjective",def:"Arranged in the order in which events occurred.",ex:"The biography was told in chronological order.",cat:"Academic"},
-  {w:"Plausible",type:"adjective",def:"Seeming reasonable or probable; believable.",ex:"Her explanation was plausible but unproven.",cat:"Academic"},
-  {w:"Vivid",type:"adjective",def:"Producing powerful feelings or clear images in the mind.",ex:"The author used vivid descriptions of the jungle.",cat:"Literary"},
-  {w:"Ambivalent",type:"adjective",def:"Having mixed feelings about something.",ex:"She felt ambivalent about leaving home for university.",cat:"General"},
-  {w:"Benevolent",type:"adjective",def:"Well meaning and kindly; charitable.",ex:"The benevolent donor funded a new school library.",cat:"General"},
-  {w:"Profound",type:"adjective",def:"Very great or intense; having deep insight.",ex:"The professor's lecture was profound and thought-provoking.",cat:"Academic"},
-  {w:"Serene",type:"adjective",def:"Calm, peaceful, and untroubled.",ex:"The lake looked serene in the early morning mist.",cat:"General"},
-  {w:"Turbulent",type:"adjective",def:"Characterized by conflict, disorder, or confusion.",ex:"The country went through a turbulent decade of political change.",cat:"General"},
-  {w:"Eloquence",type:"noun",def:"Fluent and effective use of language.",ex:"Her eloquence made her speech unforgettable.",cat:"Academic"},
-  {w:"Perseverance",type:"noun",def:"Persistence in doing something despite difficulty or delay.",ex:"Perseverance is essential for long-term success.",cat:"Academic"},
-  {w:"Integrity",type:"noun",def:"The quality of being honest and having strong moral principles.",ex:"A good leader must have integrity above all else.",cat:"General"},
-  {w:"Empathy",type:"noun",def:"The ability to understand and share the feelings of another.",ex:"Showing empathy helps build strong relationships.",cat:"General"},
-  {w:"Insight",type:"noun",def:"The capacity to gain accurate understanding of a person or thing.",ex:"The novel gave readers deep insight into rural life.",cat:"Academic"},
-  {w:"Perspective",type:"noun",def:"A particular attitude toward or way of regarding something.",ex:"Reading helps us see events from different perspectives.",cat:"Academic"},
-  {w:"Discourse",type:"noun",def:"Written or spoken communication on a subject.",ex:"The academic discourse on climate change continues to grow.",cat:"Academic"},
-  {w:"Rhetoric",type:"noun",def:"The art of effective or persuasive speaking or writing.",ex:"Politicians often use rhetoric to sway public opinion.",cat:"Academic"},
-  // Grammar-focused
-  {w:"Clause",type:"noun",def:"A grammatical unit with a subject and predicate.",ex:"'When it rains' is a dependent clause.",cat:"Grammar"},
-  {w:"Phrase",type:"noun",def:"A small group of words forming a unit within a sentence.",ex:"'In the morning' is a prepositional phrase.",cat:"Grammar"},
-  {w:"Conjunction",type:"noun",def:"A word used to connect clauses, sentences, or words.",ex:"And, but, or, so are common conjunctions.",cat:"Grammar"},
-  {w:"Preposition",type:"noun",def:"A word showing the relationship of a noun to another word.",ex:"In, on, at, under, and between are prepositions.",cat:"Grammar"},
-  {w:"Modifier",type:"noun",def:"A word that provides information about another word.",ex:"'Quickly' modifies the verb 'runs' in 'He runs quickly.'",cat:"Grammar"},
-  {w:"Antonym",type:"noun",def:"A word with the opposite meaning to another.",ex:"Hot and cold are antonyms.",cat:"Vocabulary"},
-  {w:"Synonym",type:"noun",def:"A word with the same or similar meaning to another.",ex:"Happy and joyful are synonyms.",cat:"Vocabulary"},
-  {w:"Homophone",type:"noun",def:"A word that sounds the same as another but has a different meaning.",ex:"'Their,' 'there,' and 'they're' are homophones.",cat:"Grammar"},
-  {w:"Etymology",type:"noun",def:"The study of the origin and development of words.",ex:"Knowing a word's etymology can help you understand its meaning.",cat:"Vocabulary"},
-];
+(function(){
+  "use strict";
 
-/* ════════════════════════════════════════
-   GRAMMAR RULES
-════════════════════════════════════════ */
-const GRAMMAR = [
-  {
-    title:"Subject–Verb Agreement",
-    desc:"A singular subject takes a singular verb; a plural subject takes a plural verb.",
-    examples:["<span class='good'>✓ She runs every day.</span>","<span class='bad'>✗ She run every day.</span>","<span class='good'>✓ They study together.</span>","<span class='bad'>✗ They studies together.</span>"],
-    drill:{q:"The students ___ working hard.",opts:["is","are","was","am"],ans:1}
-  },
-  {
-    title:"Comma Rules",
-    desc:"Use a comma (1) to separate items in a list, (2) before a coordinating conjunction joining two independent clauses, and (3) after an introductory element.",
-    examples:["<span class='good'>✓ I bought apples, bananas, and oranges.</span>","<span class='good'>✓ She studied hard, but she was nervous.</span>","<span class='good'>✓ After school, I went to the library.</span>"],
-    drill:{q:"I want to travel ___ I don't have enough money.",opts:["but","so","and","or"],ans:0}
-  },
-  {
-    title:"Active vs Passive Voice",
-    desc:"In active voice the subject performs the action. In passive voice the subject receives the action. Prefer active voice for clarity and directness.",
-    examples:["<span class='good'>✓ Active: The dog chased the cat.</span>","<span class='bad'>〉 Passive: The cat was chased by the dog.</span>","<span class='good'>✓ The teacher explained the lesson.</span>"],
-    drill:{q:"Which sentence uses active voice?",opts:["The cake was eaten by Maria.","Maria ate the cake.","The lesson was learned.","The test was passed."],ans:1}
-  },
-  {
-    title:"Tenses: Simple vs Continuous",
-    desc:"Simple tenses express habitual actions or completed events. Continuous tenses express ongoing actions at a specific time.",
-    examples:["<span class='good'>✓ Simple: I walk to school every day.</span>","<span class='good'>✓ Continuous: I am walking to school right now.</span>","<span class='good'>✓ Past continuous: She was reading when he arrived.</span>"],
-    drill:{q:"She ___ her homework when her phone rang.",opts:["did","does","was doing","does do"],ans:2}
-  },
-  {
-    title:"Articles: A, An, The",
-    desc:"Use 'a' before consonant sounds, 'an' before vowel sounds. Use 'the' for specific or previously mentioned items. No article for general plurals.",
-    examples:["<span class='good'>✓ I saw a dog. The dog was friendly.</span>","<span class='good'>✓ She is an engineer.</span>","<span class='good'>✓ I love books (general — no article).</span>","<span class='bad'>✗ She is a engineer.</span>"],
-    drill:{q:"She has ___ umbrella in her bag.",opts:["a","an","the","—"],ans:1}
-  },
-  {
-    title:"Apostrophes",
-    desc:"Use an apostrophe to show possession (John's book) or to form contractions (it's = it is). Never use an apostrophe to form regular plurals.",
-    examples:["<span class='good'>✓ That is Maria's notebook.</span>","<span class='good'>✓ It's raining today. (= It is)</span>","<span class='bad'>✗ The students' book's are here.</span>","<span class='good'>✓ The students' books are here.</span>"],
-    drill:{q:"Which is correct?",opts:["Its raining.","It's raining.","Its' raining.","It is' raining."],ans:1}
-  },
-  {
-    title:"Comparative & Superlative",
-    desc:"For short adjectives add -er/-est. For long adjectives (3+ syllables) use more/most. Some are irregular: good→better→best, bad→worse→worst.",
-    examples:["<span class='good'>✓ She is taller than her brother.</span>","<span class='good'>✓ This is the most beautiful painting.</span>","<span class='bad'>✗ She is more tall than her brother.</span>"],
-    drill:{q:"This book is ___ than the last one.",opts:["more interesting","interestinger","most interesting","interestingest"],ans:0}
-  },
-];
-
-/* ════════════════════════════════════════
-   READING PASSAGES
-════════════════════════════════════════ */
-const PASSAGES = [
-  {
-    title:"The Importance of Reading",
-    text:"Reading is one of the most powerful habits a student can develop. When we read, we do much more than simply decode words on a page. We build vocabulary, strengthen our ability to concentrate, and expose ourselves to new ideas and perspectives that we might never encounter in our daily lives.\n\nResearch has consistently shown that students who read regularly perform better not just in language arts, but across all subjects. This is because reading strengthens the brain's ability to process and retain information. A student who reads even twenty minutes a day will encounter approximately 1.8 million words per year.\n\nMoreover, reading develops empathy. When we follow a character through challenges and triumphs, we practise understanding experiences different from our own. In this way, literature is not merely an academic exercise — it is preparation for life.",
-    questions:[
-      {q:"What is the main idea of this passage?",opts:["Reading only helps in language arts.","Reading builds many skills and perspectives.","Students should read for 20 minutes daily.","Books have 1.8 million words."],ans:1},
-      {q:"According to the passage, how does reading develop empathy?",opts:["By building vocabulary","By improving concentration","By following characters through experiences","By decoding words on a page"],ans:2},
-      {q:"The word 'consistently' in paragraph 2 most nearly means:",opts:["sometimes","repeatedly","rarely","recently"],ans:1},
-    ]
-  },
-  {
-    title:"The Water Cycle",
-    text:"Water is constantly moving through the environment in a process called the water cycle, or hydrological cycle. This natural system has no beginning or end, making Earth's water supply remarkably stable across millions of years.\n\nThe cycle begins when heat from the sun causes water to evaporate from oceans, lakes, and rivers, turning liquid water into water vapour. This vapour rises into the atmosphere, where cooler temperatures cause it to condense into tiny droplets, forming clouds. When these droplets combine and grow heavy enough, they fall back to Earth as precipitation — rain, snow, sleet, or hail.\n\nThe fallen water then takes many paths: some is absorbed by plants and trees, which release it back into the air through a process called transpiration; some soaks into the ground and replenishes underground aquifers; and some flows across the surface in streams and rivers, eventually returning to the ocean to begin the cycle again.",
-    questions:[
-      {q:"What drives the water cycle according to the passage?",opts:["The moon's gravity","Heat from the sun","Wind patterns","Underground aquifers"],ans:1},
-      {q:"What is transpiration?",opts:["Water evaporating from oceans","Rain falling from clouds","Plants releasing water into the air","Water soaking into the ground"],ans:2},
-      {q:"The word 'replenishes' means:",opts:["empties","refills","destroys","filters"],ans:1},
-    ]
-  },
-];
-
-/* ════════════════════════════════════════
-   PRONUNCIATION WORDS
-════════════════════════════════════════ */
-const PRON_WORDS = [
-  {w:"Particularly",ipa:"/pəˈtɪk.jʊ.lə.li/",tip:"Break it: par-TIC-u-lar-ly"},
-  {w:"Necessary",ipa:"/ˈnes.ə.ser.i/",tip:"One collar, two socks: NE-c-ss-ary"},
-  {w:"Wednesday",ipa:"/ˈwenz.deɪ/",tip:"Silent 'd': WENZ-day"},
-  {w:"Conscientious",ipa:"/ˌkɒn.ʃiˈen.ʃəs/",tip:"con-she-EN-shus"},
-  {w:"Entrepreneur",ipa:"/ˌɒn.trə.prəˈnɜːr/",tip:"on-truh-pruh-NUR"},
-  {w:"Pronunciation",ipa:"/prəˌnʌn.siˈeɪ.ʃən/",tip:"Not 'pronounciation' — pruh-NUN-see-AY-shun"},
-  {w:"Specifically",ipa:"/spəˈsɪf.ɪ.kli/",tip:"spuh-SIF-ik-lee"},
-  {w:"Extraordinary",ipa:"/ɪkˈstrɔː.dɪ.nri/",tip:"ik-STROR-din-ree"},
-  {w:"Hierarchy",ipa:"/ˈhaɪ.ə.rɑː.ki/",tip:"HY-uh-rar-kee"},
-  {w:"Worcestershire",ipa:"/ˈwʊs.tə.ʃɪər/",tip:"Famously: WUS-ter-sheer"},
-];
-
-/* ════════════════════════════════════════
-   STATE
-════════════════════════════════════════ */
-let state = {
-  mode:"vocab",
-  vocabIdx:0, vocabCat:"All",
-  grammarIdx:0, grammarAnswered:false, grammarPicked:null,
-  passageIdx:0, passageQ:null, passageAnswered:false, passagePicked:null,
-  pronIdx:0, recState:"idle", lastScore:0,
-  testQ:[], testIdx:0, testAnswered:false, testPicked:null, testScore:0, testDone:false,
-  progress: JSON.parse(localStorage.getItem("wm_progress")||'{"vocab":0,"quiz":0,"reading":0,"speak":0}'),
-  streak: JSON.parse(localStorage.getItem("wm_streak")||'{"days":0,"lastDate":""}'),
-};
-
-function checkStreak(){
-  const today=new Date().toDateString();
-  const s=state.streak;
-  if(s.lastDate===today) return;
-  const yesterday=new Date(Date.now()-86400000).toDateString();
-  s.days = s.lastDate===yesterday ? s.days+1 : 1;
-  s.lastDate=today;
-  localStorage.setItem("wm_streak",JSON.stringify(s));
-}
-checkStreak();
-
-function saveProgress(key,val){
-  state.progress[key]=Math.max(state.progress[key]||0,val);
-  localStorage.setItem("wm_progress",JSON.stringify(state.progress));
-}
-
-/* ════════════════════════════════════════
-   RENDER DISPATCH
-════════════════════════════════════════ */
-function renderAll(){
-  renderStreak();
-  ["vocab","grammar","reading","speak","test","progress"].forEach(m=>{
-    const el=document.getElementById("m-"+m);
-    if(el) el.classList.toggle("active",m===state.mode);
-  });
-  renderPanel();
-}
-
-function renderStreak(){
-  document.getElementById("streakBar").innerHTML=`
-    <div style="font-size:26px">🔥</div>
-    <div><h3>${state.streak.days}-Day Streak</h3><p>Keep practising every day!</p></div>
-    <div style="margin-left:auto;text-align:right">
-      <div class="num">${state.streak.days}</div><div class="lbl">days</div>
-    </div>`;
-}
-
-function renderPanel(){
-  const el=document.getElementById("panel");
-  if(state.mode==="vocab") el.innerHTML=renderVocab();
-  else if(state.mode==="grammar") el.innerHTML=renderGrammar();
-  else if(state.mode==="reading") el.innerHTML=renderReading();
-  else if(state.mode==="speak") el.innerHTML=renderPron();
-  else if(state.mode==="test") el.innerHTML=renderTest();
-  else el.innerHTML=renderProgress();
-}
-
-function setMode(m){
-  state.mode=m;
-  if(m==="test" && !state.testDone && state.testQ.length===0) buildTest();
-  renderAll();
-}
-
-/* ═══════ VOCABULARY ═══════ */
-function getVocab(){
-  return state.vocabCat==="All" ? VOCAB : VOCAB.filter(v=>v.cat===state.vocabCat);
-}
-function getVocabCats(){
-  return ["All",...new Set(VOCAB.map(v=>v.cat))];
-}
-function renderVocab(){
-  const list=getVocab();
-  if(state.vocabIdx>=list.length) state.vocabIdx=0;
-  const v=list[state.vocabIdx];
-  const cats=getVocabCats();
-  return `
-    <div class="cat-row">${cats.map(c=>`<button class="cat-btn ${c===state.vocabCat?'active':''}" onclick="setVocabCat('${c}')">${c}</button>`).join("")}</div>
-    <div class="card">
-      <div class="word-display">
-        <div class="word-main">${v.w}</div>
-        <div class="word-type">${v.type}</div>
-        <div class="word-def">${v.def}</div>
-        <div class="word-ex">"${v.ex}"</div>
-      </div>
-      <div style="padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="speakWord('${v.w}')">🔊 Hear it</button>
-        <button class="btn btn-outline" onclick="setMode('test');renderPanel()">📝 Quiz me</button>
-      </div>
-      <div class="word-nav">
-        <span class="word-counter">${state.vocabIdx+1} / ${list.length} words</span>
-        <div class="nav-row">
-          <button class="icon-btn" onclick="prevVocab()">◀</button>
-          <button class="icon-btn" onclick="nextVocab()">▶</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-function setVocabCat(c){ state.vocabCat=c; state.vocabIdx=0; renderPanel(); }
-function nextVocab(){ const l=getVocab(); state.vocabIdx=(state.vocabIdx+1)%l.length; saveProgress("vocab",state.vocabIdx+1); renderPanel(); }
-function prevVocab(){ const l=getVocab(); state.vocabIdx=(state.vocabIdx-1+l.length)%l.length; renderPanel(); }
-
-/* ═══════ GRAMMAR ═══════ */
-function renderGrammar(){
-  const r=GRAMMAR[state.grammarIdx];
-  const drill=r.drill;
-  const optHTML=drill.opts.map((o,i)=>{
-    let cls="opt";
-    if(state.grammarAnswered){
-      if(i===drill.ans) cls+=" correct";
-      else if(i===state.grammarPicked) cls+=" wrong";
-    }
-    return `<button class="opt ${cls}" ${state.grammarAnswered?"disabled":""} onclick="answerGrammar(${i})">${o}</button>`;
-  }).join("");
-  return `
-    <div class="card">
-      <div class="card-head">
-        <span style="font-size:14px;font-weight:700">${r.title}</span>
-        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">${state.grammarIdx+1}/${GRAMMAR.length}</span>
-      </div>
-      <div class="card-body">
-        <div class="rule-card">
-          <div class="rule-title">📌 Rule</div>
-          <div class="rule-desc">${r.desc}</div>
-          <div class="rule-ex">${r.examples.join("<br/>")}</div>
-        </div>
-        <div style="margin-top:16px">
-          <div style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">PRACTICE DRILL</div>
-          <div class="quiz-q">${drill.q}</div>
-          <div class="opts">${optHTML}</div>
-          <div class="feedback" id="gramFb"></div>
-          ${state.grammarAnswered?`<button class="btn btn-primary" style="margin-top:12px" onclick="nextGrammar()">Next Rule →</button>`:""}
-        </div>
-      </div>
-    </div>`;
-}
-
-function answerGrammar(i){
-  if(state.grammarAnswered) return;
-  state.grammarAnswered=true; state.grammarPicked=i;
-  const r=GRAMMAR[state.grammarIdx];
-  const fb=r.drill.ans===i?"✅ Correct! Well done.":"❌ Incorrect. The answer is: <span style='color:var(--text)'>"+r.drill.opts[r.drill.ans]+"</span>";
-  renderPanel();
-  const el=document.getElementById("gramFb");
-  if(el){ el.innerHTML=fb; el.style.color=r.drill.ans===i?"var(--green)":"var(--red)"; }
-}
-
-function nextGrammar(){
-  state.grammarIdx=(state.grammarIdx+1)%GRAMMAR.length;
-  state.grammarAnswered=false; state.grammarPicked=null;
-  renderPanel();
-}
-
-/* ═══════ READING ═══════ */
-function renderReading(){
-  const p=PASSAGES[state.passageIdx];
-  const qHTML = p.questions.map((q,qi)=>{
-    const opts=q.opts.map((o,oi)=>{
-      let cls="opt";
-      if(state.passageAnswered){
-        if(oi===q.ans) cls+=" correct";
-        else if(oi===state.passagePicked) cls+=" wrong";
-      }
-      return `<button class="${cls}" ${state.passageAnswered?"disabled":""} onclick="answerReading(${oi})">${o}</button>`;
-    }).join("");
-    return `<div style="margin-bottom:20px"><div class="quiz-q">Q${qi+1}. ${q.q}</div><div class="opts">${opts}</div></div>`;
-  }).slice(0,1).join(""); // Show one question at a time
-
-  return `
-    <div class="card">
-      <div class="card-head">
-        <span style="font-size:14px;font-weight:700">Reading Comprehension</span>
-        <div style="display:flex;gap:8px">
-          ${PASSAGES.map((_,i)=>`<button class="icon-btn ${i===state.passageIdx?'':'btn-outline'}" style="${i===state.passageIdx?'border-color:var(--accent);color:var(--accent)':''}" onclick="switchPassage(${i})">P${i+1}</button>`).join("")}
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="passage"><div class="passage-title">${p.title}</div>${p.text.split("\n\n").map(para=>`<p style="margin-bottom:12px">${para}</p>`).join("")}</div>
-        <div style="margin-top:18px;font-size:13px;font-weight:700;margin-bottom:12px">Comprehension Questions</div>
-        ${qHTML}
-        <div id="readFb" class="feedback" style="margin-bottom:10px"></div>
-        ${state.passageAnswered?`<button class="btn btn-primary" onclick="nextReadingQ()">Next Question →</button>`:""}
-      </div>
-    </div>`;
-}
-
-let readQIdx=0;
-function answerReading(i){
-  if(state.passageAnswered) return;
-  state.passageAnswered=true; state.passagePicked=i;
-  const p=PASSAGES[state.passageIdx];
-  const correct=p.questions[readQIdx].ans===i;
-  renderPanel();
-  const el=document.getElementById("readFb");
-  if(el){ el.innerHTML=correct?"✅ Correct!":"❌ Not quite."; el.style.color=correct?"var(--green)":"var(--red)"; }
-  if(correct) saveProgress("reading",(state.progress.reading||0)+1);
-}
-
-function nextReadingQ(){
-  const p=PASSAGES[state.passageIdx];
-  readQIdx=(readQIdx+1)%p.questions.length;
-  state.passageAnswered=false; state.passagePicked=null;
-  renderPanel();
-}
-
-function switchPassage(i){ state.passageIdx=i; state.passageAnswered=false; state.passagePicked=null; readQIdx=0; renderPanel(); }
-
-/* ═══════ PRONUNCIATION ═══════ */
-function renderPron(){
-  const pw=PRON_WORDS[state.pronIdx];
-  const scoreHTML=state.recState==="scored"?`
-    <div class="score-bar">
-      <div><div style="font-size:11px;color:var(--muted);font-family:var(--mono)">SCORE</div>
-      <div style="font-size:22px;font-weight:700;color:${state.lastScore>=70?'var(--green)':state.lastScore>=40?'var(--yellow)':'var(--red)'}">${state.lastScore}%</div></div>
-      <div class="score-track">
-        <div class="score-fill" style="width:${state.lastScore}%;background:${state.lastScore>=70?'var(--green)':state.lastScore>=40?'var(--yellow)':'var(--red)'}"></div>
-      </div>
-      <div style="font-size:13px;color:var(--muted)">${state.lastScore>=70?"Excellent!":state.lastScore>=40?"Good try!":"Listen again"}</div>
-    </div>`:"";
-  return `
-    ${scoreHTML}
-    <div class="card">
-      <div class="card-head"><span style="font-weight:700">Pronunciation Practice</span>
-        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">${state.pronIdx+1}/${PRON_WORDS.length}</span>
-      </div>
-      <div class="card-body" style="text-align:center">
-        <div class="pron-word">${pw.w}</div>
-        <div class="pron-ipa">${pw.ipa}</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">💡 Tip: ${pw.tip}</div>
-        <button class="btn btn-outline" onclick="speakWord('${pw.w}')" style="margin-bottom:20px">🔊 Hear native pronunciation</button>
-        <div class="rec-ring ${state.recState==="recording"?"recording":""}" id="recRing">
-          ${state.recState==="idle"?"🎙️":state.recState==="recording"?"⏺️":"✅"}
-        </div>
-        <div class="wave" id="waveform">${Array(12).fill(0).map(()=>`<div class="wave-bar" style="height:${Math.random()*26+4}px"></div>`).join("")}</div>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-          <button class="btn btn-primary" onmousedown="startRec()" onmouseup="stopRec()" ontouchstart="startRec()" ontouchend="stopRec()">
-            ${state.recState==="recording"?"⏹ Release to stop":"🎙️ Hold to speak"}
-          </button>
-          <button class="btn btn-outline" onclick="nextPron()">Next word →</button>
-        </div>
-      </div>
-      <div class="word-nav">
-        <div class="nav-row">
-          <button class="icon-btn" onclick="prevPron()">◀</button>
-          <button class="icon-btn" onclick="nextPron()">▶</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-function nextPron(){ state.pronIdx=(state.pronIdx+1)%PRON_WORDS.length; state.recState="idle"; renderPanel(); }
-function prevPron(){ state.pronIdx=(state.pronIdx-1+PRON_WORDS.length)%PRON_WORDS.length; state.recState="idle"; renderPanel(); }
-
-let waveTimer=null;
-function startRec(){
-  if(state.recState==="recording") return;
-  state.recState="recording"; renderPanel(); animWave();
-  if(navigator.mediaDevices) navigator.mediaDevices.getUserMedia({audio:true}).then(s=>s.getTracks().forEach(t=>t.stop())).catch(()=>{});
-}
-function stopRec(){
-  if(state.recState!=="recording") return;
-  clearInterval(waveTimer); simulateScore();
-}
-function simulateScore(){
-  state.lastScore=Math.min(99,45+Math.floor(Math.random()*40)+(Math.random()>.4?Math.floor(Math.random()*14):0));
-  state.recState="scored"; saveProgress("speak",(state.progress.speak||0)+1);
-  renderPanel();
-  toast(state.lastScore>=70?"🎉 Excellent pronunciation!":state.lastScore>=40?"👍 Keep practising!":"🔄 Listen first, then try again");
-}
-function animWave(){
-  waveTimer=setInterval(()=>{
-    document.querySelectorAll(".wave-bar").forEach(b=>{
-      b.style.height=(Math.random()*30+4)+"px";
-      b.style.background=state.recState==="recording"?"var(--red)":"var(--muted)";
-    });
-  },110);
-}
-
-/* ═══════ MOCK TEST ═══════ */
-function buildTest(){
-  const pool=[...VOCAB].sort(()=>Math.random()-.5).slice(0,15);
-  state.testQ=pool.map(v=>{
-    const others=VOCAB.filter(x=>x.w!==v.w).sort(()=>Math.random()-.5).slice(0,3);
-    const opts=[...others.map(o=>o.def),v.def].sort(()=>Math.random()-.5);
-    return {prompt:v.w, answer:v.def, opts};
-  });
-  state.testIdx=0; state.testAnswered=false; state.testPicked=null; state.testScore=0; state.testDone=false;
-}
-
-function renderTest(){
-  if(state.testDone){
-    const pct=Math.round(state.testScore/state.testQ.length*100);
-    return `
-      <div class="card">
-        <div class="card-body" style="text-align:center;padding:30px">
-          <div style="font-size:52px;margin-bottom:12px">${pct>=80?"🏆":pct>=60?"🎖️":"📖"}</div>
-          <div style="font-size:28px;font-weight:800;margin-bottom:6px">${pct}%</div>
-          <div style="font-size:15px;color:var(--muted);margin-bottom:6px">${state.testScore}/${state.testQ.length} correct</div>
-          <div style="font-size:14px;color:var(--muted);margin-bottom:24px">${pct>=80?"Excellent result!":pct>=60?"Good work — keep studying!":"Review the vocabulary section and try again."}</div>
-          <button class="btn btn-primary" onclick="buildTest();setMode('test');renderPanel()">Take another test</button>
-        </div>
-      </div>`;
-  }
-  if(!state.testQ.length) return "<p style='color:var(--muted)'>Loading test...</p>";
-  const q=state.testQ[state.testIdx];
-  const optHTML=q.opts.map((o,i)=>{
-    let cls="opt";
-    if(state.testAnswered){
-      if(o===q.answer) cls+=" correct";
-      else if(i===state.testPicked && o!==q.answer) cls+=" wrong";
-    }
-    return `<button class="${cls}" ${state.testAnswered?"disabled":""} onclick="answerTest(${i},'${o.replace(/'/g,"&#39;")}')">${o}</button>`;
-  }).join("");
-  return `
-    <div class="card">
-      <div class="card-head">
-        <span style="font-weight:700;font-size:14px">Mock Vocabulary Test</span>
-        <span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${state.testIdx+1}/${state.testQ.length} · Score: ${state.testScore}</span>
-      </div>
-      <div class="card-body">
-        <div class="quiz-hint">WHAT IS THE MEANING OF:</div>
-        <div class="quiz-q">${q.prompt}</div>
-        <div class="opts">${optHTML}</div>
-        <div id="testFb" class="feedback"></div>
-        ${state.testAnswered?`<button class="btn btn-primary" style="margin-top:12px" onclick="nextTestQ()">Next →</button>`:""}
-      </div>
-    </div>`;
-}
-
-function answerTest(i,o){
-  if(state.testAnswered) return;
-  state.testAnswered=true; state.testPicked=i;
-  const q=state.testQ[state.testIdx];
-  const correct=o===q.answer;
-  if(correct){ state.testScore++; saveProgress("quiz",state.testScore); }
-  renderPanel();
-  const el=document.getElementById("testFb");
-  if(el){ el.innerHTML=correct?"✅ Correct!":"❌ The answer was: <em style='color:var(--text)'>"+q.answer+"</em>"; el.style.color=correct?"var(--green)":"var(--red)"; }
-}
-
-function nextTestQ(){
-  if(state.testIdx>=state.testQ.length-1){ state.testDone=true; renderPanel(); return; }
-  state.testIdx++; state.testAnswered=false; state.testPicked=null;
-  renderPanel();
-}
-
-/* ═══════ PROGRESS ═══════ */
-function renderProgress(){
-  const p=state.progress;
-  const items=[
-    {icon:"📖",label:"Words Explored",val:p.vocab||0,total:VOCAB.length},
-    {icon:"📝",label:"Quiz Score",val:p.quiz||0,total:15},
-    {icon:"📄",label:"Questions Answered",val:p.reading||0,total:PASSAGES.reduce((a,b)=>a+b.questions.length,0)},
-    {icon:"🎙️",label:"Pronunciation Attempts",val:p.speak||0,total:PRON_WORDS.length},
+  /* ================= VOCAB DATA ================= */
+  const VOCAB = [
+    {w:"Serene",ipa:"/səˈriːn/",pos:"adj",diff:"Easy",def:"Calm, peaceful, and untroubled.",ex:"The lake was serene at dawn."},
+    {w:"Vivid",ipa:"/ˈvɪvɪd/",pos:"adj",diff:"Easy",def:"Producing powerful, clear images in the mind.",ex:"She had a vivid memory of the trip."},
+    {w:"Blend",ipa:"/blɛnd/",pos:"verb",diff:"Easy",def:"To mix smoothly and inseparably together.",ex:"Blend the flour and sugar."},
+    {w:"Gather",ipa:"/ˈɡæðər/",pos:"verb",diff:"Easy",def:"To bring together in one place.",ex:"We gather every Sunday for dinner."},
+    {w:"Brief",ipa:"/briːf/",pos:"adj",diff:"Easy",def:"Short in duration or length.",ex:"Give a brief summary of the plan."},
+    {w:"Curious",ipa:"/ˈkjʊəriəs/",pos:"adj",diff:"Easy",def:"Eager to know or learn something.",ex:"The curious child asked many questions."},
+    {w:"Gentle",ipa:"/ˈdʒɛntl/",pos:"adj",diff:"Easy",def:"Kind, mild, and soft in manner.",ex:"A gentle breeze moved through the trees."},
+    {w:"Journey",ipa:"/ˈdʒɜːrni/",pos:"noun",diff:"Easy",def:"A trip made from one place to another.",ex:"Their journey took three long days."},
+    {w:"Modest",ipa:"/ˈmɒdɪst/",pos:"adj",diff:"Easy",def:"Not showy, boastful, or excessive.",ex:"He stayed modest about his success."},
+    {w:"Nurture",ipa:"/ˈnɜːrtʃər/",pos:"verb",diff:"Easy",def:"To care for and help something grow.",ex:"Good teachers nurture curiosity."},
+    {w:"Optimal",ipa:"/ˈɒptɪməl/",pos:"adj",diff:"Easy",def:"The best or most favorable possible.",ex:"Find the optimal route to the airport."},
+    {w:"Radiant",ipa:"/ˈreɪdiənt/",pos:"adj",diff:"Easy",def:"Shining brightly, or glowing with joy.",ex:"She greeted us with a radiant smile."},
+    {w:"Steady",ipa:"/ˈstɛdi/",pos:"adj",diff:"Easy",def:"Firmly fixed, balanced, and not shaking.",ex:"Keep a steady pace up the hill."},
+    {w:"Thrive",ipa:"/θraɪv/",pos:"verb",diff:"Easy",def:"To grow, develop, or do well vigorously.",ex:"These plants thrive in bright sunlight."},
+    {w:"Wander",ipa:"/ˈwɒndər/",pos:"verb",diff:"Easy",def:"To walk slowly without a fixed direction.",ex:"We wandered through the old market."},
+    {w:"Ambiguous",ipa:"/æmˈbɪɡjuəs/",pos:"adj",diff:"Medium",def:"Open to more than one interpretation.",ex:"The instructions were frustratingly ambiguous."},
+    {w:"Candid",ipa:"/ˈkændɪd/",pos:"adj",diff:"Medium",def:"Truthful, direct, and straightforward.",ex:"She gave a candid answer to the question."},
+    {w:"Diligent",ipa:"/ˈdɪlɪdʒənt/",pos:"adj",diff:"Medium",def:"Showing careful, persistent effort in work.",ex:"A diligent student rarely misses a deadline."},
+    {w:"Eloquent",ipa:"/ˈɛləkwənt/",pos:"adj",diff:"Medium",def:"Fluent and persuasive in speech or writing.",ex:"She's known as an eloquent public speaker."},
+    {w:"Fluctuate",ipa:"/ˈflʌktʃueɪt/",pos:"verb",diff:"Medium",def:"To rise and fall irregularly over time.",ex:"Currency prices fluctuate throughout the day."},
+    {w:"Genuine",ipa:"/ˈdʒɛnjuɪn/",pos:"adj",diff:"Medium",def:"Truly what something is said to be.",ex:"It turned out to be a genuine antique."},
+    {w:"Hesitant",ipa:"/ˈhɛzɪtənt/",pos:"adj",diff:"Medium",def:"Slow to act or speak through uncertainty.",ex:"She was hesitant to raise her hand."},
+    {w:"Inevitable",ipa:"/ɪnˈɛvɪtəbl/",pos:"adj",diff:"Medium",def:"Certain to happen and unable to be avoided.",ex:"With no backup plan, failure felt inevitable."},
+    {w:"Juxtapose",ipa:"/ˈdʒʌkstəpoʊz/",pos:"verb",diff:"Medium",def:"To place things side by side for contrast.",ex:"The film juxtaposes the past with the present."},
+    {w:"Kinetic",ipa:"/kɪˈnɛtɪk/",pos:"adj",diff:"Medium",def:"Relating to or produced by motion.",ex:"A rolling ball carries kinetic energy."},
+    {w:"Lucid",ipa:"/ˈluːsɪd/",pos:"adj",diff:"Medium",def:"Clear, easy to understand, and rational.",ex:"He gave a lucid explanation of the process."},
+    {w:"Meticulous",ipa:"/məˈtɪkjələs/",pos:"adj",diff:"Medium",def:"Showing great care and precision with detail.",ex:"Her meticulous planning paid off on the trip."},
+    {w:"Notorious",ipa:"/noʊˈtɔːriəs/",pos:"adj",diff:"Medium",def:"Well known for something considered bad.",ex:"The pirate was notorious along the coast."},
+    {w:"Obsolete",ipa:"/ˈɒbsəliːt/",pos:"adj",diff:"Medium",def:"No longer produced or used; out of date.",ex:"The old software quickly became obsolete."},
+    {w:"Pragmatic",ipa:"/præɡˈmætɪk/",pos:"adj",diff:"Medium",def:"Dealing with problems in a sensible, practical way.",ex:"They took a pragmatic approach to the budget."},
+    {w:"Quaint",ipa:"/kweɪnt/",pos:"adj",diff:"Medium",def:"Attractively unusual or old-fashioned.",ex:"We stayed in a quaint village inn."},
+    {w:"Resilient",ipa:"/rɪˈzɪliənt/",pos:"adj",diff:"Medium",def:"Able to recover quickly from difficulty.",ex:"The town proved resilient after the storm."},
+    {w:"Skeptical",ipa:"/ˈskɛptɪkəl/",pos:"adj",diff:"Medium",def:"Not easily convinced; having doubts.",ex:"He remained skeptical of the bold claim."},
+    {w:"Tedious",ipa:"/ˈtiːdiəs/",pos:"adj",diff:"Medium",def:"Too long, slow, or dull; tiresome.",ex:"Filing paperwork can feel tedious."},
+    {w:"Ubiquitous",ipa:"/juːˈbɪkwɪtəs/",pos:"adj",diff:"Medium",def:"Seeming to be present everywhere at once.",ex:"Smartphones have become ubiquitous."},
+    {w:"Cacophony",ipa:"/kəˈkɒfəni/",pos:"noun",diff:"Hard",def:"A harsh, jarring mixture of sounds.",ex:"A cacophony of car horns filled the street."},
+    {w:"Ephemeral",ipa:"/ɪˈfɛmərəl/",pos:"adj",diff:"Hard",def:"Lasting for only a very short time.",ex:"Fame in that industry can be ephemeral."},
+    {w:"Idiosyncrasy",ipa:"/ˌɪdioʊˈsɪŋkrəsi/",pos:"noun",diff:"Hard",def:"A peculiar, individual habit or trait.",ex:"Talking to his plants is one of his idiosyncrasies."},
+    {w:"Loquacious",ipa:"/loʊˈkweɪʃəs/",pos:"adj",diff:"Hard",def:"Very talkative; fond of chatting.",ex:"Our loquacious host kept everyone entertained."},
+    {w:"Perfunctory",ipa:"/pərˈfʌŋktəri/",pos:"adj",diff:"Hard",def:"Done as a routine, without care or interest.",ex:"He gave a perfunctory nod and walked off."},
+    {w:"Quintessential",ipa:"/ˌkwɪntɪˈsɛnʃəl/",pos:"adj",diff:"Hard",def:"Representing the most perfect example of a quality.",ex:"A picnic by the lake felt like the quintessential summer day."},
+    {w:"Sycophant",ipa:"/ˈsɪkəfænt/",pos:"noun",diff:"Hard",def:"A person who flatters others excessively for gain.",ex:"The king grew tired of being surrounded by sycophants."},
+    {w:"Truculent",ipa:"/ˈtrʌkjələnt/",pos:"adj",diff:"Hard",def:"Eager to argue or fight; fiercely defiant.",ex:"The customer gave a truculent, angry reply."},
+    {w:"Vicissitude",ipa:"/vɪˈsɪsɪtjuːd/",pos:"noun",diff:"Hard",def:"A change of circumstance, often for the worse.",ex:"She wrote calmly about the vicissitudes of her career."},
+    {w:"Winsome",ipa:"/ˈwɪnsəm/",pos:"adj",diff:"Hard",def:"Attractive or appealing in a charming way.",ex:"The puppy had a winsome, playful expression."},
+    {w:"Xenophobia",ipa:"/ˌzɛnəˈfoʊbiə/",pos:"noun",diff:"Hard",def:"Fear or dislike of people from other countries.",ex:"The campaign aimed at reducing xenophobia."},
+    {w:"Zealous",ipa:"/ˈzɛləs/",pos:"adj",diff:"Hard",def:"Having or showing great energy for a cause.",ex:"A zealous fan showed up hours before the show."},
+    {w:"Anachronism",ipa:"/əˈnækrənɪzəm/",pos:"noun",diff:"Hard",def:"Something placed in the wrong historical period.",ex:"A wristwatch in a Roman film is an anachronism."},
+    {w:"Circumlocution",ipa:"/ˌsɜːrkəmloʊˈkjuːʃən/",pos:"noun",diff:"Hard",def:"An indirect way of saying something.",ex:"He used circumlocution to avoid answering directly."},
+    {w:"Obfuscate",ipa:"/ˈɒbfʌskeɪt/",pos:"verb",diff:"Hard",def:"To make something unclear or hard to understand.",ex:"The dense report seemed to obfuscate the real numbers."}
   ];
-  return `
-    <h3 style="margin-bottom:6px">Your Progress</h3>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Track your WordMaster journey</p>
-    <div class="prog-grid">
-      ${items.map(it=>{
-        const pct=it.total?Math.round(it.val/it.total*100):0;
-        return `<div class="prog-card">
-          <div style="font-size:28px;margin-bottom:8px">${it.icon}</div>
-          <div class="prog-num">${it.val}</div>
-          <div class="prog-label">${it.label}</div>
-          <div style="margin-top:10px;height:5px;background:var(--card2);border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;transition:.4s"></div>
-          </div>
-          <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px">${pct}% complete</div>
-        </div>`;
-      }).join("")}
-    </div>
-    <div style="margin-top:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
-      <h4 style="margin-bottom:12px;font-size:14px">Library</h4>
-      <div style="display:flex;gap:16px;flex-wrap:wrap">
-        <div><span style="font-size:28px;font-weight:800;color:var(--accent)">${VOCAB.length}</span><div style="font-size:12px;color:var(--muted)">vocabulary words</div></div>
-        <div><span style="font-size:28px;font-weight:800;color:var(--blue)">${GRAMMAR.length}</span><div style="font-size:12px;color:var(--muted)">grammar rules</div></div>
-        <div><span style="font-size:28px;font-weight:800;color:var(--green)">${PASSAGES.length}</span><div style="font-size:12px;color:var(--muted)">reading passages</div></div>
-        <div><span style="font-size:28px;font-weight:800;color:var(--yellow)">${PRON_WORDS.length}</span><div style="font-size:12px;color:var(--muted)">pronunciation words</div></div>
-      </div>
-    </div>`;
-}
+  VOCAB.forEach((v,i)=>v.id=i);
 
-/* ════════ HELPERS ════════ */
-function speakWord(w){
-  if(!window.speechSynthesis){ toast("TTS not supported"); return; }
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(w);
-  u.lang="en-GB"; u.rate=0.85;
-  window.speechSynthesis.speak(u);
-}
+  const GLYPHS = ["ə","ʃ","θ","ŋ","ʒ","æ","ɪ","ʊ","ɛ","ɔ","ˈ","ˌ","tʃ","dʒ","ɜː","aɪ"];
+  const bgWrap = document.getElementById('bgGlyphs');
+  for(let i=0;i<24;i++){
+    const s = document.createElement('span');
+    s.textContent = GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+    s.style.top = (Math.random()*100)+'%';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.fontSize = (16+Math.random()*40)+'px';
+    s.style.transform = 'rotate('+(Math.random()*40-20)+'deg)';
+    bgWrap.appendChild(s);
+  }
 
-function toast(msg,ms=2600){
-  const el=document.getElementById("toast");
-  el.textContent=msg; el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"),ms);
-}
+  /* ================= STATE ================= */
+  const state = {
+    learned: new Set(),
+    reviewing: new Set(),
+    pronunciationAttempts: [], // {wordId, score}
+    testResults: [], // {score,total,date}
+    learnFilter: 'All',
+    learnIndex: 0,
+    pronounceWordId: 0,
+    testDiff: 'All',
+    testLen: 10,
+    quiz: { questions: [], index: 0, correct: 0, missed: [], timer: null, timeLeft: 0, answered:false }
+  };
 
-/* ════════ INIT ════════ */
-buildTest();
-renderAll();
+  const $ = sel => document.querySelector(sel);
+  const $all = sel => Array.from(document.querySelectorAll(sel));
+
+  function filteredDeck(diff){
+    return diff==='All' ? VOCAB : VOCAB.filter(v=>v.diff===diff);
+  }
+
+  /* ================= NAV TABS ================= */
+  $all('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      $all('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      $all('.panel').forEach(p=>p.classList.remove('active'));
+      $('#panel-'+btn.dataset.tab).classList.add('active');
+      if(btn.dataset.tab==='progress') renderProgress();
+    });
+  });
+
+  /* ================= SPEECH SYNTH (Listen) ================= */
+  function speak(word, eqEl){
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = 'en-US';
+    utter.rate = 0.85;
+    if(eqEl) eqEl.classList.add('playing');
+    utter.onend = ()=>{ if(eqEl) eqEl.classList.remove('playing'); };
+    utter.onerror = ()=>{ if(eqEl) eqEl.classList.remove('playing'); };
+    window.speechSynthesis.speak(utter);
+  }
+
+  /* ================= LEARN TAB ================= */
+  const flashcard = $('#flashcard');
+  function currentLearnDeck(){ return filteredDeck(state.learnFilter); }
+
+  function renderLearnCard(){
+    const deck = currentLearnDeck();
+    if(deck.length===0) return;
+    if(state.learnIndex>=deck.length) state.learnIndex=0;
+    if(state.learnIndex<0) state.learnIndex=deck.length-1;
+    const v = deck[state.learnIndex];
+    flashcard.classList.remove('flipped');
+    $('#posBadge').textContent = v.pos;
+    $('#diffBadge').textContent = v.diff;
+    $('#diffBadge').className = 'diff-badge diff-'+v.diff;
+    $('#wordDisplay').textContent = v.w;
+    $('#ipaDisplay').textContent = v.ipa;
+    $('#defDisplay').textContent = v.def;
+    $('#exDisplay').textContent = v.ex;
+    $('#deckCount').textContent = 'Card '+(state.learnIndex+1)+' of '+deck.length;
+    flashcard.dataset.wordId = v.id;
+    const pct = Math.round((state.learned.size / VOCAB.length)*100);
+    $('#learnProgressFill').style.width = pct+'%';
+    updateNavStreak();
+  }
+
+  flashcard.addEventListener('click', ()=> flashcard.classList.toggle('flipped'));
+  $('#listenBtnFront').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const v = currentLearnDeck()[state.learnIndex];
+    speak(v.w, $('#eqFront'));
+  });
+  $('#nextBtn').addEventListener('click', ()=>{ state.learnIndex++; renderLearnCard(); });
+  $('#prevBtn').addEventListener('click', ()=>{ state.learnIndex--; renderLearnCard(); });
+  $('#knownBtn').addEventListener('click', ()=>{
+    const v = currentLearnDeck()[state.learnIndex];
+    state.learned.add(v.id);
+    state.reviewing.delete(v.id);
+    state.learnIndex++; renderLearnCard();
+  });
+  $('#stillLearningBtn').addEventListener('click', ()=>{
+    const v = currentLearnDeck()[state.learnIndex];
+    state.reviewing.add(v.id);
+    state.learned.delete(v.id);
+    state.learnIndex++; renderLearnCard();
+  });
+  $all('#learnFilters .chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      $all('#learnFilters .chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      state.learnFilter = chip.dataset.diff;
+      state.learnIndex = 0;
+      renderLearnCard();
+    });
+  });
+
+  /* ================= SPEECH RECOGNITION (Pronounce + Test) ================= */
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognitionSupported = !!SpeechRecognitionAPI;
+  if(!recognitionSupported){ $('#unsupportedNote').style.display='block'; }
+
+  function levenshtein(a,b){
+    a=a.toLowerCase().trim(); b=b.toLowerCase().trim();
+    const m=a.length, n=b.length;
+    const dp = Array.from({length:m+1},()=>new Array(n+1).fill(0));
+    for(let i=0;i<=m;i++) dp[i][0]=i;
+    for(let j=0;j<=n;j++) dp[0][j]=j;
+    for(let i=1;i<=m;i++){
+      for(let j=1;j<=n;j++){
+        dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+      }
+    }
+    return dp[m][n];
+  }
+  function similarityScore(target, heard){
+    if(!heard) return 0;
+    const t=target.toLowerCase().trim(), h=heard.toLowerCase().trim();
+    if(t===h) return 100;
+    const dist = levenshtein(t,h);
+    const maxLen = Math.max(t.length,h.length,1);
+    let score = Math.round((1 - dist/maxLen)*100);
+    return Math.max(0, Math.min(100, score));
+  }
+  function feedbackFor(score){
+    if(score>=90) return {msg:"Excellent — spot on!", tip:"That's the target pronunciation. Try a harder word next."};
+    if(score>=75) return {msg:"Great job, very close.", tip:"Small differences in vowel sound. Listen once more and match the stress."};
+    if(score>=50) return {msg:"Good attempt — keep practicing.", tip:"Break the word into syllables and say each one slowly before combining them."};
+    return {msg:"Let's try that again.", tip:"Play Listen, focus on the first syllable, and speak a little slower and clearer."};
+  }
+
+  function runRecognition(targetWord, onResult){
+    if(!recognitionSupported){ onResult(null); return; }
+    const rec = new SpeechRecognitionAPI();
+    rec.lang='en-US'; rec.maxAlternatives=3; rec.interimResults=false;
+    let done=false;
+    rec.onresult = (e)=>{
+      done=true;
+      const transcript = e.results[0][0].transcript;
+      onResult(transcript);
+    };
+    rec.onerror = ()=>{ if(!done){ done=true; onResult(null); } };
+    rec.onend = ()=>{ if(!done){ done=true; onResult(null); } };
+    try{ rec.start(); }catch(err){ onResult(null); }
+    return rec;
+  }
+
+  /* ---- Pronounce tab wiring ---- */
+  function renderPronounceWord(){
+    const v = VOCAB.find(x=>x.id===state.pronounceWordId) || VOCAB[0];
+    $('#pPosBadge').textContent = v.pos;
+    $('#pDiffBadge').textContent = v.diff;
+    $('#pDiffBadge').className = 'diff-badge diff-'+v.diff;
+    $('#pWordDisplay').textContent = v.w;
+    $('#pIpaDisplay').textContent = v.ipa;
+    $('#pDefDisplay').textContent = v.def;
+    $('#scoreResult').classList.remove('show');
+    $('#micLabel').textContent = 'Tap to record yourself saying the word';
+  }
+  $('#shuffleBtn').addEventListener('click', ()=>{
+    let next;
+    do{ next = VOCAB[Math.floor(Math.random()*VOCAB.length)].id; }while(next===state.pronounceWordId && VOCAB.length>1);
+    state.pronounceWordId = next;
+    renderPronounceWord();
+  });
+  $('#listenBtnP').addEventListener('click', ()=>{
+    const v = VOCAB.find(x=>x.id===state.pronounceWordId);
+    speak(v.w, $('#eqP'));
+  });
+  $('#nextWordBtn').addEventListener('click', ()=>{
+    let next;
+    do{ next = VOCAB[Math.floor(Math.random()*VOCAB.length)].id; }while(next===state.pronounceWordId && VOCAB.length>1);
+    state.pronounceWordId = next;
+    renderPronounceWord();
+  });
+  $('#retryBtn').addEventListener('click', ()=>{ $('#scoreResult').classList.remove('show'); });
+
+  const micBtn = $('#micBtn');
+  micBtn.addEventListener('click', ()=>{
+    if(!recognitionSupported){ $('#unsupportedNote').style.display='block'; return; }
+    const v = VOCAB.find(x=>x.id===state.pronounceWordId);
+    micBtn.classList.add('recording');
+    $('#recEq').classList.add('active');
+    $('#micLabel').textContent = 'Listening… say "'+v.w+'"';
+    runRecognition(v.w, (transcript)=>{
+      micBtn.classList.remove('recording');
+      $('#recEq').classList.remove('active');
+      $('#micLabel').textContent = 'Tap to record yourself saying the word';
+      const score = transcript ? similarityScore(v.w, transcript) : 0;
+      state.pronunciationAttempts.push({wordId:v.id, score});
+      showScore(score, transcript);
+      updateNavStreak();
+    });
+  });
+
+  function showScore(score, transcript){
+    $('#scoreResult').classList.add('show');
+    const circumference = 2*Math.PI*60;
+    const fg = $('#gaugeFg');
+    fg.style.strokeDasharray = (circumference*(score/100))+' '+circumference;
+    fg.style.stroke = score>=75 ? 'var(--citrus)' : score>=50 ? 'var(--sky)' : 'var(--coral)';
+    $('#gaugeNum').textContent = score;
+    const fb = feedbackFor(score);
+    $('#feedbackMsg').textContent = fb.msg;
+    $('#tipBox').textContent = fb.tip;
+    $('#heardText').textContent = transcript ? ('"'+transcript+'"') : 'nothing recognized — try again';
+  }
+
+  /* ================= NAV STREAK MINI STAT ================= */
+  function updateNavStreak(){
+    $('#navLearned').textContent = state.learned.size;
+    const attempts = state.pronunciationAttempts;
+    if(attempts.length===0){ $('#navAvg').textContent='—'; }
+    else{
+      const avg = Math.round(attempts.reduce((s,a)=>s+a.score,0)/attempts.length);
+      $('#navAvg').textContent = avg+'%';
+    }
+  }
+
+  /* ================= MOCK TEST ================= */
+  $all('#testDiffGroup .chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      $all('#testDiffGroup .chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      state.testDiff = chip.dataset.diff;
+    });
+  });
+  $all('#testLenGroup .chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      $all('#testLenGroup .chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      state.testLen = parseInt(chip.dataset.len,10);
+    });
+  });
+
+  function shuffleArr(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+
+  function buildQuiz(){
+    const pool = shuffleArr(filteredDeck(state.testDiff));
+    const n = Math.min(state.testLen, pool.length);
+    const chosen = pool.slice(0, n);
+    const questions = chosen.map((v, idx)=>{
+      const roll = idx % 5;
+      let type;
+      if(roll===4) type='pronounce';
+      else if(roll % 2 === 0) type='defMatch';
+      else type='wordMatch';
+      return buildQuestion(v, type);
+    });
+    return shuffleArr(questions);
+  }
+
+  function buildQuestion(v, type){
+    if(type==='pronounce'){
+      return {type:'pronounce', word:v};
+    }
+    const distractPool = VOCAB.filter(x=>x.id!==v.id);
+    const distractors = shuffleArr(distractPool).slice(0,3);
+    if(type==='defMatch'){
+      const options = shuffleArr([{text:v.def,correct:true}, ...distractors.map(d=>({text:d.def,correct:false}))]);
+      return {type:'defMatch', word:v, prompt:v.w, options};
+    }else{
+      const options = shuffleArr([{text:v.w,correct:true}, ...distractors.map(d=>({text:d.w,correct:false}))]);
+      return {type:'wordMatch', word:v, prompt:v.def, options};
+    }
+  }
+
+  $('#startTestBtn').addEventListener('click', startTest);
+  $('#retakeBtn').addEventListener('click', startTest);
+  $('#backToMenuBtn').addEventListener('click', ()=>{
+    $('#testResultsScreen').style.display='none';
+    $('#testStartScreen').style.display='block';
+  });
+
+  function startTest(){
+    state.quiz = { questions: buildQuiz(), index:0, correct:0, missed:[], timer:null, timeLeft:20, answered:false, pronScores:[] };
+    $('#testStartScreen').style.display='none';
+    $('#testResultsScreen').style.display='none';
+    $('#testQuizScreen').style.display='block';
+    renderQuizQuestion();
+  }
+
+  function clearQuizTimer(){ if(state.quiz.timer){ clearInterval(state.quiz.timer); state.quiz.timer=null; } }
+
+  function renderQuizQuestion(){
+    clearQuizTimer();
+    const q = state.quiz.questions[state.quiz.index];
+    state.quiz.answered = false;
+    $('#qProgress').textContent = 'Question '+(state.quiz.index+1)+' of '+state.quiz.questions.length;
+    const card = $('#quizCard');
+
+    if(q.type==='pronounce'){
+      card.innerHTML =
+        '<span class="q-type">Pronunciation</span>'+
+        '<p class="q-prompt">Say the word: <span class="hi">'+q.word.w+'</span> <span style="color:var(--muted);font-family:var(--font-mono);font-size:1rem;">'+q.word.ipa+'</span></p>'+
+        '<div class="quiz-pron">'+
+          '<button class="btn btn-ghost" id="quizListenBtn" type="button">🔊 Listen first</button>'+
+          '<button class="mic-btn" id="quizMicBtn" type="button" style="width:76px;height:76px;">'+
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>'+
+          '</button>'+
+          '<div class="mic-label" id="quizMicLabel">Tap the mic and say the word</div>'+
+        '</div>';
+      $('#quizListenBtn').addEventListener('click', ()=> speak(q.word.w, null));
+      $('#quizMicBtn').addEventListener('click', ()=>{
+        if(state.quiz.answered) return;
+        if(!recognitionSupported){ $('#quizMicLabel').textContent='Mic scoring unsupported in this browser — counted as skipped.'; setTimeout(()=>submitAnswer(false,0), 900); return; }
+        $('#quizMicBtn').classList.add('recording');
+        $('#quizMicLabel').textContent = 'Listening…';
+        runRecognition(q.word.w, (transcript)=>{
+          $('#quizMicBtn').classList.remove('recording');
+          const score = transcript ? similarityScore(q.word.w, transcript) : 0;
+          state.quiz.pronScores.push(score);
+          state.pronunciationAttempts.push({wordId:q.word.id, score});
+          $('#quizMicLabel').textContent = transcript ? ('Heard: "'+transcript+'" · '+score+'%') : 'Nothing recognized · 0%';
+          submitAnswer(score>=65, score);
+        });
+      });
+    } else {
+      const promptLabel = q.type==='defMatch' ? 'What does this word mean?' : 'Which word matches this definition?';
+      const promptText = q.type==='defMatch' ? q.prompt : ('"'+q.prompt+'"');
+      card.innerHTML =
+        '<span class="q-type">'+(q.type==='defMatch'?'Meaning':'Word match')+'</span>'+
+        '<p class="q-prompt">'+promptLabel+' <span class="hi">'+(q.type==='defMatch'?promptText:'')+'</span>'+(q.type!=='defMatch'?('<br><span style="font-size:1.05rem;font-style:italic;color:var(--paper-dim);">'+promptText+'</span>'):'')+'</p>'+
+        '<div class="options-grid" id="optionsGrid"></div>';
+      const grid = $('#optionsGrid');
+      q.options.forEach(opt=>{
+        const b = document.createElement('button');
+        b.className='opt-btn'; b.textContent=opt.text;
+        b.addEventListener('click', ()=>{
+          if(state.quiz.answered) return;
+          state.quiz.answered = true;
+          clearQuizTimer();
+          $all('.opt-btn').forEach(el=>el.disabled=true);
+          if(opt.correct){ b.classList.add('correct'); }
+          else{
+            b.classList.add('wrong');
+            const correctBtn = Array.from(grid.children).find((el,i)=>q.options[i].correct);
+            if(correctBtn) correctBtn.classList.add('correct');
+          }
+          setTimeout(()=> submitAnswer(opt.correct), 550);
+        });
+        grid.appendChild(b);
+      });
+    }
+
+    startQuizTimer(q);
+  }
+
+  function startQuizTimer(q){
+    let timeLimit = q.type==='pronounce' ? 15 : 20;
+    let t = timeLimit;
+    const fill = $('#timerFill');
+    fill.style.transition = 'none';
+    fill.style.width='100%';
+    requestAnimationFrame(()=>{
+      fill.style.transition = 'width '+timeLimit+'s linear';
+      fill.style.width='0%';
+    });
+    state.quiz.timer = setInterval(()=>{
+      t--;
+      if(t<=0){
+        clearQuizTimer();
+        if(!state.quiz.answered){
+          state.quiz.answered = true;
+          if(q.type!=='pronounce'){
+            $all('.opt-btn').forEach(el=>{ el.disabled=true; });
+            const grid = $('#optionsGrid');
+            if(grid){
+              Array.from(grid.children).forEach((el,i)=>{ if(q.options[i].correct) el.classList.add('correct'); });
+            }
+          }
+          submitAnswer(false, 0);
+        }
+      }
+    }, 1000);
+  }
+
+  function submitAnswer(isCorrect, pronScore){
+    clearQuizTimer();
+    const q = state.quiz.questions[state.quiz.index];
+    if(isCorrect) state.quiz.correct++;
+    else state.quiz.missed.push(q.word);
+    setTimeout(()=>{
+      state.quiz.index++;
+      if(state.quiz.index >= state.quiz.questions.length){ finishQuiz(); }
+      else{ renderQuizQuestion(); }
+    }, q.type==='pronounce' ? 500 : 60);
+  }
+
+  function finishQuiz(){
+    clearQuizTimer();
+    const total = state.quiz.questions.length;
+    const correct = state.quiz.correct;
+    state.testResults.push({score:correct, total, date:Date.now()});
+    // dedupe missed by word id, mark for review
+    const seen = new Set();
+    const missedUnique = [];
+    state.quiz.missed.forEach(w=>{
+      if(!seen.has(w.id)){ seen.add(w.id); missedUnique.push(w); state.reviewing.add(w.id); }
+    });
+
+    $('#testQuizScreen').style.display='none';
+    $('#testResultsScreen').style.display='block';
+    $('#resultsScore').innerHTML = correct+'<span>/'+total+'</span>';
+
+    const pronCount = state.quiz.pronScores.length;
+    const pronAvg = pronCount ? Math.round(state.quiz.pronScores.reduce((s,v)=>s+v,0)/pronCount) : null;
+    const pct = Math.round((correct/total)*100);
+
+    $('#resultsStatRow').innerHTML =
+      '<div class="stat-mini"><div class="n">'+pct+'%</div><div class="l">Accuracy</div></div>'+
+      '<div class="stat-mini"><div class="n">'+(total-correct)+'</div><div class="l">Missed</div></div>'+
+      '<div class="stat-mini"><div class="n">'+(pronAvg!==null ? pronAvg+'%' : '—')+'</div><div class="l">Pron. avg</div></div>';
+
+    const listEl = $('#reviewList');
+    if(missedUnique.length===0){
+      listEl.innerHTML = '<div class="empty-msg" style="padding:14px 0;">Perfect run — nothing to review!</div>';
+    }else{
+      listEl.innerHTML = missedUnique.map(w=>'<div class="review-item"><b>'+w.w+'</b><span>'+w.ipa+'</span></div>').join('');
+    }
+    updateNavStreak();
+  }
+
+  /* ================= PROGRESS DASHBOARD ================= */
+  function renderProgress(){
+    $('#statLearned').textContent = state.learned.size;
+    const attempts = state.pronunciationAttempts;
+    $('#statAvgScore').textContent = attempts.length ? Math.round(attempts.reduce((s,a)=>s+a.score,0)/attempts.length)+'%' : '—';
+    $('#statTests').textContent = state.testResults.length;
+    if(state.testResults.length){
+      const best = state.testResults.reduce((m,r)=> (r.score/r.total) > (m.score/m.total) ? r : m, state.testResults[0]);
+      $('#statBest').textContent = best.score+'/'+best.total;
+    }else{
+      $('#statBest').textContent = '—';
+    }
+
+    const barsWrap = $('#barsWrap');
+    const recent = attempts.slice(-10);
+    if(recent.length===0){
+      barsWrap.innerHTML = '<div class="empty-msg">Practice a few words in the Pronounce tab to see your trend here.</div>';
+    }else{
+      barsWrap.innerHTML = recent.map(a=>{
+        const w = VOCAB.find(v=>v.id===a.wordId);
+        return '<div class="bar-col"><div class="bar" style="height:'+Math.max(4,a.score)+'%;"></div><div class="bl">'+(w?w.w.slice(0,4):'')+'</div></div>';
+      }).join('');
+    }
+
+    const reviewMini = $('#reviewMini');
+    const reviewIds = Array.from(state.reviewing);
+    if(reviewIds.length===0){
+      reviewMini.innerHTML = '<div class="empty-msg">Nothing to review yet — mark words "Still learning" or miss them in a test.</div>';
+    }else{
+      reviewMini.innerHTML = reviewIds.map(id=>{
+        const w = VOCAB.find(v=>v.id===id);
+        if(!w) return '';
+        return '<div class="review-mini-item"><b>'+w.w+'</b><button class="mini-play" data-word="'+w.w+'" aria-label="Play pronunciation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg></button></div>';
+      }).join('');
+      $all('.mini-play').forEach(btn=>{
+        btn.addEventListener('click', ()=> speak(btn.dataset.word, null));
+      });
+    }
+  }
+
+  /* ================= INIT ================= */
+  renderLearnCard();
+  renderPronounceWord();
+  updateNavStreak();
+})();
 </script>
 </body>
 </html>

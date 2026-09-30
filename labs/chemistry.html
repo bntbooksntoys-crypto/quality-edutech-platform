@@ -1,0 +1,1455 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Spectra Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,400&display=swap">
+<style>
+:root{
+  --paper:#e9ecf1; --surface:#f9fafc; --surface-2:#f1f3f7; --line:#cdd3de; --line-soft:#dee3ec;
+  --ink:#11151f; --ink-2:#414b60; --ink-3:#6b7488;
+  --accent:#0a7d84; --accent-ink:#ffffff; --accent-soft:#d5eef0;
+  --good:#1c7a4b; --warn:#9a6408; --bad:#a33232;
+  --tile-l:62%; --tile-s:52%; --tile-text:#0d1017; --tile-a:1;
+  --shadow:0 1px 2px rgba(16,22,36,.06), 0 8px 24px -12px rgba(16,22,36,.28);
+  --glow:0 0 0 rgba(0,0,0,0);
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#080a0f; --surface:#111621; --surface-2:#171d2a; --line:#2a3244; --line-soft:#1e2536;
+    --ink:#e8ecf5; --ink-2:#a7b1c6; --ink-3:#78839a;
+    --accent:#3ad6db; --accent-ink:#03242a; --accent-soft:#0e3238;
+    --good:#4ede9c; --warn:#f0bf5f; --bad:#ff8a8a;
+    --tile-l:58%; --tile-s:46%; --tile-text:#05070c;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 32px -16px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#080a0f; --surface:#111621; --surface-2:#171d2a; --line:#2a3244; --line-soft:#1e2536;
+  --ink:#e8ecf5; --ink-2:#a7b1c6; --ink-3:#78839a;
+  --accent:#3ad6db; --accent-ink:#03242a; --accent-soft:#0e3238;
+  --good:#4ede9c; --warn:#f0bf5f; --bad:#ff8a8a;
+  --tile-l:58%; --tile-s:46%; --tile-text:#05070c;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 32px -16px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0; text-wrap:balance; font-weight:700; letter-spacing:-.02em}
+p{margin:0}
+button{font:inherit; color:inherit; background:none; border:none; cursor:pointer}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.serif{font-family:"Newsreader",Georgia,serif}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- gate ---------- */
+#gate{position:fixed; inset:0; z-index:120; display:grid; place-items:center; background:var(--paper); padding:24px}
+#gate.hide{display:none}
+#gate{overflow-y:auto; align-items:start; padding:clamp(16px,5vh,56px) 20px}
+.gate-card{width:min(520px,100%); background:var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); overflow:hidden}
+.gate-strip{height:8px; background:linear-gradient(90deg, var(--accent), hsl(var(--accent-h,268) 60% 58%))}
+.gate-inner{padding:26px 30px 30px}
+.gate-card h1{font-size:32px; margin-top:14px; letter-spacing:-.03em}
+.gate-lede{color:var(--ink-2); margin-top:8px; font-size:14.5px; font-family:"Newsreader",Georgia,serif; font-size:17px; line-height:1.45}
+.field{margin-top:22px; border:none; padding:0}
+.field label, .field legend{display:block; font-size:13px; font-weight:600; letter-spacing:.01em; margin-bottom:7px; padding:0}
+.req{color:var(--bad); font-weight:700}
+.field input[type=text], .field input:not([type]), .field input[type=email], #benchOtherText{
+  width:100%; background:var(--surface-2); border:1px solid var(--line); color:var(--ink);
+  border-radius:9px; padding:10px 12px; font:inherit; font-size:14px;
+}
+.field input::placeholder, #benchOtherText::placeholder{color:var(--ink-3)}
+.field input:focus{border-color:var(--accent)}
+.benches{display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:5px}
+.bench-opt{display:flex; align-items:center; gap:7px; padding:7px 9px; border:1px solid var(--line); border-radius:8px; background:var(--surface-2); font-size:13px; cursor:pointer}
+.bench-opt:hover{border-color:var(--accent)}
+.bench-opt input{accent-color:var(--accent); margin:0}
+.bench-opt.on{border-color:var(--accent); background:var(--accent-soft)}
+.other-row{display:flex; align-items:center; gap:8px; margin-top:7px}
+.other-row input[type=radio]{accent-color:var(--accent)}
+.other-lab{font-size:13px; font-weight:600; margin:0 !important}
+#benchOtherText{flex:1; padding:7px 10px; font-size:13px}
+.pass-row{display:flex; gap:8px; align-items:center}
+.pass-row input{flex:1; min-width:0}
+.peek{padding:9px 12px; font-size:12.5px}
+.hint-line{display:block; font-size:12px; color:var(--ink-3); margin-top:6px}
+.linkish{color:var(--accent); font-size:12px; text-decoration:underline; text-underline-offset:2px; padding:0}
+.toast{position:fixed; left:50%; bottom:26px; transform:translate(-50%,14px); z-index:200;
+  background:var(--ink); color:var(--paper); padding:10px 16px; border-radius:10px; font-size:13px; font-weight:500;
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; box-shadow:var(--shadow)}
+.toast.on{opacity:1; transform:translate(-50%,0)}
+.err{display:none; color:var(--bad); font-size:12px; margin-top:6px}
+.err.show{display:block}
+.gate-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:24px}
+.btn{background:var(--accent); color:var(--accent-ink); border-radius:9px; padding:11px 16px; font-weight:600; font-size:14px; transition:filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent; color:var(--ink-2); border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--surface-2); filter:none}
+.gate-note{margin-top:16px; font-size:12px; color:var(--ink-3); line-height:1.45}
+.mark{display:flex; align-items:center; gap:10px}
+.mark svg{display:block}
+
+/* ---------- shell ---------- */
+header.top{
+  position:sticky; top:0; z-index:60; background:color-mix(in oklab, var(--paper) 88%, transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line-soft);
+}
+.top-in{max-width:1500px; margin:0 auto; padding:10px 18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.brand{font-size:17px; font-weight:800; letter-spacing:-.03em; display:flex; align-items:center; gap:9px}
+.brand small{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em; color:var(--ink-3); font-weight:500; text-transform:uppercase}
+.spacer{flex:1}
+.search{position:relative}
+.search input{width:190px; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 11px 8px 30px; color:var(--ink); font:inherit; font-size:13px}
+.search svg{position:absolute; left:9px; top:50%; transform:translateY(-50%); opacity:.5}
+.seg{display:flex; background:var(--surface); border:1px solid var(--line); border-radius:9px; padding:3px; gap:2px}
+.seg button{padding:6px 11px; border-radius:6px; font-size:12.5px; font-weight:600; color:var(--ink-3); white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+.who{font-size:12.5px; color:var(--ink-2); display:flex; align-items:center; gap:8px}
+.who b{font-weight:600; color:var(--ink)}
+.icon-btn{width:34px; height:34px; border-radius:8px; border:1px solid var(--line); background:var(--surface); display:grid; place-items:center}
+.icon-btn:hover{background:var(--surface-2)}
+main{max-width:1500px; margin:0 auto; padding:20px 18px 90px}
+section{margin-top:34px}
+.sec-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:14px}
+.sec-head h2{font-size:20px}
+.sec-head p{color:var(--ink-3); font-size:13px}
+
+/* ---------- table ---------- */
+.legend{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px}
+.chip{display:flex; align-items:center; gap:6px; font-size:11.5px; padding:4px 9px 4px 6px; border-radius:20px; border:1px solid var(--line); background:var(--surface); color:var(--ink-2); font-weight:500}
+.chip[aria-pressed="true"]{border-color:currentColor; background:var(--surface-2); color:var(--ink)}
+.chip i{width:9px; height:9px; border-radius:3px; background:var(--c); display:block}
+.table-wrap{overflow-x:auto; padding-bottom:6px}
+.ptable{display:grid; grid-template-columns:repeat(18, minmax(46px,1fr)); gap:3px; min-width:900px}
+.frow{grid-column:1/-1; height:10px}
+.tile{
+  position:relative; aspect-ratio:1; border-radius:7px; border:1px solid transparent;
+  background:var(--c); color:var(--tile-text); padding:4px 5px; text-align:left;
+  display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;
+  transition:transform .12s ease, box-shadow .12s ease, opacity .2s;
+}
+.tile:hover{transform:translateY(-3px) scale(1.03); z-index:5; box-shadow:0 10px 22px -8px rgba(0,0,0,.45)}
+.tile .z{font-family:"IBM Plex Mono",monospace; font-size:9.5px; opacity:.72; font-variant-numeric:tabular-nums}
+.tile .sym{font-size:clamp(14px,1.35vw,20px); font-weight:800; letter-spacing:-.02em; line-height:1}
+.tile .nm{font-size:8.5px; line-height:1.15; opacity:.8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.tile .val{position:absolute; right:4px; bottom:3px; font-family:"IBM Plex Mono",monospace; font-size:9px; opacity:.8}
+.tile.dim{opacity:.17; filter:saturate(.2)}
+.tile.sel{box-shadow:0 0 0 2.5px var(--ink), 0 0 0 5px var(--c)}
+.tile.pick{box-shadow:0 0 0 2.5px var(--accent)}
+.fnote{grid-column:3/18; font-size:10.5px; color:var(--ink-3); text-align:center; align-self:center}
+.ptable .ph{display:grid; place-items:center; font-size:10px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+
+/* ---------- detail drawer ---------- */
+#drawer{
+  position:fixed; top:0; right:0; height:100dvh; width:min(400px,100%); z-index:80;
+  background:var(--surface); border-left:1px solid var(--line); box-shadow:var(--shadow);
+  transform:translateX(102%); transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex; flex-direction:column;
+}
+#drawer.open{transform:none}
+.dr-head{padding:18px 20px; border-bottom:1px solid var(--line-soft); display:flex; gap:14px; align-items:flex-start}
+.dr-tile{width:70px; height:70px; border-radius:12px; background:var(--c); color:var(--tile-text); display:flex; flex-direction:column; justify-content:center; align-items:center; flex:none}
+.dr-tile .sym{font-size:28px; font-weight:800; line-height:1}
+.dr-tile .z{font-family:"IBM Plex Mono",monospace; font-size:10px; opacity:.75}
+.dr-body{overflow-y:auto; padding:18px 20px 40px; flex:1}
+.dr-name{font-size:24px; letter-spacing:-.03em}
+.dr-cat{font-size:12px; color:var(--ink-2); margin-top:3px}
+.facts{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:10px; overflow:hidden; margin-top:16px}
+.fact{background:var(--surface); padding:9px 11px}
+.fact span{display:block; font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.fact b{font-size:15px; font-weight:600; font-variant-numeric:tabular-nums}
+.note{margin-top:16px; font-family:"Newsreader",Georgia,serif; font-size:16.5px; line-height:1.55; color:var(--ink-2)}
+.bohr-wrap{margin-top:18px; background:var(--surface-2); border:1px solid var(--line-soft); border-radius:12px; padding:10px}
+.bohr-cap{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px}
+canvas{display:block; width:100%; height:auto}
+
+/* ---------- lab ---------- */
+.tabs{display:flex; gap:4px; border-bottom:1px solid var(--line); overflow-x:auto}
+.tabs button{padding:9px 14px; font-size:13.5px; font-weight:600; color:var(--ink-3); border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink); border-color:var(--accent)}
+.panel{display:none; padding-top:20px}
+.panel.on{display:block}
+.lab-grid{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:20px; align-items:start}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px}
+.card h3{font-size:15px; margin-bottom:4px}
+.card .hint{font-size:12.5px; color:var(--ink-3)}
+.picker{display:flex; flex-wrap:wrap; gap:5px; margin-top:14px; max-height:210px; overflow-y:auto; padding-right:4px}
+.pel{border:1px solid var(--line); border-radius:7px; padding:5px 9px; font-size:12.5px; font-weight:600; background:var(--surface-2); display:flex; gap:6px; align-items:center}
+.pel:hover{border-color:var(--accent)}
+.pel i{width:8px;height:8px;border-radius:2px;background:var(--c);display:block}
+.slots{display:flex; gap:10px; align-items:center; margin-top:14px; flex-wrap:wrap}
+.slot{width:74px; height:74px; border-radius:12px; border:1.5px dashed var(--line); display:grid; place-items:center; color:var(--ink-3); font-size:11px; text-align:center; background:var(--surface-2)}
+.slot.full{border-style:solid; border-color:transparent; background:var(--c); color:var(--tile-text)}
+.slot .s{font-size:24px; font-weight:800; line-height:1}
+.slot .n{font-size:9.5px; opacity:.8}
+.plus{font-size:20px; color:var(--ink-3)}
+.beaker{position:relative; height:210px; display:grid; place-items:end center; margin-top:6px}
+.beaker svg{height:210px; width:auto}
+.result{margin-top:16px; border-top:1px solid var(--line-soft); padding-top:16px}
+.eq{font-family:"IBM Plex Mono",monospace; font-size:19px; font-weight:600; letter-spacing:-.01em; word-break:break-word}
+.badges{display:flex; gap:6px; flex-wrap:wrap; margin-top:9px}
+.badge{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:20px; border:1px solid var(--line); color:var(--ink-2)}
+.badge.plain{text-transform:none; letter-spacing:.01em; font-size:11px}
+.badge.hot{color:var(--bad); border-color:color-mix(in oklab, var(--bad) 40%, transparent)}
+.badge.cold{color:var(--accent); border-color:color-mix(in oklab, var(--accent) 40%, transparent)}
+.badge.ok{color:var(--good); border-color:color-mix(in oklab, var(--good) 40%, transparent)}
+.rows{margin-top:12px}
+.row{display:flex; justify-content:space-between; gap:12px; padding:7px 0; border-bottom:1px dashed var(--line-soft); font-size:13.5px}
+.row span{color:var(--ink-3)}
+.row b{font-weight:600; font-variant-numeric:tabular-nums}
+.log{margin-top:14px; max-height:190px; overflow-y:auto}
+.log-item{display:flex; gap:10px; align-items:baseline; padding:6px 0; border-bottom:1px dashed var(--line-soft); font-size:12.5px}
+.log-item .mono{color:var(--ink)}
+.log-item em{color:var(--ink-3); font-style:normal; font-size:11.5px; margin-left:auto}
+.controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
+select{background:var(--surface-2); border:1px solid var(--line); color:var(--ink); border-radius:8px; padding:8px 10px; font:inherit; font-size:13px}
+.chart{margin-top:8px}
+.trend-note{font-family:"Newsreader",Georgia,serif; font-size:16px; color:var(--ink-2); margin-top:12px; line-height:1.5}
+.stack{display:flex; flex-direction:column; gap:16px}
+.count-el{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 9px; border:1px solid var(--line-soft); border-radius:9px; background:var(--surface-2); margin-top:6px}
+.count-el .lhs{display:flex; align-items:center; gap:8px; font-weight:600; font-size:13.5px}
+.count-el .lhs i{width:10px;height:10px;border-radius:3px;background:var(--c);display:block}
+.stepper{display:flex; align-items:center; gap:2px}
+.stepper button{width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:var(--surface); font-weight:700; line-height:1}
+.stepper .v{width:26px; text-align:center; font-variant-numeric:tabular-nums; font-weight:600}
+.empty{color:var(--ink-3); font-size:13px; padding:14px 0; font-family:"Newsreader",Georgia,serif; font-size:15px}
+footer{max-width:1500px; margin:0 auto; padding:0 18px 40px; color:var(--ink-3); font-size:12px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.scrim{position:fixed; inset:0; background:rgba(6,9,16,.45); opacity:0; pointer-events:none; transition:opacity .25s; z-index:70}
+.scrim.on{opacity:1; pointer-events:auto}
+@media (max-width:900px){
+  .lab-grid{grid-template-columns:1fr}
+  .search input{width:130px}
+  main{padding:16px 12px 70px}
+  #drawer{width:100%; height:86dvh; top:auto; bottom:0; border-left:none; border-top:1px solid var(--line); border-radius:18px 18px 0 0; transform:translateY(103%)}
+  #drawer.open{transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+}
+</style>
+<div id="gate">
+  <form class="gate-card" id="gateForm" novalidate>
+    <div class="gate-strip" aria-hidden="true"></div>
+    <div class="gate-inner">
+      <div class="mark">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          <circle cx="13" cy="13" r="3" fill="currentColor"/>
+          <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+          <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.2" opacity=".55" transform="rotate(60 13 13)"/>
+          <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.2" opacity=".55" transform="rotate(120 13 13)"/>
+        </svg>
+        <span class="eyebrow">Spectra Lab</span>
+      </div>
+      <h1>Login</h1>
+      <p class="gate-lede">Please login to go to your bench of chemicals in QMIZ Solutions.</p>
+
+      <div class="field">
+        <label for="gateName">Name <b class="req">*</b></label>
+        <input id="gateName" name="name" placeholder="Your answer" autocomplete="name" maxlength="40">
+        <span class="err" id="errName">Enter your name.</span>
+      </div>
+
+      <div class="field">
+        <label for="gatePass">Password <b class="req">*</b></label>
+        <div class="pass-row">
+          <input id="gatePass" name="password" type="password" placeholder="Your answer" autocomplete="current-password" maxlength="60">
+          <button type="button" class="btn ghost peek" id="peekPass" aria-pressed="false">Show</button>
+        </div>
+        <span class="hint-line" id="passHint">Choose a password for this bench — it is checked on this device only.</span>
+        <span class="err" id="errPass">Enter a password of at least 4 characters.</span>
+      </div>
+
+      <fieldset class="field">
+        <legend>Bench number <b class="req">*</b></legend>
+        <div class="benches" id="benches"></div>
+        <div class="other-row">
+          <input type="radio" name="bench" id="benchOther" value="__other">
+          <label for="benchOther" class="other-lab">Other</label>
+          <input id="benchOtherText" placeholder="Name your bench" maxlength="24" aria-label="Other bench name">
+        </div>
+        <span class="err" id="errBench">Choose a bench.</span>
+      </fieldset>
+
+      <div class="gate-actions">
+        <button class="btn" type="submit">Login</button>
+      </div>
+      <p class="gate-note">Nothing here is sent anywhere — there is no server behind this page. Your password is stored on this device as a one-way hash purely to lock your own bench, so do not reuse a password that matters. <button type="button" class="linkish" id="resetBench">Forgotten it? Reset this bench</button></p>
+    </div>
+  </form>
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg width="20" height="20" viewBox="0 0 26 26" fill="none" aria-hidden="true" style="color:var(--accent)">
+        <circle cx="13" cy="13" r="3" fill="currentColor"/>
+        <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.4" opacity=".7"/>
+        <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.4" opacity=".7" transform="rotate(60 13 13)"/>
+        <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.4" opacity=".7" transform="rotate(120 13 13)"/>
+      </svg>
+      Spectra Lab <small>118 elements</small>
+    </div>
+    <div class="spacer"></div>
+    <div class="search">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+      <input id="q" placeholder="Search element…" aria-label="Search elements">
+    </div>
+    <div class="seg" id="colorMode" role="group" aria-label="Colour the table by">
+      <button data-mode="cat" aria-pressed="true">Category</button>
+      <button data-mode="en" aria-pressed="false">Electroneg.</button>
+      <button data-mode="mp" aria-pressed="false">Melting pt</button>
+      <button data-mode="r" aria-pressed="false">Radius</button>
+    </div>
+    <div class="who"><span id="whoName"></span>
+      <button class="icon-btn" id="themeBtn" title="Switch theme" aria-label="Switch theme">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5v13M8 4.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+      <button class="icon-btn" id="logoutBtn" title="Sign out of this bench" aria-label="Sign out of this bench">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 2H3.5A1.5 1.5 0 002 3.5v9A1.5 1.5 0 003.5 14H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section style="margin-top:18px">
+    <div class="sec-head">
+      <h2>The periodic table</h2>
+      <p id="tableSub">Tap any element for its data and electron shells. Recolour the table with the switch above.</p>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="table-wrap"><div class="ptable" id="ptable"></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Virtual lab</h2>
+      <p>Four benches. Nothing here can explode, so try the reckless combinations.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="mix">Reaction mixer</button>
+      <button role="tab" aria-selected="false" data-tab="build">Compound builder</button>
+      <button role="tab" aria-selected="false" data-tab="bohr">Shell visualiser</button>
+      <button role="tab" aria-selected="false" data-tab="trend">Property playground</button>
+    </div>
+
+    <!-- MIXER -->
+    <div class="panel on" id="tab-mix">
+      <div class="lab-grid">
+        <div class="card">
+          <h3>Charge the beaker</h3>
+          <p class="hint">Pick two elements. The bench works out whether they bond, what forms, and how hard it happens.</p>
+          <div class="slots">
+            <div class="slot" id="slotA" style="--c:var(--surface-2)">empty</div>
+            <span class="plus">+</span>
+            <div class="slot" id="slotB" style="--c:var(--surface-2)">empty</div>
+            <div style="display:flex; gap:8px; margin-left:auto">
+              <button class="btn" id="reactBtn">React</button>
+              <button class="btn ghost" id="clearMix">Clear</button>
+            </div>
+          </div>
+          <div class="picker" id="mixPicker"></div>
+        </div>
+        <div class="card">
+          <div class="beaker" id="beaker"></div>
+          <div class="result" id="mixResult"><p class="empty">The beaker is clean. Choose two elements and hit React.</p></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h3>Experiment log</h3>
+        <p class="hint">Saved to your bench.</p>
+        <div class="log" id="mixLog"></div>
+        <div class="controls">
+          <button class="btn" id="exportLog">Export to spreadsheet (CSV)</button>
+          <button class="btn ghost" id="clearLog">Clear log</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUILDER -->
+    <div class="panel" id="tab-build">
+      <div class="lab-grid">
+        <div class="card">
+          <h3>Assemble a formula</h3>
+          <p class="hint">Add elements and set how many atoms of each. The bench computes the formula, mass and composition, and checks whether the charges balance.</p>
+          <div id="buildList"></div>
+          <div class="picker" id="buildPicker" style="margin-top:14px"></div>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <div class="eyebrow">Formula</div>
+            <div class="eq" id="formula" style="margin-top:6px">—</div>
+            <div class="badges" id="buildBadges"></div>
+            <div class="rows" id="buildRows"></div>
+          </div>
+          <div class="card">
+            <h3>Composition by mass</h3>
+            <div id="compBars" style="margin-top:10px"></div>
+            <div class="controls">
+              <button class="btn" id="saveCompound">Save to bench</button>
+              <button class="btn ghost" id="exportSaved">Export CSV</button>
+              <button class="btn ghost" id="clearBuild">Clear</button>
+            </div>
+            <div class="log" id="savedList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOHR -->
+    <div class="panel" id="tab-bohr">
+      <div class="lab-grid">
+        <div class="card">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+            <h3 id="bohrTitle">Hydrogen</h3>
+            <span class="badge" id="bohrConf" style="text-transform:none">1s¹</span>
+            <div class="spacer"></div>
+            <button class="icon-btn" id="bohrPrev" aria-label="Previous element">‹</button>
+            <button class="icon-btn" id="bohrNext" aria-label="Next element">›</button>
+          </div>
+          <p class="hint" style="margin-top:4px">Electrons orbit at their shell speed. Hover a shell to hold it still.</p>
+          <canvas id="bohrCanvas" width="820" height="520" style="margin-top:8px"></canvas>
+          <div class="controls">
+            <label class="badge" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="bohrSpin" checked> animate</label>
+            <label class="badge" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="bohrLabels" checked> shell labels</label>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <h3>Shell occupancy</h3>
+            <p class="hint">Each shell holds 2n² electrons at most.</p>
+            <div id="shellRows" style="margin-top:12px"></div>
+          </div>
+          <div class="card">
+            <h3>What the outer shell tells you</h3>
+            <p class="note serif" id="bohrNote" style="margin-top:6px"></p>
+          </div>
+          <div class="card">
+            <h3>Jump to an element</h3>
+            <p class="hint">Or step through with the arrows.</p>
+            <div class="picker" id="bohrPicker" style="max-height:180px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRENDS -->
+    <div class="panel" id="tab-trend">
+      <div class="card">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+          <h3>Plot a property across the table</h3>
+          <div class="spacer"></div>
+          <select id="propSel" aria-label="Property">
+            <option value="en">Electronegativity</option>
+            <option value="mp">Melting point (K)</option>
+            <option value="bp">Boiling point (K)</option>
+            <option value="r">Atomic radius (pm)</option>
+            <option value="mass">Atomic mass</option>
+          </select>
+          <select id="scopeSel" aria-label="Scope">
+            <option value="all">All 118</option>
+            <option value="1-36">Elements 1–36</option>
+            <option value="main">Main group only</option>
+            <option value="g1">Group 1 · alkali metals</option>
+            <option value="g17">Group 17 · halogens</option>
+            <option value="p2">Period 2</option>
+            <option value="p3">Period 3</option>
+          </select>
+        </div>
+        <div class="chart"><canvas id="trendCanvas" width="1400" height="460"></canvas></div>
+        <p class="trend-note" id="trendNote"></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Spectra Lab · data rounded for classroom use · reactions are simplified models, not safety guidance</span>
+  <span id="benchStamp"></span>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside id="drawer" aria-label="Element detail">
+  <div class="dr-head">
+    <div class="dr-tile" id="drTile"><span class="z"></span><span class="sym"></span></div>
+    <div style="flex:1; min-width:0">
+      <div class="dr-name" id="drName"></div>
+      <div class="dr-cat" id="drCat"></div>
+    </div>
+    <button class="icon-btn" id="drClose" aria-label="Close">✕</button>
+  </div>
+  <div class="dr-body">
+    <div class="facts" id="drFacts"></div>
+    <p class="note" id="drNote"></p>
+    <div class="bohr-wrap">
+      <div class="bohr-cap"><span class="eyebrow">Electron shells</span><span class="eyebrow mono" id="drConf"></span></div>
+      <canvas id="drCanvas" width="720" height="440"></canvas>
+    </div>
+    <div class="controls">
+      <button class="btn" id="drToMix">Send to beaker</button>
+      <button class="btn ghost" id="drToBohr">Open in visualiser</button>
+    </div>
+  </div>
+</aside>
+<script>
+/* Element data: [Z, symbol, name, mass, category, group, period, electronegativity, meltK, boilK, radius(pm), note] */
+const CATS = {
+  alkali:     { label: "Alkali metal",        hue: 12  },
+  alkaline:   { label: "Alkaline earth metal",hue: 32  },
+  tm:         { label: "Transition metal",    hue: 208 },
+  post:       { label: "Post-transition metal",hue: 178 },
+  metalloid:  { label: "Metalloid",           hue: 152 },
+  nm:         { label: "Reactive nonmetal",   hue: 96  },
+  halogen:    { label: "Halogen",             hue: 60  },
+  noble:      { label: "Noble gas",           hue: 268 },
+  lanth:      { label: "Lanthanide",          hue: 320 },
+  act:        { label: "Actinide",            hue: 344 },
+  unknown:    { label: "Unknown properties",  hue: 240 }
+};
+
+const RAW = [
+[1,"H","Hydrogen",1.008,"nm",1,1,2.20,14,20,53,"Lightest element; three quarters of all matter in the universe."],
+[2,"He","Helium",4.0026,"noble",18,1,null,1,4,31,"Never freezes at normal pressure. Second-most abundant element."],
+[3,"Li","Lithium",6.94,"alkali",1,2,0.98,454,1615,167,"Floats on water, then fizzes. Powers rechargeable batteries."],
+[4,"Be","Beryllium",9.0122,"alkaline",2,2,1.57,1560,2742,112,"Stiffer than steel and transparent to X-rays. Also toxic."],
+[5,"B","Boron",10.81,"metalloid",13,2,2.04,2349,4200,87,"Makes heat-proof borosilicate glass and absorbs stray neutrons."],
+[6,"C","Carbon",12.011,"nm",14,2,2.55,3823,4098,67,"Backbone of all life. Appears as graphite, diamond and graphene."],
+[7,"N","Nitrogen",14.007,"nm",15,2,3.04,63,77,56,"78% of the air you breathe; its triple bond is very hard to break."],
+[8,"O","Oxygen",15.999,"nm",16,2,3.44,54,90,48,"Most abundant element in Earth's crust and in your body."],
+[9,"F","Fluorine",18.998,"halogen",17,2,3.98,53,85,42,"The most electronegative element — it attacks almost everything."],
+[10,"Ne","Neon",20.180,"noble",18,2,null,25,27,38,"Glows orange-red in discharge tubes. Refuses to react."],
+[11,"Na","Sodium",22.990,"alkali",1,3,0.93,371,1156,190,"Soft enough to cut with a knife; explodes on contact with water."],
+[12,"Mg","Magnesium",24.305,"alkaline",2,3,1.31,923,1363,145,"Burns with a blinding white flame; sits at the heart of chlorophyll."],
+[13,"Al","Aluminium",26.982,"post",13,3,1.61,933,2792,118,"Light, cheap, endlessly recyclable — once more precious than gold."],
+[14,"Si","Silicon",28.085,"metalloid",14,3,1.90,1687,3538,111,"Sand, glass and every computer chip ever made."],
+[15,"P","Phosphorus",30.974,"nm",15,3,2.19,317,550,98,"White phosphorus ignites in air; red phosphorus strikes matches."],
+[16,"S","Sulfur",32.06,"nm",16,3,2.58,388,718,88,"Yellow, brittle, and the smell of struck matches and volcanoes."],
+[17,"Cl","Chlorine",35.45,"halogen",17,3,3.16,172,239,79,"Green choking gas that becomes harmless table salt."],
+[18,"Ar","Argon",39.95,"noble",18,3,null,84,87,71,"Fills light bulbs and welding shields — 1% of the atmosphere."],
+[19,"K","Potassium",39.098,"alkali",1,4,0.82,337,1032,243,"Burns lilac. Essential for nerve signals and heartbeats."],
+[20,"Ca","Calcium",40.078,"alkaline",2,4,1.00,1115,1757,194,"Bones, teeth, chalk, limestone and seashells."],
+[21,"Sc","Scandium",44.956,"tm",3,4,1.36,1814,3109,184,"Rare and light; strengthens aluminium in high-end bike frames."],
+[22,"Ti","Titanium",47.867,"tm",4,4,1.54,1941,3560,176,"As strong as steel, 45% lighter, and body-friendly for implants."],
+[23,"V","Vanadium",50.942,"tm",5,4,1.63,2183,3680,171,"Forms brilliantly coloured solutions — purple, green, blue, yellow."],
+[24,"Cr","Chromium",51.996,"tm",6,4,1.66,2180,2944,166,"Gives stainless steel its shine and rubies their red."],
+[25,"Mn","Manganese",54.938,"tm",7,4,1.55,1519,2334,161,"Hardens steel; its purple permanganate is a classroom favourite."],
+[26,"Fe","Iron",55.845,"tm",8,4,1.83,1811,3134,156,"Earth's core, your blood, and the end point of stellar fusion."],
+[27,"Co","Cobalt",58.933,"tm",9,4,1.88,1768,3200,152,"Named after goblins; colours glass a deep, famous blue."],
+[28,"Ni","Nickel",58.693,"tm",10,4,1.91,1728,3186,149,"Resists corrosion; alloys into coins and rechargeable batteries."],
+[29,"Cu","Copper",63.546,"tm",11,4,1.90,1358,2835,145,"First metal humans smelted; conducts electricity superbly."],
+[30,"Zn","Zinc",65.38,"tm",12,4,1.65,693,1180,142,"Galvanises steel against rust and runs your immune system."],
+[31,"Ga","Gallium",69.723,"post",13,4,1.81,303,2673,136,"Melts in your hand at 30 °C. Used in LEDs and fast chips."],
+[32,"Ge","Germanium",72.630,"metalloid",14,4,2.01,1211,3106,125,"The first transistor material; now used in infrared optics."],
+[33,"As","Arsenic",74.922,"metalloid",15,4,2.18,1090,887,114,"Notorious poison; also a semiconductor dopant."],
+[34,"Se","Selenium",78.971,"nm",16,4,2.55,494,958,103,"Conducts better in light — the basis of early photocopiers."],
+[35,"Br","Bromine",79.904,"halogen",17,4,2.96,266,332,94,"One of only two elements liquid at room temperature."],
+[36,"Kr","Krypton",83.798,"noble",18,4,3.00,116,120,88,"Once defined the metre; brightens high-performance headlights."],
+[37,"Rb","Rubidium",85.468,"alkali",1,5,0.82,312,961,265,"Melts just above body temperature and ignites in air."],
+[38,"Sr","Strontium",87.62,"alkaline",2,5,0.95,1050,1655,219,"Paints fireworks crimson red."],
+[39,"Y","Yttrium",88.906,"tm",3,5,1.22,1799,3609,212,"Named after a Swedish village; makes red phosphors and lasers."],
+[40,"Zr","Zirconium",91.224,"tm",4,5,1.33,2128,4682,206,"Nearly invisible to neutrons — it lines nuclear fuel rods."],
+[41,"Nb","Niobium",92.906,"tm",5,5,1.60,2750,5017,198,"Superconducting magnets in MRI scanners rely on it."],
+[42,"Mo","Molybdenum",95.95,"tm",6,5,2.16,2896,4912,190,"Extreme melting point; an essential trace nutrient too."],
+[43,"Tc","Technetium",98,"tm",7,5,1.90,2430,4538,183,"First element made by humans; every isotope is radioactive."],
+[44,"Ru","Ruthenium",101.07,"tm",8,5,2.20,2607,4423,178,"Hardens platinum contacts and catalyses ammonia synthesis."],
+[45,"Rh","Rhodium",102.91,"tm",9,5,2.28,2237,3968,173,"The costliest precious metal; scrubs car exhaust clean."],
+[46,"Pd","Palladium",106.42,"tm",10,5,2.20,1828,3236,169,"Soaks up 900 times its volume in hydrogen gas."],
+[47,"Ag","Silver",107.87,"tm",11,5,1.93,1235,2435,165,"Best electrical and thermal conductor of all elements."],
+[48,"Cd","Cadmium",112.41,"tm",12,5,1.69,594,1040,161,"Bright yellow pigments — and serious toxicity."],
+[49,"In","Indium",114.82,"post",13,5,1.78,430,2345,156,"So soft it screams when bent; coats every touchscreen."],
+[50,"Sn","Tin",118.71,"post",14,5,1.96,505,2875,145,"Bronze Age partner to copper; still solders circuits together."],
+[51,"Sb","Antimony",121.76,"metalloid",15,5,2.05,904,1860,133,"Ancient eyeliner ingredient; now a flame retardant."],
+[52,"Te","Tellurium",127.60,"metalloid",16,5,2.10,723,1261,123,"Rarer than platinum on Earth; makes garlic breath in humans."],
+[53,"I","Iodine",126.90,"halogen",17,5,2.66,387,457,115,"Sublimes to violet vapour; your thyroid cannot work without it."],
+[54,"Xe","Xenon",131.29,"noble",18,5,2.60,161,165,108,"Powers ion thrusters on deep-space probes."],
+[55,"Cs","Caesium",132.91,"alkali",1,6,0.79,302,944,298,"Defines the second. Reacts explosively with water."],
+[56,"Ba","Barium",137.33,"alkaline",2,6,0.89,1000,2170,253,"Swallowed as a harmless sulfate to make X-rays of the gut."],
+[57,"La","Lanthanum",138.91,"lanth",0,6,1.10,1193,3737,187,"Gives camera lenses high refraction and low dispersion."],
+[58,"Ce","Cerium",140.12,"lanth",0,6,1.12,1068,3716,182,"Most abundant rare earth; sparks in lighter flints."],
+[59,"Pr","Praseodymium",140.91,"lanth",0,6,1.13,1208,3793,182,"Tints welder's goggles yellow-green and filters glare."],
+[60,"Nd","Neodymium",144.24,"lanth",0,6,1.14,1297,3347,181,"The strongest permanent magnets ever made."],
+[61,"Pm","Promethium",145,"lanth",0,6,1.13,1315,3273,183,"Radioactive and vanishingly rare; once lit glow-in-dark dials."],
+[62,"Sm","Samarium",150.36,"lanth",0,6,1.17,1345,2067,180,"Magnets that keep working at scorching temperatures."],
+[63,"Eu","Europium",151.96,"lanth",0,6,1.20,1099,1802,199,"Red phosphor in screens; anti-counterfeit ink in euro notes."],
+[64,"Gd","Gadolinium",157.25,"lanth",0,6,1.20,1585,3546,180,"Injected as a contrast agent to sharpen MRI images."],
+[65,"Tb","Terbium",158.93,"lanth",0,6,1.20,1629,3503,177,"Changes shape in a magnetic field — used in sonar."],
+[66,"Dy","Dysprosium",162.50,"lanth",0,6,1.22,1680,2840,178,"Keeps electric-car motor magnets stable when hot."],
+[67,"Ho","Holmium",164.93,"lanth",0,6,1.23,1734,2993,176,"Has the strongest magnetic moment of any element."],
+[68,"Er","Erbium",167.26,"lanth",0,6,1.24,1802,3141,176,"Amplifies light inside undersea fibre-optic cables."],
+[69,"Tm","Thulium",168.93,"lanth",0,6,1.25,1818,2223,176,"Rarest stable rare earth; powers portable X-ray sources."],
+[70,"Yb","Ytterbium",173.05,"lanth",0,6,1.10,1097,1469,176,"Keeps time in the most accurate atomic clocks built."],
+[71,"Lu","Lutetium",174.97,"lanth",0,6,1.27,1925,3675,174,"Densest and hardest lanthanide; used in PET scanners."],
+[72,"Hf","Hafnium",178.49,"tm",4,6,1.30,2506,4876,167,"Twin of zirconium but eats neutrons — nuclear control rods."],
+[73,"Ta","Tantalum",180.95,"tm",5,6,1.50,3290,5731,149,"Corrosion-proof; every phone holds a tantalum capacitor."],
+[74,"W","Tungsten",183.84,"tm",6,6,2.36,3695,5828,141,"Highest melting point of any metal: 3422 °C."],
+[75,"Re","Rhenium",186.21,"tm",7,6,1.90,3459,5869,137,"Last stable element discovered; survives jet-engine heat."],
+[76,"Os","Osmium",190.23,"tm",8,6,2.20,3306,5285,135,"Densest naturally occurring element — twice the density of lead."],
+[77,"Ir","Iridium",192.22,"tm",9,6,2.20,2719,4701,136,"An iridium layer in the rock records the dinosaur extinction."],
+[78,"Pt","Platinum",195.08,"tm",10,6,2.28,2041,4098,139,"Unreactive and precious; catalyses reactions without being consumed."],
+[79,"Au","Gold",196.97,"tm",11,6,2.54,1337,3129,144,"Never tarnishes; forged in neutron-star collisions."],
+[80,"Hg","Mercury",200.59,"tm",12,6,2.00,234,630,151,"The only metal liquid at room temperature — and a potent neurotoxin."],
+[81,"Tl","Thallium",204.38,"post",13,6,1.62,577,1746,170,"Tasteless, odourless and infamous as the poisoner's poison."],
+[82,"Pb","Lead",207.2,"post",14,6,2.33,601,2022,175,"Dense and soft; blocks radiation but damages nerves."],
+[83,"Bi","Bismuth",208.98,"post",15,6,2.02,544,1837,156,"Grows staircase-shaped rainbow crystals; a benign heavy metal."],
+[84,"Po","Polonium",209,"post",16,6,2.00,527,1235,168,"Discovered by Marie Curie; intensely radioactive."],
+[85,"At","Astatine",210,"halogen",17,6,2.20,575,610,150,"Rarest natural element — under 30 grams exist on Earth."],
+[86,"Rn","Radon",222,"noble",18,6,2.20,202,211,150,"Radioactive gas that seeps from granite into basements."],
+[87,"Fr","Francium",223,"alkali",1,7,0.70,300,950,260,"Most unstable of the first 101 elements; half-life 22 minutes."],
+[88,"Ra","Radium",226,"alkaline",2,7,0.90,973,2010,221,"Glows faintly blue; once painted onto watch dials with tragic results."],
+[89,"Ac","Actinium",227,"act",0,7,1.10,1323,3471,215,"Glows pale blue in the dark from its own radioactivity."],
+[90,"Th","Thorium",232.04,"act",0,7,1.30,2115,5061,206,"Four times more abundant than uranium; a possible reactor fuel."],
+[91,"Pa","Protactinium",231.04,"act",0,7,1.50,1841,4300,200,"Scarce, toxic and extremely difficult to isolate."],
+[92,"U","Uranium",238.03,"act",0,7,1.38,1405,4404,196,"Heaviest primordial element; splits to release nuclear energy."],
+[93,"Np","Neptunium",237,"act",0,7,1.36,917,4273,190,"First element beyond uranium ever synthesised."],
+[94,"Pu","Plutonium",244,"act",0,7,1.28,913,3501,187,"Warms itself by decay — it powers spacecraft for decades."],
+[95,"Am","Americium",243,"act",0,7,1.13,1449,2880,180,"Sits inside household smoke detectors, ionising the air."],
+[96,"Cm","Curium",247,"act",0,7,1.28,1613,3383,169,"Glows purple; analysed Martian rocks aboard Curiosity."],
+[97,"Bk","Berkelium",247,"act",0,7,1.30,1259,2900,170,"Made in milligram amounts; named for Berkeley, California."],
+[98,"Cf","Californium",251,"act",0,7,1.30,1173,1743,186,"A powerful neutron source used to start reactors."],
+[99,"Es","Einsteinium",252,"act",0,7,1.30,1133,1269,186,"Found in the debris of the first hydrogen bomb test."],
+[100,"Fm","Fermium",257,"act",0,7,1.30,1800,null,null,"Heaviest element that can be made in a nuclear reactor."],
+[101,"Md","Mendelevium",258,"act",0,7,1.30,1100,null,null,"Named for Mendeleev, who predicted the table's gaps."],
+[102,"No","Nobelium",259,"act",0,7,1.30,1100,null,null,"Made an atom at a time; prefers an unusual +2 state."],
+[103,"Lr","Lawrencium",266,"act",0,7,1.30,1900,null,null,"Closes the actinide row; studied a few atoms at a time."],
+[104,"Rf","Rutherfordium",267,"tm",4,7,null,2400,5800,null,"First transactinide; behaves like a heavy hafnium."],
+[105,"Db","Dubnium",268,"tm",5,7,null,null,null,null,"Named after the Dubna laboratory in Russia."],
+[106,"Sg","Seaborgium",269,"tm",6,7,null,null,null,null,"Named for Glenn Seaborg while he was still alive."],
+[107,"Bh","Bohrium",270,"tm",7,7,null,null,null,null,"Only a few dozen atoms have ever existed."],
+[108,"Hs","Hassium",269,"tm",8,7,null,null,null,null,"Chemistry confirmed on just seven atoms."],
+[109,"Mt","Meitnerium",278,"unknown",9,7,null,null,null,null,"Honours Lise Meitner, who explained nuclear fission."],
+[110,"Ds","Darmstadtium",281,"unknown",10,7,null,null,null,null,"Made by fusing nickel and lead nuclei together."],
+[111,"Rg","Roentgenium",282,"unknown",11,7,null,null,null,null,"Predicted to be a metal — but no one has ever seen a piece."],
+[112,"Cn","Copernicium",285,"unknown",12,7,null,null,null,null,"May be a gas at room temperature, like a heavy mercury."],
+[113,"Nh","Nihonium",286,"unknown",13,7,null,null,null,null,"First element discovered in Japan; named for Nihon."],
+[114,"Fl","Flerovium",289,"unknown",14,7,null,null,null,null,"Surprisingly unreactive — perhaps almost noble-gas-like."],
+[115,"Mc","Moscovium",290,"unknown",15,7,null,null,null,null,"Exists for a fraction of a second before decaying."],
+[116,"Lv","Livermorium",293,"unknown",16,7,null,null,null,null,"Named for the Livermore laboratory in California."],
+[117,"Ts","Tennessine",294,"unknown",17,7,null,null,null,null,"Second-heaviest element; may not behave like a halogen."],
+[118,"Og","Oganesson",294,"unknown",18,7,null,null,null,null,"Heaviest element known — and probably not a gas at all."]
+];
+
+/* Common oxidation state used by the lab's bonding rules. null = does not readily bond. */
+const OXID = {
+  H:1, He:null, Li:1, Be:2, B:3, C:4, N:-3, O:-2, F:-1, Ne:null,
+  Na:1, Mg:2, Al:3, Si:4, P:-3, S:-2, Cl:-1, Ar:null,
+  K:1, Ca:2, Sc:3, Ti:4, V:5, Cr:3, Mn:2, Fe:3, Co:2, Ni:2, Cu:2, Zn:2,
+  Ga:3, Ge:4, As:-3, Se:-2, Br:-1, Kr:null,
+  Rb:1, Sr:2, Y:3, Zr:4, Nb:5, Mo:6, Tc:7, Ru:3, Rh:3, Pd:2, Ag:1, Cd:2,
+  In:3, Sn:2, Sb:3, Te:-2, I:-1, Xe:null,
+  Cs:1, Ba:2, La:3, Ce:3, Pr:3, Nd:3, Pm:3, Sm:3, Eu:3, Gd:3, Tb:3, Dy:3,
+  Ho:3, Er:3, Tm:3, Yb:3, Lu:3, Hf:4, Ta:5, W:6, Re:7, Os:4, Ir:3, Pt:2,
+  Au:3, Hg:2, Tl:1, Pb:2, Bi:3, Po:-2, At:-1, Rn:null,
+  Fr:1, Ra:2, Ac:3, Th:4, Pa:5, U:6, Np:5, Pu:4, Am:3, Cm:3, Bk:3, Cf:3,
+  Es:3, Fm:3, Md:3, No:2, Lr:3
+};
+
+/* Curated reactions — keyed by sorted symbols. */
+const REACTIONS = {
+  "H,O":   { eq:"2H₂ + O₂ → 2H₂O", name:"Water", kind:"Combustion", blurb:"Hydrogen burns in oxygen with a squeaky pop and a pale flame, releasing a great deal of energy. The only product is water.", energy:"exothermic", color:"#7fd6ff" },
+  "Cl,Na": { eq:"2Na + Cl₂ → 2NaCl", name:"Sodium chloride", kind:"Synthesis", blurb:"Sodium hands its outer electron to chlorine. The violent orange flare leaves behind ordinary table salt.", energy:"very exothermic", color:"#ffffff" },
+  "H,N":   { eq:"N₂ + 3H₂ ⇌ 2NH₃", name:"Ammonia", kind:"Haber process", blurb:"Under 200 atmospheres and an iron catalyst, the nitrogen triple bond finally breaks. This reaction feeds roughly half the planet.", energy:"exothermic", color:"#cfe8ff" },
+  "C,O":   { eq:"C + O₂ → CO₂", name:"Carbon dioxide", kind:"Combustion", blurb:"Carbon burns to carbon dioxide. Starve it of oxygen and you get carbon monoxide instead — colourless, odourless and deadly.", energy:"exothermic", color:"#b9c4cc" },
+  "Fe,O":  { eq:"4Fe + 3O₂ → 2Fe₂O₃", name:"Iron(III) oxide — rust", kind:"Oxidation", blurb:"Slow, damp and relentless. Rust flakes away instead of sealing the surface, so the metal underneath keeps corroding.", energy:"exothermic", color:"#b4552a" },
+  "Mg,O":  { eq:"2Mg + O₂ → 2MgO", name:"Magnesium oxide", kind:"Combustion", blurb:"A ribbon of magnesium burns with a white light so intense it was once used for photographic flash powder.", energy:"very exothermic", color:"#fff6e0" },
+  "H,S":   { eq:"H₂ + S → H₂S", name:"Hydrogen sulfide", kind:"Synthesis", blurb:"The smell of rotten eggs. Detectable at a few parts per billion, and dangerous well before that becomes reassuring.", energy:"exothermic", color:"#e6e08a" },
+  "Cu,O":  { eq:"2Cu + O₂ → 2CuO", name:"Copper(II) oxide", kind:"Oxidation", blurb:"Bright copper darkens to black on heating. Left outdoors for decades it turns the green of old rooftops instead.", energy:"exothermic", color:"#2a2a2a" },
+  "Ca,O":  { eq:"2Ca + O₂ → 2CaO", name:"Calcium oxide — quicklime", kind:"Oxidation", blurb:"Add water and quicklime hisses, steams and swells into slaked lime. It is how mortar has been made for millennia.", energy:"very exothermic", color:"#f2efe6" },
+  "Cl,H":  { eq:"H₂ + Cl₂ → 2HCl", name:"Hydrogen chloride", kind:"Photochemical", blurb:"Mix the two gases in the dark and nothing happens. Shine a bright light on them and the mixture detonates.", energy:"explosive", color:"#dff3c8" },
+  "K,O":   { eq:"4K + O₂ → 2K₂O", name:"Potassium oxide", kind:"Oxidation", blurb:"Potassium tarnishes within seconds of being cut, which is why it is stored under oil.", energy:"exothermic", color:"#e8dfc0" },
+  "Ag,S":  { eq:"2Ag + S → Ag₂S", name:"Silver sulfide", kind:"Tarnishing", blurb:"Traces of sulfur in the air turn silver cutlery black. Aluminium foil and hot salt water reverse it.", energy:"exothermic", color:"#3c3a38" },
+  "Al,O":  { eq:"4Al + 3O₂ → 2Al₂O₃", name:"Aluminium oxide", kind:"Passivation", blurb:"Aluminium corrodes instantly — but its oxide forms a sealed, invisible skin that protects the metal beneath.", energy:"very exothermic", color:"#eef1f4" },
+  "I,K":   { eq:"2K + I₂ → 2KI", name:"Potassium iodide", kind:"Synthesis", blurb:"The salt handed out after nuclear accidents: it floods the thyroid with safe iodine so it cannot absorb radioactive iodine.", energy:"exothermic", color:"#f6f3ea" },
+  "N,O":   { eq:"N₂ + O₂ → 2NO", name:"Nitric oxide", kind:"Endothermic", blurb:"Air only reacts with itself inside lightning bolts and engine cylinders. The product goes on to make smog.", energy:"endothermic", color:"#c9b8e8" },
+  "Br,Na": { eq:"2Na + Br₂ → 2NaBr", name:"Sodium bromide", kind:"Synthesis", blurb:"Once prescribed as a sedative, now used in photography and drilling fluids.", energy:"exothermic", color:"#f0eee8" },
+  "O,S":   { eq:"S + O₂ → SO₂", name:"Sulfur dioxide", kind:"Combustion", blurb:"Sulfur burns with an eerie blue flame. The sharp gas that results is the origin of acid rain.", energy:"exothermic", color:"#cfd8dd" },
+  "H,Li":  { eq:"2Li + H₂ → 2LiH", name:"Lithium hydride", kind:"Synthesis", blurb:"One of the few compounds where hydrogen is the negative partner. It reacts violently with water.", energy:"exothermic", color:"#f4f4f0" },
+  "F,Xe":  { eq:"Xe + 2F₂ → XeF₄", name:"Xenon tetrafluoride", kind:"Synthesis", blurb:"For decades noble gases were thought inert. Fluorine proved otherwise in 1962 — and the textbooks were rewritten.", energy:"exothermic", color:"#e2f0ff" },
+  "Cu,S":  { eq:"2Cu + S → Cu₂S", name:"Copper(I) sulfide", kind:"Synthesis", blurb:"The mineral chalcocite — one of the richest copper ores mined today.", energy:"exothermic", color:"#4a4a52" },
+  "Ca,Cl": { eq:"Ca + Cl₂ → CaCl₂", name:"Calcium chloride", kind:"Synthesis", blurb:"Grips water out of thin air. It melts road ice and keeps packaged goods dry.", energy:"very exothermic", color:"#ffffff" },
+  "O,Ti":  { eq:"Ti + O₂ → TiO₂", name:"Titanium dioxide", kind:"Oxidation", blurb:"The whitest white known — in paint, sunscreen, toothpaste and paper.", energy:"very exothermic", color:"#ffffff" },
+  "H,I":   { eq:"H₂ + I₂ ⇌ 2HI", name:"Hydrogen iodide", kind:"Equilibrium", blurb:"The classic textbook equilibrium: it never runs to completion, settling instead into a fixed ratio of reactants and product.", energy:"slightly exothermic", color:"#e9d7ef" },
+  "Na,O":  { eq:"4Na + O₂ → 2Na₂O", name:"Sodium oxide", kind:"Oxidation", blurb:"Freshly cut sodium is mirror-bright for about a second before this reaction dulls it.", energy:"exothermic", color:"#f0ece0" },
+  "Cl,Cu": { eq:"Cu + Cl₂ → CuCl₂", name:"Copper(II) chloride", kind:"Synthesis", blurb:"Dissolves to a blue-green solution and burns with a striking blue-green flame.", energy:"exothermic", color:"#3f9c86" },
+  "F,H":   { eq:"H₂ + F₂ → 2HF", name:"Hydrogen fluoride", kind:"Explosive", blurb:"The most vigorous of the halogen–hydrogen reactions: it proceeds explosively even in the dark at −200 °C.", energy:"explosive", color:"#dffbff" },
+  "C,H":   { eq:"C + 2H₂ → CH₄", name:"Methane", kind:"Synthesis", blurb:"The simplest organic molecule and the main component of natural gas.", energy:"exothermic", color:"#d7e6ff" },
+  "O,Zn":  { eq:"2Zn + O₂ → 2ZnO", name:"Zinc oxide", kind:"Combustion", blurb:"Burns blue-green to a smoke of white oxide — the classic thick sunscreen and nappy cream.", energy:"exothermic", color:"#fbfbf8" },
+  "Fe,S":  { eq:"Fe + S → FeS", name:"Iron(II) sulfide", kind:"Synthesis", blurb:"A staple school demonstration: the mixture glows red-hot on its own once the reaction is started.", energy:"exothermic", color:"#4b3a33" },
+  "C,Fe":  { eq:"3Fe + C → Fe₃C", name:"Cementite", kind:"Steelmaking", blurb:"Dissolve a little carbon in iron and you get steel; let it order into Fe₃C and you get cementite, the hard phase that makes steel tough.", energy:"mildly endothermic", color:"#5c5c60" },
+  "Cu,Zn": { eq:"Cu + Zn → CuZn (brass)", name:"Brass", kind:"Alloy", blurb:"Copper and zinc pool their electrons rather than trading them. Vary the ratio and you slide from red gilding metal to pale yellow brass.", energy:"mixes on melting", color:"#c9a227" },
+  "Cu,Sn": { eq:"Cu + Sn → Cu₃Sn (bronze)", name:"Bronze", kind:"Alloy", blurb:"Harder than either parent metal and castable — the alloy that named an age.", energy:"mixes on melting", color:"#b07a43" },
+  "Ag,Au": { eq:"Au + Ag → AuAg (electrum)", name:"Electrum", kind:"Alloy", blurb:"A natural gold–silver alloy, pale yellow and used for the world's first coins.", energy:"mixes on melting", color:"#e0c86a" },
+  "C,Si":  { eq:"Si + C → SiC", name:"Silicon carbide", kind:"Synthesis", blurb:"Almost as hard as diamond. It grinds, it armours, and it switches high-power electronics.", energy:"exothermic", color:"#2e3a40" },
+  "C,Ca":  { eq:"Ca + 2C → CaC₂", name:"Calcium carbide", kind:"Synthesis", blurb:"Drop it in water and it hisses out acetylene — the fuel of old miners' lamps.", energy:"endothermic", color:"#6b6252" },
+  "O,Si":  { eq:"Si + O₂ → SiO₂", name:"Silica", kind:"Oxidation", blurb:"Quartz, sand and glass. Grown as a thin film, it is also the insulating layer inside every silicon chip.", energy:"very exothermic", color:"#e8eef2" },
+  "H,Na":  { eq:"2Na + H₂ → 2NaH", name:"Sodium hydride", kind:"Synthesis", blurb:"Here hydrogen is the negative partner. It rips protons off almost anything and fizzes furiously with water.", energy:"exothermic", color:"#f0ece0" },
+  "Cl,K":  { eq:"2K + Cl₂ → 2KCl", name:"Potassium chloride", kind:"Synthesis", blurb:"Sold as low-sodium salt substitute and used as fertiliser.", energy:"very exothermic", color:"#ffffff" }
+};
+/* ---------------- store ---------------- */
+const KEY = "spectra-lab-v1";
+let store = { name:"", pass:"", bench:"", log:[], saved:[], theme:"" };
+function load(){ try{ const r=localStorage.getItem(KEY); if(r) store=Object.assign(store,JSON.parse(r)); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+load();
+
+/* ---------------- elements ---------------- */
+const ORDER=[[1,2],[2,2],[2,6],[3,2],[3,6],[4,2],[3,10],[4,6],[5,2],[4,10],[5,6],[6,2],[4,14],[5,10],[6,6],[7,2],[5,14],[6,10],[7,6]];
+function shellsFor(z){
+  let left=z, sh=[0,0,0,0,0,0,0];
+  for(const [n,cap] of ORDER){ if(left<=0) break; const put=Math.min(cap,left); sh[n-1]+=put; left-=put; }
+  while(sh.length && sh[sh.length-1]===0) sh.pop();
+  return sh;
+}
+const SUB=["1s","2s","2p","3s","3p","4s","3d","4p","5s","4d","5p","6s","4f","5d","6p","7s","5f","6d","7p"];
+function configFor(z){
+  let left=z, out=[];
+  for(let i=0;i<ORDER.length && left>0;i++){ const cap=ORDER[i][1], put=Math.min(cap,left); out.push(SUB[i]+sup(put)); left-=put; }
+  return out.join(" ");
+}
+function sup(n){ return String(n).replace(/\d/g,d=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[+d]); }
+function sub(n){ return n===1?"":String(n).replace(/\d/g,d=>"₀₁₂₃₄₅₆₇₈₉"[+d]); }
+
+const EL = RAW.map(r=>{
+  const [z,sym,name,mass,cat,group,period,en,mp,bp,radius,note]=r;
+  const sh=shellsFor(z);
+  let x,y;
+  if(cat==="lanth"){ x=3+(z-57); y=9; }
+  else if(cat==="act"){ x=3+(z-89); y=10; }
+  else { x=group; y=period; }
+  return {z,sym,name,mass,cat,group,period,en,mp,bp,radius,note,x,y,shells:sh,valence:sh[sh.length-1],config:configFor(z)};
+});
+const BY_SYM = Object.fromEntries(EL.map(e=>[e.sym,e]));
+const catColor = c => c==="unknown"
+  ? "hsl(228 10% var(--tile-l))"
+  : `hsl(${CATS[c].hue} var(--tile-s) var(--tile-l))`;
+function propColor(v,min,max){
+  if(v==null) return "hsl(220 6% var(--tile-l))";
+  const t=Math.max(0,Math.min(1,(v-min)/(max-min||1)));
+  return `hsl(${(205-165*t).toFixed(0)} calc(var(--tile-s) + ${(18*t).toFixed(0)}%) calc(var(--tile-l) - ${(6*t).toFixed(0)}%))`;
+}
+const PROPS={
+  en:{label:"Electronegativity",unit:"",get:e=>e.en},
+  mp:{label:"Melting point",unit:" K",get:e=>e.mp},
+  bp:{label:"Boiling point",unit:" K",get:e=>e.bp},
+  r:{label:"Atomic radius",unit:" pm",get:e=>e.radius},
+  mass:{label:"Atomic mass",unit:"",get:e=>e.mass}
+};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+/* ---------------- helpers ---------------- */
+async function hashPass(v){
+  try{
+    const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode("spectra:"+v));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+  }catch(e){
+    let h=0; for(let i=0;i<v.length;i++){ h=(h*31+v.charCodeAt(i))|0; }
+    return "fallback"+h;
+  }
+}
+/* ---- CSV export (downloads capability, clipboard fallback) ---- */
+function csvCell(v){
+  const t=String(v==null?"":v);
+  return /[",\r\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t;
+}
+function toCSV(rows){ return rows.map(r=>r.map(csvCell).join(",")).join("\r\n"); }
+async function exportCSV(base, rows, label){
+  if(rows.length<2){ toast(`Nothing to export yet — run some ${label} first`); return; }
+  const csv=toCSV(rows);
+  let dl=null;
+  try{ dl = (window.claude && claude.use) ? await claude.use("downloads") : null; }catch(e){ dl=null; }
+  if(dl){
+    try{
+      await dl.save({filename:base+".csv", data:csv});
+      toast("Saved — open it in Excel or Google Sheets");
+      return;
+    }catch(err){
+      if(err && err.code==="extension_not_enabled"){
+        try{ await dl.save({filename:base+".txt", data:csv}); toast("Saved as .txt — rename to .csv to open as a sheet"); return; }catch(e2){}
+      }
+      if(err && err.code==="declined"){ toast("Export cancelled"); return; }
+    }
+  }
+  try{
+    await navigator.clipboard.writeText(csv);
+    toast("Copied as CSV — paste straight into a spreadsheet");
+  }catch(e){
+    toast("Export unavailable in this view");
+  }
+}
+function stamp(t){ const d=new Date(t); return d.toISOString().slice(0,19).replace("T"," "); }
+$("#exportLog").addEventListener("click",()=>exportCSV(
+  `spectra-log-${(store.bench||"bench").replace(/\s+/g,"-").toLowerCase()}`,
+  [["Timestamp","Bench","Student","Element A","Element B","Equation"],
+   ...store.log.map(l=>[stamp(l.at), l.bench||store.bench||"", l.who||store.name||"", l.a, l.b, l.eq])],
+  "experiments"));
+$("#exportSaved").addEventListener("click",()=>exportCSV(
+  `spectra-compounds-${(store.bench||"bench").replace(/\s+/g,"-").toLowerCase()}`,
+  [["Timestamp","Bench","Student","Formula","Molar mass (g/mol)"],
+   ...store.saved.map(c=>[stamp(c.at), c.bench||store.bench||"", c.who||store.name||"", c.formula, c.mass])],
+  "compounds"));
+
+let toastT;
+function toast(msg){
+  let n=document.getElementById("toast");
+  if(!n){ n=document.createElement("div"); n.id="toast"; n.className="toast"; n.setAttribute("role","status"); document.body.appendChild(n); }
+  n.textContent=msg; n.classList.add("on");
+  clearTimeout(toastT); toastT=setTimeout(()=>n.classList.remove("on"),2600);
+}
+
+/* ---------------- gate ---------------- */
+const benchBox=$("#benches");
+for(let i=1;i<=15;i++){
+  const id="bench"+i;
+  const l=document.createElement("label");
+  l.className="bench-opt"; l.setAttribute("for",id);
+  l.innerHTML=`<input type="radio" name="bench" id="${id}" value="Bench ${i}"> Bench ${i}`;
+  benchBox.appendChild(l);
+}
+function syncBenchUI(){
+  $$(".bench-opt").forEach(l=>l.classList.toggle("on", l.querySelector("input").checked));
+}
+document.addEventListener("change",e=>{ if(e.target.name==="bench") syncBenchUI(); });
+$("#benchOtherText").addEventListener("input",()=>{ $("#benchOther").checked=true; syncBenchUI(); });
+
+function benchValue(){
+  const picked=document.querySelector('input[name="bench"]:checked');
+  if(!picked) return "";
+  if(picked.value==="__other") return $("#benchOtherText").value.trim();
+  return picked.value;
+}
+function openLab(){
+  $("#gate").classList.add("hide");
+  const named=!!store.name;
+  $("#whoName").innerHTML = named ? `<b>${esc(store.name)}</b>${store.bench?" · "+esc(store.bench):""}` : "";
+  $("#benchStamp").textContent = named ? `${store.bench||"Bench"} · signed in as ${store.name}` : "";
+  $("#logoutBtn").hidden=!named;
+}
+function fillGate(){
+  $("#gateName").value=store.name||"";
+  $("#gatePass").value="";
+  $("#passHint").textContent = store.pass
+    ? "Enter the password you set for this bench on this device."
+    : "Choose a password for this bench — it is checked on this device only.";
+  const match=[...document.querySelectorAll('input[name="bench"]')].find(r=>r.value===store.bench);
+  if(match) match.checked=true;
+  else if(store.bench){ $("#benchOther").checked=true; $("#benchOtherText").value=store.bench; }
+  syncBenchUI();
+}
+if(store.name){ fillGate(); openLab(); }
+function showErr(id,on){ $(id).classList.toggle("show",on); }
+$("#gateName").addEventListener("input",()=>showErr("#errName",false));
+$("#gatePass").addEventListener("input",()=>showErr("#errPass",false));
+benchBox.addEventListener("change",()=>showErr("#errBench",false));
+$("#benchOtherText").addEventListener("input",()=>showErr("#errBench",false));
+$("#gateForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=$("#gateName").value.trim();
+  const pass=$("#gatePass").value;
+  const bench=benchValue();
+  showErr("#errName",!name); showErr("#errPass",pass.length<4); showErr("#errBench",!bench);
+  if(!name){ $("#gateName").focus(); return; }
+  if(pass.length<4){ $("#gatePass").focus(); return; }
+  if(!bench){ $("#benchOtherText").focus(); return; }
+  const h=await hashPass(pass);
+  if(store.pass && store.pass!==h){
+    $("#errPass").textContent="That password doesn’t match this bench. Reset it below if you’ve forgotten it.";
+    showErr("#errPass",true); $("#gatePass").select(); return;
+  }
+  $("#errPass").textContent="Enter a password of at least 4 characters.";
+  store.name=name; store.pass=h; store.bench=bench;
+  save(); openLab(); renderLog(); renderSaved();
+  toast(`Logged in — ${bench}`);
+});
+$("#peekPass").addEventListener("click",()=>{
+  const i=$("#gatePass"), showing=i.type==="text";
+  i.type=showing?"password":"text";
+  $("#peekPass").textContent=showing?"Show":"Hide";
+  $("#peekPass").setAttribute("aria-pressed",String(!showing));
+});
+$("#resetBench").addEventListener("click",()=>{
+  store={ name:"", pass:"", bench:"", log:[], saved:[], theme:store.theme };
+  save();
+  $("#gateName").value=""; $("#gatePass").value="";
+  $$('input[name="bench"]').forEach(r=>r.checked=false); $("#benchOtherText").value=""; syncBenchUI();
+  $("#passHint").textContent="Choose a password for this bench — it is checked on this device only.";
+  renderLog(); renderSaved();
+  toast("Bench reset — log, saved compounds and password cleared");
+});
+$("#logoutBtn").addEventListener("click",()=>{
+  const who=store.name;
+  store.name=""; store.bench="";
+  save();
+  mixA=mixB=null; paintSlots();
+  closeDrawer();
+  $("#whoName").innerHTML=""; $("#benchStamp").textContent="";
+  $("#logoutBtn").hidden=true;
+  $("#gateName").value=""; $("#gatePass").value="";
+  $$('input[name="bench"]').forEach(r=>r.checked=false); $("#benchOtherText").value=""; syncBenchUI();
+  $$(".err").forEach(n=>n.classList.remove("show"));
+  $("#gate").classList.remove("hide");
+  $("#gateName").focus();
+  toast(who?`Logged out — ${who}’s log is still saved on this device`:"Logged out");
+});
+
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------------- theme ---------------- */
+function currentTheme(){
+  const s=document.documentElement.getAttribute("data-theme");
+  if(s) return s;
+  return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+}
+if(store.theme) document.documentElement.setAttribute("data-theme",store.theme);
+$("#themeBtn").addEventListener("click",()=>{
+  const next = currentTheme()==="dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme",next);
+  store.theme=next; save(); redrawAll();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",redrawAll);
+
+/* ---------------- periodic table ---------------- */
+let colorMode="cat", filterCat=null, query="";
+const legend=$("#legend");
+Object.entries(CATS).forEach(([k,v])=>{
+  const b=document.createElement("button");
+  b.className="chip"; b.setAttribute("aria-pressed","false"); b.dataset.cat=k;
+  b.style.setProperty("--c",catColor(k));
+  b.innerHTML=`<i></i>${v.label}`;
+  b.addEventListener("click",()=>{
+    filterCat = filterCat===k ? null : k;
+    $$("#legend .chip").forEach(c=>c.setAttribute("aria-pressed", String(c.dataset.cat===filterCat)));
+    paintTable();
+  });
+  legend.appendChild(b);
+});
+
+const tableEl=$("#ptable");
+function buildTable(){
+  const cells=[];
+  for(let y=1;y<=10;y++){
+    for(let x=1;x<=18;x++){
+      if(y===6&&x===3) cells.push({ph:"57–71",x,y});
+      else if(y===7&&x===3) cells.push({ph:"89–103",x,y});
+      else{
+        const e=EL.find(e=>e.x===x&&e.y===y);
+        if(e) cells.push({e,x,y});
+      }
+    }
+  }
+  const frag=document.createDocumentFragment();
+  cells.filter(c=>c.y<=7).forEach(c=>frag.appendChild(cellNode(c)));
+  const gap=document.createElement("div"); gap.className="frow"; gap.style.gridRow=8; frag.appendChild(gap);
+  cells.filter(c=>c.y===9).forEach(c=>frag.appendChild(cellNode(c)));
+  cells.filter(c=>c.y===10).forEach(c=>frag.appendChild(cellNode(c)));
+  tableEl.appendChild(frag);
+}
+function cellNode(c){
+  if(c.ph){ const d=document.createElement("div"); d.className="ph"; d.textContent=c.ph; d.style.gridColumn=c.x; d.style.gridRow=c.y; return d; }
+  const e=c.e, b=document.createElement("button");
+  b.className="tile"; b.dataset.z=e.z; b.style.gridColumn=c.x;
+  b.style.gridRow = c.y;
+  b.title=`${e.name} · ${CATS[e.cat].label}`;
+  b.innerHTML=`<span class="z">${e.z}</span><span class="sym">${e.sym}</span><span class="nm">${e.name}</span><span class="val"></span>`;
+  b.addEventListener("click",()=>openDrawer(e.z));
+  return b;
+}
+buildTable();
+function paintTable(){
+  const p=PROPS[colorMode==="cat"?"en":colorMode];
+  let min=Infinity,max=-Infinity;
+  if(colorMode!=="cat"){ EL.forEach(e=>{ const v=p.get(e); if(v!=null){ min=Math.min(min,v); max=Math.max(max,v);} }); }
+  $$("#ptable .tile").forEach(t=>{
+    const e=EL[+t.dataset.z-1];
+    t.style.setProperty("--c", colorMode==="cat"?catColor(e.cat):propColor(p.get(e),min,max));
+    const q=query.toLowerCase();
+    const hitQ = !q || e.name.toLowerCase().includes(q) || e.sym.toLowerCase()===q || String(e.z)===q || e.sym.toLowerCase().startsWith(q);
+    const hitC = !filterCat || e.cat===filterCat;
+    t.classList.toggle("dim", !(hitQ&&hitC));
+    const v = colorMode==="cat" ? null : p.get(e);
+    t.querySelector(".val").textContent = v==null?"":(colorMode==="mp"?Math.round(v):v);
+  });
+  $("#tableSub").textContent = colorMode==="cat"
+    ? "Tap any element for its data and electron shells. Recolour the table with the switch above."
+    : `Shaded by ${p.label.toLowerCase()} — cool blue is low, warm orange is high. Grey means no reliable measurement.`;
+}
+paintTable();
+$("#q").addEventListener("input",e=>{ query=e.target.value.trim(); paintTable(); });
+$$("#colorMode button").forEach(b=>b.addEventListener("click",()=>{
+  colorMode=b.dataset.mode;
+  $$("#colorMode button").forEach(o=>o.setAttribute("aria-pressed",String(o===b)));
+  paintTable();
+}));
+
+/* ---------------- drawer ---------------- */
+let drawerEl=null;
+function openDrawer(z){
+  const e=EL[z-1]; drawerEl=e;
+  $("#drTile").style.setProperty("--c",catColor(e.cat));
+  $("#drTile").querySelector(".z").textContent=e.z;
+  $("#drTile").querySelector(".sym").textContent=e.sym;
+  $("#drName").textContent=e.name;
+  $("#drCat").textContent=`${CATS[e.cat].label} · ${e.group?("group "+e.group+" · "):""}period ${e.period}`;
+  const f=[["Atomic mass",e.mass],["Electrons",e.z],["Electronegativity",e.en??"—"],["Valence electrons",e.valence],
+           ["Melting point",e.mp?e.mp+" K":"—"],["Boiling point",e.bp?e.bp+" K":"—"],
+           ["Atomic radius",e.radius?e.radius+" pm":"—"],["State at 25 °C",stateOf(e)]];
+  $("#drFacts").innerHTML=f.map(([k,v])=>`<div class="fact"><span>${k}</span><b>${v}</b></div>`).join("");
+  $("#drNote").textContent=e.note;
+  $("#drConf").textContent=e.shells.join(" · ");
+  $$("#ptable .tile").forEach(t=>t.classList.toggle("sel",+t.dataset.z===z));
+  $("#drawer").classList.add("open"); $("#scrim").classList.add("on");
+  drawAtom($("#drCanvas"),e,{labels:false});
+}
+function stateOf(e){
+  if(e.mp==null) return "—";
+  if(298<e.mp) return "solid";
+  if(e.bp!=null && 298>e.bp) return "gas";
+  return "liquid";
+}
+function closeDrawer(){ $("#drawer").classList.remove("open"); $("#scrim").classList.remove("on"); $$("#ptable .tile").forEach(t=>t.classList.remove("sel")); drawerEl=null; }
+$("#drClose").addEventListener("click",closeDrawer);
+$("#scrim").addEventListener("click",closeDrawer);
+addEventListener("keydown",e=>{ if(e.key==="Escape") closeDrawer(); });
+$("#drToMix").addEventListener("click",()=>{ if(drawerEl){ addToMix(drawerEl); closeDrawer(); goTab("mix"); }});
+$("#drToBohr").addEventListener("click",()=>{ if(drawerEl){ bohrZ=drawerEl.z; closeDrawer(); goTab("bohr"); renderBohr(); }});
+
+/* ---------------- tabs ---------------- */
+function goTab(id){
+  $$(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===id)));
+  $$(".panel").forEach(p=>p.classList.toggle("on",p.id==="tab-"+id));
+  if(id==="trend") drawTrend();
+  if(id==="bohr") renderBohr();
+  document.getElementById("tab-"+id).scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+$$(".tabs button").forEach(b=>b.addEventListener("click",()=>goTab(b.dataset.tab)));
+
+/* ---------------- pickers ---------------- */
+function buildPicker(node,onPick){
+  node.innerHTML="";
+  EL.forEach(e=>{
+    const b=document.createElement("button");
+    b.className="pel"; b.style.setProperty("--c",catColor(e.cat));
+    b.innerHTML=`<i></i>${e.sym}`; b.title=e.name;
+    b.addEventListener("click",()=>onPick(e));
+    node.appendChild(b);
+  });
+}
+
+/* ---------------- reaction mixer ---------------- */
+let mixA=null, mixB=null;
+buildPicker($("#mixPicker"),addToMix);
+function addToMix(e){
+  if(!mixA) mixA=e; else if(!mixB) mixB=e; else { mixA=mixB; mixB=e; }
+  paintSlots();
+}
+function paintSlots(){
+  [["#slotA",mixA],["#slotB",mixB]].forEach(([sel,e])=>{
+    const n=$(sel);
+    if(!e){ n.className="slot"; n.style.setProperty("--c","var(--surface-2)"); n.textContent="empty"; }
+    else { n.className="slot full"; n.style.setProperty("--c",catColor(e.cat)); n.innerHTML=`<span class="s">${e.sym}</span><span class="n">${e.name}</span>`; }
+  });
+  $$("#ptable .tile").forEach(t=>{ const z=+t.dataset.z; t.classList.toggle("pick", (mixA&&mixA.z===z)||(mixB&&mixB.z===z)); });
+}
+$("#clearMix").addEventListener("click",()=>{ mixA=mixB=null; paintSlots(); $("#beaker").innerHTML=""; $("#mixResult").innerHTML='<p class="empty">The beaker is clean. Choose two elements and hit React.</p>'; });
+$("#reactBtn").addEventListener("click",runReaction);
+
+const METAL_CATS=new Set(["alkali","alkaline","tm","post","lanth","act"]);
+function isMetal(e){ return METAL_CATS.has(e.cat) || (e.cat==="unknown" && e.group<=12); }
+function valenceOf(e){
+  const o=OXID[e.sym];
+  if(o!=null) return Math.abs(o);
+  const g=e.group;
+  if(g===1) return 1;
+  if(g===2) return 2;
+  if(g===13) return 3;
+  if(g===14) return 4;
+  if(g===15) return 3;
+  if(g===16) return 2;
+  if(g===17) return 1;
+  if(g===18) return 2;          /* only the heavy noble gases in practice */
+  return 3;                      /* d- and f-block default */
+}
+function enOf(e){ return e.en!=null ? e.en : (isMetal(e)?1.4:2.4); }
+function gcd(x,y){ return y?gcd(y,x%y):x; }
+function combine(a,b){
+  /* less electronegative partner takes the positive role */
+  let cat=a, an=b;
+  if(enOf(a)>enOf(b)) { cat=b; an=a; }
+  let cv=valenceOf(cat), av=valenceOf(an);
+  const d=gcd(cv,av)||1;
+  const nc=av/d, na=cv/d;
+  return { cat, an, nc, na, formula:`${cat.sym}${sub(nc)}${an.sym}${sub(na)}` };
+}
+function runReaction(){
+  if(!mixA||!mixB){ flash("Load two elements into the beaker first."); return; }
+  const key=[mixA.sym,mixB.sym].sort().join(",");
+  const known=REACTIONS[key];
+  let out;
+  if(mixA.z===mixB.z){
+    const e=mixA, diatomic=["H","N","O","F","Cl","Br","I"].includes(e.sym);
+    out= diatomic
+      ? {eq:`${e.sym} + ${e.sym} → ${e.sym}₂`, name:`${e.name} molecule`, kind:"Elemental form",
+         blurb:`Two ${e.name.toLowerCase()} atoms pair into a diatomic molecule — the form this element actually takes in the bottle. No compound here, just the element being itself.`,
+         energy:"exothermic", color:"#8fa3b5", ok:true}
+      : {eq:`${e.sym} + ${e.sym} → ${e.sym} (bulk)`, name:`${e.name}`, kind:"Elemental form",
+         blurb:`Adding ${e.name.toLowerCase()} to ${e.name.toLowerCase()} just gives you more ${e.name.toLowerCase()}. Pick a second element to make a compound.`,
+         energy:"none", color:"#8fa3b5", ok:true};
+  } else if(known){
+    out=Object.assign({ok:true},known);
+  } else {
+    const c=combine(mixA,mixB);
+    const gap=Math.abs(enOf(mixA)-enOf(mixB));
+    const bothMetal=isMetal(mixA)&&isMetal(mixB);
+    const noble=[mixA,mixB].find(e=>e.cat==="noble");
+    const lightNoble=noble&&["He","Ne","Ar"].includes(noble.sym);
+    const synthetic=[mixA,mixB].some(e=>e.z>103);
+    let kind, energy, blurb, color;
+    if(bothMetal){
+      kind="Alloy"; energy="mixes on melting";
+      color=enOf(mixA)>2.2||enOf(mixB)>2.2?"#c9a227":"#9aa7b4";
+      blurb=`Two metals don't swap electrons — they pool them. Melted together, ${mixA.name.toLowerCase()} and ${mixB.name.toLowerCase()} form an alloy; at the ${c.nc}:${c.na} ratio shown it can order into the intermetallic phase ${c.formula}. Real alloys accept a range of ratios, not one fixed formula.`;
+    } else if(lightNoble){
+      kind="Hypothetical"; energy="needs extreme conditions"; color="#a9b6d6";
+      blurb=`${noble.name} has a full outer shell and has never been made to bond in a stable compound. ${c.formula} is what the valence arithmetic predicts if it could — treat it as a thought experiment, not a bottle on the shelf.`;
+    } else if(noble){
+      kind="Forced bond"; energy="needs extreme conditions"; color="#dbe7ff";
+      blurb=`Heavy noble gases can be forced to react: their outer electrons sit far enough from the nucleus for a hungry partner to reach them. Under pressure and heat, ${noble.name.toLowerCase()} and ${(noble===mixA?mixB:mixA).name.toLowerCase()} would give ${c.formula}.`;
+    } else if(synthetic){
+      kind="Predicted"; energy="unmeasured"; color="#b9a7d8";
+      blurb=`Superheavy elements exist for fractions of a second, so this pairing has never been observed. From periodic trends alone, the expected product is ${c.formula}.`;
+    } else {
+      kind = gap>1.7 ? "Ionic bond" : gap>0.4 ? "Polar covalent bond" : "Covalent bond";
+      energy = gap>2.4 ? "very exothermic" : gap>1.2 ? "exothermic" : "mildly exothermic";
+      color = gap>1.7 ? "#dfe9f7" : gap>0.9 ? "#8fc4d8" : "#a8b6a0";
+      blurb=`${c.cat.name} gives, ${c.an.name.toLowerCase()} takes. With ${c.cat.sym} contributing ${valenceOf(c.cat)} and ${c.an.sym} needing ${valenceOf(c.an)}, the charges balance at ${c.formula}. The electronegativity difference of ${gap.toFixed(2)} makes it ${kind.toLowerCase().replace(" bond","")}. Predicted from valence rules — real chemistry may prefer another ratio or need a catalyst.`;
+    }
+    out={eq:`${mixA.sym} + ${mixB.sym} → ${c.formula}`, name:c.formula, kind, energy, blurb, color, ok:true, predicted:!bothMetal};
+  }
+  renderReaction(out);
+  store.log.unshift({a:mixA.sym,b:mixB.sym,eq:out.eq,at:Date.now(),bench:store.bench,who:store.name});
+  store.log=store.log.slice(0,40); save(); renderLog();
+}
+function fmtOx(n){ return (n>0?"+":"")+n; }
+function flash(msg){ $("#mixResult").innerHTML=`<p class="empty">${esc(msg)}</p>`; }
+function renderReaction(o){
+  const cls = o.energy==="explosive"||o.energy.startsWith("very")?"hot":o.energy==="endothermic"?"cold":o.ok?"ok":"";
+  $("#mixResult").innerHTML=`
+    <div class="eyebrow">${esc(o.kind)}</div>
+    <div class="eq" style="margin-top:6px">${esc(o.eq)}</div>
+    <div class="badges">
+      <span class="badge ${cls}">${esc(o.energy)}</span>
+      <span class="badge plain">${esc(o.name)}</span>
+      ${o.predicted?'<span class="badge">predicted</span>':""}
+    </div>
+    <p class="note">${esc(o.blurb)}</p>`;
+  drawBeaker(o);
+}
+function toneFor(hex){
+  const h=(hex||"#8fa3b5").replace("#","");
+  let r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+  const lum=(0.299*r+0.587*g+0.114*b)/255, dark=currentTheme()==="dark";
+  const target = dark ? Math.max(lum,0.34) : Math.min(lum,0.72);
+  const k = lum>0 ? target/lum : 1;
+  const mix=(v)=> Math.round(Math.max(0,Math.min(255, lum>0 ? v*k : 90)));
+  return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+}
+function drawBeaker(o){
+  const c=toneFor(o.color), active=o.ok;
+  const surf = active ? 84 : 138;
+  const bubbles = active ? Array.from({length:10},()=>{
+    const x=(58+Math.random()*84).toFixed(0), r=(2+Math.random()*4).toFixed(1),
+          d=(1.5+Math.random()*1.9).toFixed(2), del=(Math.random()*2.2).toFixed(2);
+    return `<circle cx="${x}" cy="176" r="${r}" fill="#fff" opacity="0">
+      <animate attributeName="cy" values="176;${surf+6}" dur="${d}s" begin="${del}s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.55;0" dur="${d}s" begin="${del}s" repeatCount="indefinite"/></circle>`;
+  }).join("") : "";
+  const ticks=[110,130,150].map(y=>`<path d="M56 ${y}h13" stroke="currentColor" stroke-width="2" opacity=".35" stroke-linecap="round"/>`).join("");
+  $("#beaker").innerHTML=`
+  <svg viewBox="0 0 200 200" role="img" aria-label="Laboratory beaker">
+    <defs><clipPath id="bk"><path d="M54 46h92v126a12 12 0 01-12 12H66a12 12 0 01-12-12z"/></clipPath></defs>
+    <g clip-path="url(#bk)">
+      <rect x="50" y="${surf}" width="100" height="120" fill="${c}" opacity="${active?.9:.32}"/>
+      <rect x="50" y="${surf}" width="100" height="2.5" fill="${c}" opacity="${active?1:.5}"/>
+      <ellipse cx="100" cy="${surf}" rx="50" ry="5" fill="#fff" opacity="${active?.22:.1}">
+        <animate attributeName="cy" values="${surf};${surf-3};${surf}" dur="3.4s" repeatCount="indefinite"/>
+      </ellipse>
+      ${bubbles}
+    </g>
+    <path d="M54 46h92v126a12 12 0 01-12 12H66a12 12 0 01-12-12z" fill="none" stroke="currentColor" stroke-width="2.5" opacity=".5"/>
+    <path d="M46 44h108" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" opacity=".5"/>
+    ${ticks}
+  </svg>`;
+}
+function renderLog(){
+  const n=$("#mixLog");
+  if(!store.log.length){ n.innerHTML='<p class="empty">No experiments run yet.</p>'; return; }
+  n.innerHTML=store.log.map(l=>`<div class="log-item"><span class="mono">${esc(l.eq)}</span><em>${new Date(l.at).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</em></div>`).join("");
+}
+renderLog();
+$("#clearLog").addEventListener("click",()=>{ store.log=[]; save(); renderLog(); });
+
+/* ---------------- compound builder ---------------- */
+let build=[];
+buildPicker($("#buildPicker"),e=>{
+  const f=build.find(b=>b.sym===e.sym);
+  if(f) f.n++; else build.push({sym:e.sym,n:1});
+  renderBuild();
+});
+function renderBuild(){
+  const list=$("#buildList");
+  if(!build.length){ list.innerHTML='<p class="empty">Nothing on the bench. Pick elements below.</p>'; }
+  else list.innerHTML=build.map((b,i)=>{
+    const e=BY_SYM[b.sym];
+    return `<div class="count-el" style="--c:${catColor(e.cat)}">
+      <span class="lhs"><i></i>${e.sym} <span style="color:var(--ink-3);font-weight:400">${e.name}</span></span>
+      <span class="stepper"><button data-i="${i}" data-d="-1">−</button><span class="v">${b.n}</span><button data-i="${i}" data-d="1">+</button><button data-i="${i}" data-d="0" title="Remove">✕</button></span>
+    </div>`;
+  }).join("");
+  list.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{
+    const i=+btn.dataset.i, d=+btn.dataset.d;
+    if(d===0) build.splice(i,1);
+    else { build[i].n=Math.max(1,build[i].n+d); if(d===-1&&build[i].n===1&&btn.previousElementSibling===null){} }
+    renderBuild();
+  }));
+  computeBuild();
+}
+function computeBuild(){
+  if(!build.length){
+    $("#formula").textContent="—"; $("#buildBadges").innerHTML=""; $("#buildRows").innerHTML=""; $("#compBars").innerHTML='<p class="empty">Add elements to see the mass breakdown.</p>'; return;
+  }
+  const parts=build.map(b=>b.sym+sub(b.n));
+  const formula=parts.join("");
+  const mass=build.reduce((s,b)=>s+BY_SYM[b.sym].mass*b.n,0);
+  const atoms=build.reduce((s,b)=>s+b.n,0);
+  const charge=build.reduce((s,b)=>s+(OXID[b.sym]??0)*b.n,0);
+  const anyNull=build.some(b=>OXID[b.sym]==null);
+  const ens=build.map(b=>BY_SYM[b.sym].en).filter(v=>v!=null);
+  const gap= ens.length>1 ? Math.max(...ens)-Math.min(...ens) : 0;
+  const bond = build.length<2 ? "single element" : gap>1.7?"ionic":gap>0.4?"polar covalent":"covalent";
+  $("#formula").textContent=formula;
+  const balanced = !anyNull && charge===0 && build.length>1;
+  $("#buildBadges").innerHTML=[
+    `<span class="badge ${balanced?"ok":build.length>1?"hot":""}">${anyNull?"charges unknown":balanced?"charges balance":build.length>1?"net charge "+fmtOx(charge):"element"}</span>`,
+    `<span class="badge">${bond}</span>`,
+    `<span class="badge">${atoms} atom${atoms>1?"s":""}</span>`
+  ].join("");
+  $("#buildRows").innerHTML=[
+    ["Molar mass",mass.toFixed(3)+" g/mol"],
+    ["Elements",build.length],
+    ["Electronegativity spread",gap?gap.toFixed(2):"—"],
+    ["Total electrons",build.reduce((s,b)=>s+BY_SYM[b.sym].z*b.n,0)]
+  ].map(([k,v])=>`<div class="row"><span>${k}</span><b>${v}</b></div>`).join("");
+  $("#compBars").innerHTML=build.map(b=>{
+    const e=BY_SYM[b.sym], pct=e.mass*b.n/mass*100;
+    return `<div style="margin-bottom:9px">
+      <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px"><b>${e.sym}${sub(b.n)} <span style="color:var(--ink-3);font-weight:400">${e.name}</span></b><b class="num">${pct.toFixed(1)}%</b></div>
+      <div style="height:8px;border-radius:6px;background:var(--surface-2);overflow:hidden"><div style="height:100%;width:${pct}%;background:${catColor(e.cat)}"></div></div>
+    </div>`;
+  }).join("");
+}
+$("#clearBuild").addEventListener("click",()=>{ build=[]; renderBuild(); });
+$("#saveCompound").addEventListener("click",()=>{
+  if(!build.length) return;
+  const formula=build.map(b=>b.sym+sub(b.n)).join("");
+  const mass=build.reduce((s,b)=>s+BY_SYM[b.sym].mass*b.n,0);
+  store.saved.unshift({formula,mass:+mass.toFixed(3),at:Date.now(),bench:store.bench,who:store.name});
+  store.saved=store.saved.slice(0,25); save(); renderSaved();
+});
+function renderSaved(){
+  const n=$("#savedList");
+  if(!store.saved.length){ n.innerHTML='<p class="empty">No saved compounds yet.</p>'; return; }
+  n.innerHTML=store.saved.map(s=>`<div class="log-item"><span class="mono">${esc(s.formula)}</span><span style="color:var(--ink-3)">${s.mass} g/mol</span><em>${new Date(s.at).toLocaleDateString([], {month:"short",day:"numeric"})}</em></div>`).join("");
+}
+renderBuild(); renderSaved();
+
+/* ---------------- Bohr visualiser ---------------- */
+let bohrZ=6, hoverShell=-1;
+function renderBohr(){
+  const e=EL[bohrZ-1];
+  $("#bohrTitle").textContent=`${e.name} · ${e.sym}`;
+  $("#bohrConf").textContent=e.config;
+  $("#shellRows").innerHTML=e.shells.map((n,i)=>{
+    const cap=2*(i+1)**2, pct=Math.min(100,n/cap*100);
+    return `<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px">
+        <b>Shell ${i+1} <span style="color:var(--ink-3);font-weight:400">(${"KLMNOPQ"[i]})</span></b><b class="num">${n} / ${cap}</b></div>
+      <div style="height:8px;border-radius:6px;background:var(--surface-2);overflow:hidden"><div style="height:100%;width:${pct}%;background:${catColor(e.cat)}"></div></div>
+    </div>`;
+  }).join("");
+  const v=e.valence, cap=2*e.shells.length**2;
+  let msg;
+  if(e.cat==="noble") msg=`Its outer shell is complete with ${v} electrons, so ${e.name} has nothing to gain by reacting. That single fact explains almost everything about noble gases.`;
+  else if(v<=3) msg=`${e.name} carries ${v} loosely held outer electron${v>1?"s":""}. Losing ${v>1?"them":"it"} is easier than gaining ${cap-v} — so it forms positive ions and behaves as a metal.`;
+  else msg=`With ${v} electrons in its outer shell, ${e.name} is only ${8-v>0?8-v:0} short of a full octet. Pulling electrons in beats giving ${v} away, so it forms negative ions or shares in covalent bonds.`;
+  $("#bohrNote").textContent=msg;
+  drawAtom($("#bohrCanvas"),e,{labels:$("#bohrLabels").checked});
+}
+$("#bohrPrev").addEventListener("click",()=>{ bohrZ=bohrZ>1?bohrZ-1:118; renderBohr(); });
+$("#bohrNext").addEventListener("click",()=>{ bohrZ=bohrZ<118?bohrZ+1:1; renderBohr(); });
+$("#bohrLabels").addEventListener("change",renderBohr);
+buildPicker($("#bohrPicker"),e=>{ bohrZ=e.z; renderBohr(); });
+
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+const atomState=new WeakMap();
+function drawAtom(canvas,e,opts){ atomState.set(canvas,{e,opts}); }
+canvasHover($("#bohrCanvas"));
+function canvasHover(cv){
+  if(!cv) return;
+  cv.addEventListener("mousemove",ev=>{
+    const st=atomState.get(cv); if(!st) return;
+    const r=cv.getBoundingClientRect();
+    const scale=cv.width/r.width;
+    const x=(ev.clientX-r.left)*scale, y=(ev.clientY-r.top)*scale;
+    const cx=cv.width/2, cy=cv.height/2;
+    const d=Math.hypot(x-cx,y-cy);
+    const n=st.e.shells.length, maxR=Math.min(cv.width,cv.height)/2-30, inner=Math.min(74,maxR/(n+0.6));
+    hoverShell=-1;
+    for(let i=0;i<n;i++){
+      const r=inner+(maxR-inner)*(n>1?i/(n-1):0);
+      if(Math.abs(d-r)<Math.max(14,(maxR-inner)/Math.max(1,n-1)*0.42)){ hoverShell=i; break; }
+    }
+  });
+  cv.addEventListener("mouseleave",()=>hoverShell=-1);
+}
+let t0=performance.now();
+function frame(now){
+  const dt=(now-t0)/1000; t0=now;
+  const spin=$("#bohrSpin").checked && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  [ $("#bohrCanvas"), $("#drCanvas") ].forEach(cv=>{
+    const st=atomState.get(cv); if(!st) return;
+    if(cv===$("#drCanvas") && !$("#drawer").classList.contains("open")) return;
+    if(cv===$("#bohrCanvas") && !$("#tab-bohr").classList.contains("on")) return;
+    paintAtom(cv,st.e,st.opts,spin?dt:0, cv===$("#bohrCanvas"));
+  });
+  requestAnimationFrame(frame);
+}
+const phase=new WeakMap();
+function paintAtom(cv,e,opts,dt,interactive){
+  const ctx=cv.getContext("2d");
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  let ph=phase.get(cv); if(!ph){ ph=e.shells.map(()=>Math.random()*6.28); phase.set(cv,ph); }
+  while(ph.length<e.shells.length) ph.push(0);
+  const ink=cssVar("--ink"), ink3=cssVar("--ink-3"), col=`hsl(${CATS[e.cat].hue} 60% 55%)`;
+  ctx.clearRect(0,0,W,H);
+  const n=e.shells.length, maxR=Math.min(W,H)/2-30, inner=Math.min(74,maxR/(n+0.6));
+  const rOf=i=> inner + (maxR-inner)*(n>1 ? i/(n-1) : 0);
+  // nucleus
+  const nucR=Math.max(20,inner*0.42);
+  const grad=ctx.createRadialGradient(cx,cy,2,cx,cy,nucR*1.9);
+  grad.addColorStop(0,col); grad.addColorStop(1,"transparent");
+  ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(cx,cy,nucR*1.9,0,6.2832); ctx.fill();
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,nucR,0,6.2832); ctx.fill();
+  ctx.fillStyle=cssVar("--tile-text"); ctx.font=`700 ${Math.round(nucR*0.9)}px Archivo, sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(e.sym,cx,cy);
+  e.shells.forEach((count,i)=>{
+    const r=rOf(i);
+    const held = interactive && hoverShell===i;
+    ctx.strokeStyle= held?col:ink3; ctx.globalAlpha= held?.9:.32; ctx.lineWidth= held?2:1;
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,6.2832); ctx.stroke(); ctx.globalAlpha=1;
+    if(!held) ph[i]+= dt*(0.55/(i*0.45+1))*(i%2?-1:1);
+    for(let k=0;k<count;k++){
+      const a=ph[i]+k*6.2832/count;
+      const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x,y,6.4,0,6.2832); ctx.fill();
+      ctx.fillStyle=cssVar("--surface"); ctx.beginPath(); ctx.arc(x,y,2.3,0,6.2832); ctx.fill();
+    }
+    if(opts.labels){
+      ctx.fillStyle=ink; ctx.globalAlpha=.7; ctx.font="500 11px 'IBM Plex Mono', monospace";
+      ctx.fillText(`${count}e⁻`,cx,cy-r-11); ctx.globalAlpha=1;
+    }
+  });
+}
+requestAnimationFrame(frame);
+
+/* ---------------- trends ---------------- */
+const tc=$("#trendCanvas");
+let hoverBar=-1;
+function scopeSet(){
+  const s=$("#scopeSel").value;
+  if(s==="all") return EL;
+  if(s==="1-36") return EL.filter(e=>e.z<=36);
+  if(s==="main") return EL.filter(e=>e.group===1||e.group===2||e.group>=13);
+  if(s==="g1") return EL.filter(e=>e.group===1);
+  if(s==="g17") return EL.filter(e=>e.group===17);
+  if(s==="p2") return EL.filter(e=>e.period===2&&e.group);
+  if(s==="p3") return EL.filter(e=>e.period===3&&e.group);
+  return EL;
+}
+function drawTrend(){
+  const p=PROPS[$("#propSel").value], set=scopeSet();
+  const vals=set.map(e=>p.get(e));
+  const max=Math.max(...vals.filter(v=>v!=null));
+  const ctx=tc.getContext("2d");
+  const W=tc.width,H=tc.height, padL=54,padR=14,padT=18,padB=44;
+  ctx.clearRect(0,0,W,H);
+  const ink=cssVar("--ink"), ink3=cssVar("--ink-3"), line=cssVar("--line-soft");
+  // grid
+  ctx.strokeStyle=line; ctx.fillStyle=ink3; ctx.font="500 15px 'IBM Plex Mono', monospace"; ctx.textAlign="right"; ctx.textBaseline="middle"; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=padT+(H-padT-padB)*i/4, v=max*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillText(v>=1000?Math.round(v):(+v.toFixed(2)),padL-9,y);
+  }
+  const bw=(W-padL-padR)/set.length;
+  set.forEach((e,i)=>{
+    const v=p.get(e);
+    const bwid=Math.max(1.5,bw-Math.min(4,bw*0.22));
+    if(v==null){
+      ctx.fillStyle=line;
+      ctx.fillRect(padL+i*bw,H-padB-4,bwid,4);
+      if(bw>17){ ctx.fillStyle=ink3; ctx.font="500 13px 'IBM Plex Mono', monospace"; ctx.textAlign="center"; ctx.textBaseline="top"; ctx.fillText(e.sym,padL+i*bw+bwid/2,H-padB+8); ctx.textAlign="right"; ctx.textBaseline="middle"; }
+      return;
+    }
+    const h=(H-padT-padB)*(v/max);
+    const x=padL+i*bw, y=H-padB-h;
+    ctx.fillStyle = e.cat==="unknown"
+      ? `hsl(228 12% ${hoverBar===i?62:48}%)`
+      : `hsl(${CATS[e.cat].hue} 58% ${hoverBar===i?68:52}%)`;
+    const w=Math.max(1.5,bw-Math.min(4,bw*0.22));
+    ctx.beginPath();
+    const rad=Math.min(3,w/2);
+    ctx.roundRect(x,y,w,h,[rad,rad,0,0]); ctx.fill();
+    if(bw>17){
+      ctx.fillStyle=ink3; ctx.font="500 13px 'IBM Plex Mono', monospace"; ctx.textAlign="center"; ctx.textBaseline="top";
+      ctx.fillText(e.sym,x+w/2,H-padB+8);
+      ctx.textAlign="right"; ctx.textBaseline="middle";
+    }
+  });
+  if(hoverBar>=0 && set[hoverBar]){
+    const e=set[hoverBar], v=p.get(e);
+    ctx.fillStyle=ink; ctx.textAlign="left"; ctx.textBaseline="top"; ctx.font="600 19px Archivo, sans-serif";
+    ctx.fillText(`${e.name} · ${v==null?"no data":v+p.unit}`,padL+4,padT-4);
+  }
+  $("#trendNote").textContent=noteFor($("#propSel").value,$("#scopeSel").value);
+}
+tc.addEventListener("mousemove",ev=>{
+  const set=scopeSet(), r=tc.getBoundingClientRect();
+  const x=(ev.clientX-r.left)*(tc.width/r.width);
+  const padL=54,padR=14, bw=(tc.width-padL-padR)/set.length;
+  const i=Math.floor((x-padL)/bw);
+  hoverBar = i>=0&&i<set.length ? i : -1;
+  drawTrend();
+});
+tc.addEventListener("mouseleave",()=>{ hoverBar=-1; drawTrend(); });
+$("#propSel").addEventListener("change",drawTrend);
+$("#scopeSel").addEventListener("change",()=>{ hoverBar=-1; drawTrend(); });
+function noteFor(prop,scope){
+  const N={
+    en:"Electronegativity climbs as you go right across a period and falls as you go down a group — fluorine, top right of the reactive block, is the greediest element there is.",
+    mp:"Melting points peak in the middle of the transition metals, where bonding electrons are most plentiful, and collapse at the noble gases, which barely hold onto each other at all.",
+    bp:"Boiling points follow melting points closely: the metals with the strongest metallic bonding — tungsten, rhenium, osmium — stay liquid to thousands of degrees.",
+    r:"Atoms get smaller across a period, because the growing nuclear charge pulls the same shell inwards, then jump sharply at the start of each new period when a fresh shell opens.",
+    mass:"Mass rises steadily with atomic number, but not smoothly — the dips mark elements whose most stable isotope is unusually light."
+  };
+  const S={g1:" Down group 1 the effect is textbook-clean: each step adds a shell.",g17:" The halogens show the trend in reverse, weakening steadily from fluorine down to astatine.",p2:" Period 2 is the clearest single row to read the trend from.",p3:" Period 3 repeats period 2's pattern one shell further out."};
+  return N[prop]+(S[scope]||"");
+}
+
+function redrawAll(){ paintTable(); paintSlots(); renderBuild(); renderBohr(); drawTrend(); if(drawerEl) openDrawer(drawerEl.z); }
+renderBohr(); drawTrend(); paintSlots();
+</script>
+
+</body></html>

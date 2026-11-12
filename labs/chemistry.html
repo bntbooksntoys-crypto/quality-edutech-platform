@@ -47,37 +47,6 @@ button{font:inherit; color:inherit; background:none; border:none; cursor:pointer
 .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3)}
 .num{font-variant-numeric:tabular-nums}
 
-/* ---------- gate ---------- */
-#gate{position:fixed; inset:0; z-index:120; display:grid; place-items:center; background:var(--paper); padding:24px}
-#gate.hide{display:none}
-#gate{overflow-y:auto; align-items:start; padding:clamp(16px,5vh,56px) 20px}
-.gate-card{width:min(520px,100%); background:var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); overflow:hidden}
-.gate-strip{height:8px; background:linear-gradient(90deg, var(--accent), hsl(var(--accent-h,268) 60% 58%))}
-.gate-inner{padding:26px 30px 30px}
-.gate-card h1{font-size:32px; margin-top:14px; letter-spacing:-.03em}
-.gate-lede{color:var(--ink-2); margin-top:8px; font-size:14.5px; font-family:"Newsreader",Georgia,serif; font-size:17px; line-height:1.45}
-.field{margin-top:22px; border:none; padding:0}
-.field label, .field legend{display:block; font-size:13px; font-weight:600; letter-spacing:.01em; margin-bottom:7px; padding:0}
-.req{color:var(--bad); font-weight:700}
-.field input[type=text], .field input:not([type]), .field input[type=email], #benchOtherText{
-  width:100%; background:var(--surface-2); border:1px solid var(--line); color:var(--ink);
-  border-radius:9px; padding:10px 12px; font:inherit; font-size:14px;
-}
-.field input::placeholder, #benchOtherText::placeholder{color:var(--ink-3)}
-.field input:focus{border-color:var(--accent)}
-.benches{display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:5px}
-.bench-opt{display:flex; align-items:center; gap:7px; padding:7px 9px; border:1px solid var(--line); border-radius:8px; background:var(--surface-2); font-size:13px; cursor:pointer}
-.bench-opt:hover{border-color:var(--accent)}
-.bench-opt input{accent-color:var(--accent); margin:0}
-.bench-opt.on{border-color:var(--accent); background:var(--accent-soft)}
-.other-row{display:flex; align-items:center; gap:8px; margin-top:7px}
-.other-row input[type=radio]{accent-color:var(--accent)}
-.other-lab{font-size:13px; font-weight:600; margin:0 !important}
-#benchOtherText{flex:1; padding:7px 10px; font-size:13px}
-.pass-row{display:flex; gap:8px; align-items:center}
-.pass-row input{flex:1; min-width:0}
-.peek{padding:9px 12px; font-size:12.5px}
-.hint-line{display:block; font-size:12px; color:var(--ink-3); margin-top:6px}
 .linkish{color:var(--accent); font-size:12px; text-decoration:underline; text-underline-offset:2px; padding:0}
 .toast{position:fixed; left:50%; bottom:26px; transform:translate(-50%,14px); z-index:200;
   background:var(--ink); color:var(--paper); padding:10px 16px; border-radius:10px; font-size:13px; font-weight:500;
@@ -232,56 +201,6 @@ footer{max-width:1500px; margin:0 auto; padding:0 18px 40px; color:var(--ink-3);
   *{animation-duration:.001ms !important; transition-duration:.001ms !important}
 }
 </style>
-<div id="gate">
-  <form class="gate-card" id="gateForm" novalidate>
-    <div class="gate-strip" aria-hidden="true"></div>
-    <div class="gate-inner">
-      <div class="mark">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
-          <circle cx="13" cy="13" r="3" fill="currentColor"/>
-          <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
-          <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.2" opacity=".55" transform="rotate(60 13 13)"/>
-          <ellipse cx="13" cy="13" rx="12" ry="5" stroke="currentColor" stroke-width="1.2" opacity=".55" transform="rotate(120 13 13)"/>
-        </svg>
-        <span class="eyebrow">Spectra Lab</span>
-      </div>
-      <h1>Login</h1>
-      <p class="gate-lede">Please login to go to your bench of chemicals in QMIZ Solutions.</p>
-
-      <div class="field">
-        <label for="gateName">Name <b class="req">*</b></label>
-        <input id="gateName" name="name" placeholder="Your answer" autocomplete="name" maxlength="40">
-        <span class="err" id="errName">Enter your name.</span>
-      </div>
-
-      <div class="field">
-        <label for="gatePass">Password <b class="req">*</b></label>
-        <div class="pass-row">
-          <input id="gatePass" name="password" type="password" placeholder="Your answer" autocomplete="current-password" maxlength="60">
-          <button type="button" class="btn ghost peek" id="peekPass" aria-pressed="false">Show</button>
-        </div>
-        <span class="hint-line" id="passHint">Choose a password for this bench — it is checked on this device only.</span>
-        <span class="err" id="errPass">Enter a password of at least 4 characters.</span>
-      </div>
-
-      <fieldset class="field">
-        <legend>Bench number <b class="req">*</b></legend>
-        <div class="benches" id="benches"></div>
-        <div class="other-row">
-          <input type="radio" name="bench" id="benchOther" value="__other">
-          <label for="benchOther" class="other-lab">Other</label>
-          <input id="benchOtherText" placeholder="Name your bench" maxlength="24" aria-label="Other bench name">
-        </div>
-        <span class="err" id="errBench">Choose a bench.</span>
-      </fieldset>
-
-      <div class="gate-actions">
-        <button class="btn" type="submit">Login</button>
-      </div>
-      <p class="gate-note">Nothing here is sent anywhere — there is no server behind this page. Your password is stored on this device as a one-way hash purely to lock your own bench, so do not reuse a password that matters. <button type="button" class="linkish" id="resetBench">Forgotten it? Reset this bench</button></p>
-    </div>
-  </form>
-</div>
 
 <header class="top">
   <div class="top-in">
@@ -305,12 +224,9 @@ footer{max-width:1500px; margin:0 auto; padding:0 18px 40px; color:var(--ink-3);
       <button data-mode="mp" aria-pressed="false">Melting pt</button>
       <button data-mode="r" aria-pressed="false">Radius</button>
     </div>
-    <div class="who"><span id="whoName"></span>
+    <div class="who">
       <button class="icon-btn" id="themeBtn" title="Switch theme" aria-label="Switch theme">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5v13M8 4.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/></svg>
-      </button>
-      <button class="icon-btn" id="logoutBtn" title="Sign out of this bench" aria-label="Sign out of this bench">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 2H3.5A1.5 1.5 0 002 3.5v9A1.5 1.5 0 003.5 14H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
   </div>
@@ -470,7 +386,6 @@ footer{max-width:1500px; margin:0 auto; padding:0 18px 40px; color:var(--ink-3);
 
 <footer>
   <span>Spectra Lab · data rounded for classroom use · reactions are simplified models, not safety guidance</span>
-  <span id="benchStamp"></span>
 </footer>
 
 <div class="scrim" id="scrim"></div>
@@ -800,100 +715,8 @@ function toast(msg){
   clearTimeout(toastT); toastT=setTimeout(()=>n.classList.remove("on"),2600);
 }
 
-/* ---------------- gate ---------------- */
-const benchBox=$("#benches");
-for(let i=1;i<=15;i++){
-  const id="bench"+i;
-  const l=document.createElement("label");
-  l.className="bench-opt"; l.setAttribute("for",id);
-  l.innerHTML=`<input type="radio" name="bench" id="${id}" value="Bench ${i}"> Bench ${i}`;
-  benchBox.appendChild(l);
-}
-function syncBenchUI(){
-  $$(".bench-opt").forEach(l=>l.classList.toggle("on", l.querySelector("input").checked));
-}
-document.addEventListener("change",e=>{ if(e.target.name==="bench") syncBenchUI(); });
-$("#benchOtherText").addEventListener("input",()=>{ $("#benchOther").checked=true; syncBenchUI(); });
-
-function benchValue(){
-  const picked=document.querySelector('input[name="bench"]:checked');
-  if(!picked) return "";
-  if(picked.value==="__other") return $("#benchOtherText").value.trim();
-  return picked.value;
-}
-function openLab(){
-  $("#gate").classList.add("hide");
-  const named=!!store.name;
-  $("#whoName").innerHTML = named ? `<b>${esc(store.name)}</b>${store.bench?" · "+esc(store.bench):""}` : "";
-  $("#benchStamp").textContent = named ? `${store.bench||"Bench"} · signed in as ${store.name}` : "";
-  $("#logoutBtn").hidden=!named;
-}
-function fillGate(){
-  $("#gateName").value=store.name||"";
-  $("#gatePass").value="";
-  $("#passHint").textContent = store.pass
-    ? "Enter the password you set for this bench on this device."
-    : "Choose a password for this bench — it is checked on this device only.";
-  const match=[...document.querySelectorAll('input[name="bench"]')].find(r=>r.value===store.bench);
-  if(match) match.checked=true;
-  else if(store.bench){ $("#benchOther").checked=true; $("#benchOtherText").value=store.bench; }
-  syncBenchUI();
-}
-if(store.name){ fillGate(); openLab(); }
-function showErr(id,on){ $(id).classList.toggle("show",on); }
-$("#gateName").addEventListener("input",()=>showErr("#errName",false));
-$("#gatePass").addEventListener("input",()=>showErr("#errPass",false));
-benchBox.addEventListener("change",()=>showErr("#errBench",false));
-$("#benchOtherText").addEventListener("input",()=>showErr("#errBench",false));
-$("#gateForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const name=$("#gateName").value.trim();
-  const pass=$("#gatePass").value;
-  const bench=benchValue();
-  showErr("#errName",!name); showErr("#errPass",pass.length<4); showErr("#errBench",!bench);
-  if(!name){ $("#gateName").focus(); return; }
-  if(pass.length<4){ $("#gatePass").focus(); return; }
-  if(!bench){ $("#benchOtherText").focus(); return; }
-  const h=await hashPass(pass);
-  if(store.pass && store.pass!==h){
-    $("#errPass").textContent="That password doesn’t match this bench. Reset it below if you’ve forgotten it.";
-    showErr("#errPass",true); $("#gatePass").select(); return;
-  }
-  $("#errPass").textContent="Enter a password of at least 4 characters.";
-  store.name=name; store.pass=h; store.bench=bench;
-  save(); openLab(); renderLog(); renderSaved();
-  toast(`Logged in — ${bench}`);
-});
-$("#peekPass").addEventListener("click",()=>{
-  const i=$("#gatePass"), showing=i.type==="text";
-  i.type=showing?"password":"text";
-  $("#peekPass").textContent=showing?"Show":"Hide";
-  $("#peekPass").setAttribute("aria-pressed",String(!showing));
-});
-$("#resetBench").addEventListener("click",()=>{
-  store={ name:"", pass:"", bench:"", log:[], saved:[], theme:store.theme };
-  save();
-  $("#gateName").value=""; $("#gatePass").value="";
-  $$('input[name="bench"]').forEach(r=>r.checked=false); $("#benchOtherText").value=""; syncBenchUI();
-  $("#passHint").textContent="Choose a password for this bench — it is checked on this device only.";
-  renderLog(); renderSaved();
-  toast("Bench reset — log, saved compounds and password cleared");
-});
-$("#logoutBtn").addEventListener("click",()=>{
-  const who=store.name;
-  store.name=""; store.bench="";
-  save();
-  mixA=mixB=null; paintSlots();
-  closeDrawer();
-  $("#whoName").innerHTML=""; $("#benchStamp").textContent="";
-  $("#logoutBtn").hidden=true;
-  $("#gateName").value=""; $("#gatePass").value="";
-  $$('input[name="bench"]').forEach(r=>r.checked=false); $("#benchOtherText").value=""; syncBenchUI();
-  $$(".err").forEach(n=>n.classList.remove("show"));
-  $("#gate").classList.remove("hide");
-  $("#gateName").focus();
-  toast(who?`Logged out — ${who}’s log is still saved on this device`:"Logged out");
-});
+/* ---------------- no gate — open directly ---------------- */
+function openLab(){ /* no-op: lab is always open */ }
 
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 

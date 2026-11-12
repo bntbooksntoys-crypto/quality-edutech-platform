@@ -51,6 +51,11 @@ header.top{position:sticky;top:0;z-index:30;background:rgba(237,242,240,.93);bac
 .seg button.on{background:var(--ink);color:#fff}
 .iconbtn{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px;position:relative;display:grid;place-items:center}
 .dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:99px;background:var(--vermilion)}
+.notifwrap{position:relative}
+.notifpanel{position:absolute;top:calc(100% + 8px);right:0;width:300px;max-width:80vw;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,30,35,.14);padding:14px;z-index:40}
+.notifitem{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.notifitem:last-child{border-bottom:none}
+.notifitem .ic{flex-shrink:0;width:32px;height:32px;border-radius:99px;background:var(--tealSoft);display:grid;place-items:center;color:var(--teal)}
 .roles{display:flex;align-items:center;gap:8px;padding:0 24px 12px;overflow-x:auto}
 .chip{flex-shrink:0;border:1px solid var(--line);background:var(--card);color:var(--slate);border-radius:99px;padding:6px 14px;font-size:12px}
 .chip.on{background:var(--tealSoft);border-color:var(--teal);color:var(--teal)}
@@ -256,7 +261,7 @@ body{top:0!important;position:static!important;}
 #gt-picker select option{color:#000;background:#fff;}
 #gt-picker span{font-size:14px;}
 /* Hide Google's own widget but keep engine running */
-#_gt_root{position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden;}
+#_gt_root{position:fixed;bottom:0;right:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -278,35 +283,68 @@ body{top:0!important;position:static!important;}
   </select>
 </div>
 <script>
+// Google Translate integration
+var _gtReady=false;
 function googleTranslateElementInit(){
-  new google.translate.TranslateElement({pageLanguage:'en',autoDisplay:false},'_gt_root');
+  new google.translate.TranslateElement({
+    pageLanguage:'en',
+    autoDisplay:false,
+    multilanguagePage:false
+  },'_gt_root');
+  _gtReady=true;
+  // If a language was pending, apply it now
+  var pending=sessionStorage.getItem('gt_pending');
+  if(pending){sessionStorage.removeItem('gt_pending');_applyLang(pending);}
 }
-function gtSet(lang){
-  // Try to use the live Google Translate engine if loaded
+function _applyLang(lang){
   var el=document.querySelector('.goog-te-combo');
-  if(el){
-    el.value=lang||'en';
-    el.dispatchEvent(new Event('change'));
+  if(!el){
+    // retry up to 20 times (2s total)
+    var tries=0;
+    var iv=setInterval(function(){
+      el=document.querySelector('.goog-te-combo');
+      if(el||(++tries>20)){clearInterval(iv);if(el)_doSelect(el,lang);}
+    },100);
     return;
   }
-  // Fallback: set cookie and reload so Google picks it up on load
-  if(!lang){
-    document.cookie='googtrans=; path=/; expires=Thu,01 Jan 1970 00:00:00 GMT';
-    document.cookie='googtrans=; path=/; domain=.'+location.hostname+'; expires=Thu,01 Jan 1970 00:00:00 GMT';
-  } else {
+  _doSelect(el,lang);
+}
+function _doSelect(el,lang){
+  el.value=lang||'en';
+  el.dispatchEvent(new Event('change'));
+  // Update our picker to match
+  var s=document.getElementById('gt-sel');
+  if(s)s.value=lang||'';
+}
+function gtSet(lang){
+  if(_gtReady){
+    _applyLang(lang);
+    return;
+  }
+  // Engine not loaded yet — store and reload
+  if(lang){
+    sessionStorage.setItem('gt_pending',lang);
+    // Set cookie so engine loads into correct language on reload
     var v='/en/'+lang;
     document.cookie='googtrans='+v+'; path=/';
-    document.cookie='googtrans='+v+'; path=/; domain=.'+location.hostname;
+  } else {
+    sessionStorage.removeItem('gt_pending');
+    document.cookie='googtrans=; path=/; expires=Thu,01 Jan 1970 00:00:00 GMT';
   }
   location.reload();
 }
-// Pre-select dropdown from cookie on load
-(function(){
-  var m=document.cookie.match(/googtrans=\/en\/([^;]+)/);
-  if(m){var s=document.getElementById('gt-sel');if(s)s.value=decodeURIComponent(m[1]);}
-})();
+// On page load: if GT engine already active (from cookie), sync picker
+window.addEventListener('load',function(){
+  setTimeout(function(){
+    var el=document.querySelector('.goog-te-combo');
+    if(el){
+      var s=document.getElementById('gt-sel');
+      if(s&&el.value&&el.value!=='en')s.value=el.value;
+    }
+  },1500);
+});
 </script>
-<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script>
 /* Load assignment and quiz data */
@@ -387,57 +425,100 @@ const COURSES = [
   {t:"The French Revolution",sub:"History",d:10,l:40},
   {t:"Python Fundamentals",sub:"Coding",d:5,l:30},
 ];
-/* ── Live class schedule (teachers update this) ── */
-const LIVE_SCHEDULE = [
-  {id:"ls1", sub:"Mathematics", t:"Linear Equations — Chapter 2 Recap", teacher:"S. Rajkumar", date:"Mon, 29 Sep", time:"9:00 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls1-Mathematics",
-   notes:{
-     objective:"Recap Chapter 2 of Linear Equations in One Variable and solve practice problems.",
-     topics:["What is a linear equation?","Solving equations using transposition","Cross-multiplication method","Word problems — age, speed, and fractions"],
-     keyPoints:["An equation has an equal sign — both sides must stay balanced","Transposition: move terms across = by flipping their sign","Always verify your answer by substituting back"],
-     formulas:["ax + b = 0 → x = −b/a","Cross multiply: a/b = c/d → ad = bc"],
-     prepare:["Bring Chapter 2 textbook","Try Exercise 2.3 Q1–5 before class","Write down any question where you got the wrong answer"]
-   }},
-  {id:"ls2", sub:"Science", t:"Photosynthesis Virtual Lab", teacher:"Meera Nair", date:"Mon, 29 Sep", time:"11:00 AM", dur:"60 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls2-Science",
-   notes:{
-     objective:"Observe and understand photosynthesis through a guided virtual lab experiment.",
-     topics:["Raw materials: CO₂, water, sunlight","Chlorophyll and the role of chloroplasts","Light-dependent vs light-independent reactions (overview)","Starch test with iodine"],
-     keyPoints:["Photosynthesis only happens in green parts of the plant","Oxygen is a by-product, not the main goal","Without sunlight, photosynthesis stops completely"],
-     formulas:["6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂"],
-     prepare:["Read Chapter 6 (Life Processes) pages 88–95","Know what variegated leaves are — teacher will ask!"]
-   }},
-  {id:"ls3", sub:"English", t:"Persuasive Writing Workshop", teacher:"L. Fernandes", date:"Tue, 30 Sep", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls3-English",
-   notes:{
-     objective:"Learn to write a structured persuasive essay with strong arguments and evidence.",
-     topics:["Structure: Hook → Claim → Arguments → Counter-argument → Conclusion","Persuasive devices: repetition, rhetorical questions, statistics","Tone and formal language","Practise writing a 3-paragraph argument"],
-     keyPoints:["Your claim goes in the first paragraph — be direct","Always acknowledge the other side, then rebut it","Facts and examples are more persuasive than emotions alone"],
-     formulas:[],
-     prepare:["Think of a topic you feel strongly about","Bring 2 facts or statistics related to it","Draft a one-line claim before class"]
-   }},
-  {id:"ls4", sub:"Coding", t:"Python: Functions & Loops", teacher:"A. Balaji", date:"Wed, 1 Oct", time:"11:30 AM", dur:"60 min", live:true, meet:"https://meet.jit.si/QEPlatform-ls4-Coding",
-   notes:{
-     objective:"Write and call functions in Python; combine them with for and while loops to solve real problems.",
-     topics:["Defining functions with def","Parameters and return values","for loop with range()","while loop and break/continue","Mini-project: number guessing game"],
-     keyPoints:["A function runs only when you call it — defining it does nothing by itself","return sends a value back; print just displays it","Avoid infinite loops — always change the condition variable inside the while block"],
-     formulas:["def greet(name):\n    return 'Hello, ' + name\n\nfor i in range(1, 6):\n    print(i)"],
-     prepare:["Have Python (IDLE or Replit) open and ready","Try writing a function that adds two numbers before class","Know what range(5) produces"]
-   }},
-  {id:"ls5", sub:"Social Studies", t:"Resources and Development", teacher:"P. Anitha", date:"Thu, 2 Oct", time:"9:30 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls5-SocialStudies",
-   notes:{
-     objective:"Understand the types of resources, their distribution, and sustainable development.",
-     topics:["Types of resources: natural, human-made, human","Classification: renewable vs non-renewable","Resource planning in India","Land use pattern and its changes"],
-     keyPoints:["Resources are not just things — they need technology and humans to become useful","Over-exploitation of resources leads to scarcity for future generations","India has uneven distribution of resources across states"],
-     formulas:[],
-     prepare:["Read Chapter 1 of Social Science Geography textbook","Note the difference between renewable and non-renewable with 2 examples each"]
-   }},
-  {id:"ls6", sub:"Mathematics", t:"Simple Equations — Problem Solving", teacher:"S. Rajkumar", date:"Fri, 3 Oct", time:"10:00 AM", dur:"45 min", live:false, meet:"https://meet.jit.si/QEPlatform-ls6-Mathematics",
-   notes:{
-     objective:"Apply simple equation methods to solve word problems from everyday life.",
-     topics:["Setting up equations from word problems","Problems on age, money, and perimeter","Two-step equations","Common mistakes and how to avoid them"],
-     keyPoints:["Read the problem twice before writing the equation","Let x be the unknown — label it clearly","Check: does your answer make sense in the real-world context?"],
-     formulas:["If a number + 7 = 15 → x = 15 − 7 = 8","Perimeter of rectangle: 2(l + b) = P"],
-     prepare:["Complete Exercise 4.2 from the textbook","Mark any question you could not solve — teacher will cover those first"]
-   }},
-];
+/* ── Timetable rules (mirrors the xlsx: one teacher per weekday, 2 periods 08:00–09:20) ── */
+const TIMETABLE = {
+  1: { teacher:"S. Rajkumar",  sub:"Mathematics",    meet:"QEPlatform-Maths",
+       classes:[
+         {cls:"6-A",  grade:6,  book:"Ganita Prakash",              topic:"Perimeter and Area — Chapter 6",           obj:"Understand perimeter and area of rectangles and squares with real-world problems.",       topics:["Perimeter of rectangles","Area calculation","Comparison of shapes","Word problems"],keyPoints:["Perimeter = sum of all sides","Area of rectangle = l × b","Always write units in the answer"],formulas:["P = 2(l + b)","A = l × b"],prepare:["Bring Chapter 6 textbook","Try 3 perimeter problems before class"]},
+         {cls:"10-A", grade:10, book:"Mathematics",                  topic:"Introduction to Trigonometry — Chapter 8", obj:"Build understanding of trigonometric ratios and apply them to right-angled triangles.",    topics:["Trigonometric ratios","Complementary angles","Identities overview","Exercise 8.1"],keyPoints:["sin θ = opposite/hypotenuse","cos θ = adjacent/hypotenuse","Memorise sin 0°, 30°, 45°, 60°, 90°"],formulas:["sin²θ + cos²θ = 1","tan θ = sin θ / cos θ"],prepare:["Revise Pythagoras theorem","Bring log tables if available"]},
+       ]},
+  2: { teacher:"A. Balaji",    sub:"Computer Science / IP", meet:"QEPlatform-CS",
+       classes:[
+         {cls:"11-A", grade:11, book:"Computer Science (Class 11)",     topic:"Strings — Chapter 8",                     obj:"Master Python string operations including indexing, slicing and built-in methods.",          topics:["String indexing","Slicing","String methods","Concatenation & repetition"],keyPoints:["Strings are immutable","Index starts at 0","Negative indexing goes from end"],formulas:["s[start:stop:step]","len(s), s.upper(), s.lower()"],prepare:["Have Python (IDLE or Replit) ready","Update practical file"]},
+         {cls:"12-A", grade:12, book:"Informatics Practices (Class 12)", topic:"Plotting Data using Matplotlib — Ch 4",   obj:"Create and customise line plots using Matplotlib in Python.",                               topics:["plot() function","Labels and title","Customising colour, marker, linestyle","Saving figures"],keyPoints:["Always label axes","plt.show() renders the graph","Use plt.savefig() to export"],formulas:["plt.plot(x, y, color='blue', marker='o')","plt.xlabel() / plt.ylabel()"],prepare:["Update practical file","Write 2 programs on today's topic"]},
+       ]},
+  3: { teacher:"Meera Nair",   sub:"Science",        meet:"QEPlatform-Science",
+       classes:[
+         {cls:"6-A",  grade:6,  book:"Curiosity",                     topic:"Temperature and its Measurement — Ch 7",   obj:"Understand how temperature is measured and the correct use of thermometers.",               topics:["Hot and cold","Clinical thermometer","Laboratory thermometer","Precautions"],keyPoints:["Thermometers measure heat energy level","Normal body temp ≈ 37 °C","Read at eye level"],formulas:["°C = (°F − 32) × 5/9"],prepare:["Read Chapter 7 pages 80–88","Solve back exercise Q1–3"]},
+         {cls:"10-A", grade:10, book:"Science",                        topic:"Light – Reflection and Refraction — Ch 9", obj:"Apply laws of reflection and understand image formation by spherical mirrors.",               topics:["Laws of reflection","Concave & convex mirrors","Image formation","Mirror formula"],keyPoints:["Angle of incidence = angle of reflection","Real images form in front of the mirror","Virtual images are behind"],formulas:["1/f = 1/v + 1/u","m = −v/u"],prepare:["Draw a ray diagram for a concave mirror","Revise sign convention"]},
+       ]},
+  4: { teacher:"L. Fernandes", sub:"English",        meet:"QEPlatform-English",
+       classes:[
+         {cls:"6-A",  grade:6,  book:"Poorvi",                        topic:"Unit 3: Nurturing Nature",                 obj:"Develop reading comprehension and vocabulary through Neem Baba and related poems.",         topics:["Reading comprehension","Vocabulary in context","Poetry appreciation","Grammar exercise"],keyPoints:["Identify theme vs. topic","Poetic devices: personification, imagery","Use context clues for unfamiliar words"],formulas:[],prepare:["Read the lesson once at home","Note 5 unfamiliar words and look them up"]},
+         {cls:"10-A", grade:10, book:"First Flight & Footprints without Feet", topic:"Glimpses of India — Chapter 5",  obj:"Analyse the three-part travelogue and practise answer-writing for board exams.",             topics:["A Baker from Goa","Coorg","Tea from Assam","Board-style answers"],keyPoints:["Each part has a distinct cultural focus","Use textual evidence in answers","Vary vocabulary — avoid repeating 'beautiful'"],formulas:[],prepare:["Read the lesson once","Attempt textbook Q1–3 on your own"]},
+       ]},
+  5: { teacher:"P. Anitha",    sub:"Social Studies", meet:"QEPlatform-SST",
+       classes:[
+         {cls:"6-A",  grade:6,  book:"Exploring Society: India and Beyond", topic:"India's Cultural Roots — Chapter 7", obj:"Explore the origins of Indian civilisation through Vedic culture, Buddhism and Jainism.",    topics:["The Vedas","The Buddha's teachings","Jainism and Mahavira","Cultural legacy"],keyPoints:["The Rig Veda is the oldest","Buddhism spread along trade routes","Jainism emphasises non-violence (ahimsa)"],formulas:[],prepare:["Read Chapter 7","Make a rough mind-map before class"]},
+         {cls:"10-A", grade:10, book:"History, Geography, Political Science & Economics (Class 10)", topic:"The Age of Industrialisation — Ch 4", obj:"Trace how industrialisation developed in Britain and then in India.", topics:["Proto-industrialisation","Factory system","Indian textiles","Impact on artisans"],keyPoints:["Hand production preceded factory production","Indian textiles faced stiff competition","New labour relations emerged in factories"],formulas:[],prepare:["Read Ch 4 pages 80–92","Mark dates and events on a timeline"]},
+       ]},
+};
+
+/* ── Holidays (matches the xlsx Calendar tab) ── */
+const SCHOOL_HOLIDAYS = new Set([
+  "2026-10-02","2026-10-19","2026-10-20",
+  "2026-11-09","2026-11-10",
+]);
+function isHoliday(d){ const s=d.toISOString().slice(0,10); return SCHOOL_HOLIDAYS.has(s)||(d.getDay()===0||d.getDay()===6); }
+
+/* ── Generate LIVE_SCHEDULE dynamically from today's date ── */
+function buildSchedule(){
+  const now = new Date();
+  const fmt = d => d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+  const fmtTime = (h,m) => { const ap=h>=12?'PM':'AM'; const hh=h>12?h-12:h||12; return hh+':'+(m<10?'0'+m:m)+' '+ap; };
+
+  // find the next 6 school days starting from today
+  const schoolDays=[];
+  let cursor=new Date(now); cursor.setHours(0,0,0,0);
+  while(schoolDays.length<6){
+    const dow=cursor.getDay();
+    if(dow>=1&&dow<=5&&!isHoliday(cursor)) schoolDays.push(new Date(cursor));
+    cursor.setDate(cursor.getDate()+1);
+  }
+
+  const schedule=[];
+  schoolDays.forEach((day,si)=>{
+    const dow=day.getDay(); // 1–5
+    const tt=TIMETABLE[dow];
+    if(!tt) return;
+    const dateStr=fmt(day);
+    const isToday=day.toDateString()===now.toDateString();
+
+    tt.classes.forEach((cls,pi)=>{
+      // Period 1: 08:00–08:40  Period 2: 08:40–09:20
+      const startH=8, startM=pi===0?0:40, endH=8, endM=pi===0?40:80%60;
+      const timeStr=fmtTime(startH, startM);
+      const endStr =fmtTime(endH+(pi===1?1:0), endM===80%60&&pi===1?20:endM);
+      const nowMin=now.getHours()*60+now.getMinutes();
+      const classStart=startH*60+startM;
+      const classEnd=(pi===0?8*60+40:9*60+20);
+      const live=isToday&&nowMin>=classStart&&nowMin<classEnd;
+
+      schedule.push({
+        id:`ls-${day.toISOString().slice(0,10)}-p${pi+1}`,
+        sub: pi===0&&dow===2?'Computer Science': pi===1&&dow===2?'Informatics Practices': tt.sub,
+        t: cls.topic,
+        teacher: tt.teacher,
+        date: dateStr,
+        time: timeStr,
+        dur: '40 min',
+        live: live,
+        meet: 'https://meet.jit.si/'+tt.meet+'-'+cls.cls.replace('-',''),
+        cls: cls.cls,
+        grade: cls.grade,
+        notes:{
+          objective: cls.obj,
+          topics:    cls.topics,
+          keyPoints: cls.keyPoints,
+          formulas:  cls.formulas,
+          prepare:   cls.prepare,
+        }
+      });
+    });
+  });
+  return schedule;
+}
+const LIVE_SCHEDULE = buildSchedule();
 
 const SUBJECTS = [
   {n:"Mathematics",m:82,c:14,d:11,h:"var(--teal)"},
@@ -772,7 +853,7 @@ function saveUsers(u){ localStorage.setItem('qe_users', JSON.stringify(u)); }
 
 /* ─────────── state ─────────── */
 const state = {
-  view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,
+  view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,notifOpen:false,
   libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
   liveJoin: null, liveNotes: null, labOpen: null,
   quiz:{i:0,picked:null,answers:[],done:false},
@@ -839,7 +920,7 @@ function ribbon(){
       '<div class="k" style="color:'+k.bar+'">'+k.tag+'</div><div class="t">'+s.t+'</div></div>';}).join('');
   let ticks=[7,9,11,13,15,17].map(x=>'<span style="left:'+pct(x)+'%">'+(x>12?(x-12)+' pm':x+' am')+'</span>').join('');
   return '<div class="between" style="align-items:flex-end;margin-bottom:12px"><div>'+eyebrow(t.day)+
-    '<h3 class="display" style="font-size:22px;font-weight:800;margin-top:4px">Six sessions, 4h 20m of scheduled learning</h3></div>'+
+    '<h3 class="display" style="font-size:22px;font-weight:800;margin-top:4px">'+LIVE_SCHEDULE.length+' sessions scheduled this week</h3></div>'+
     '<div class="small">'+now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"short"})+'</div></div>'+
     '<div class="ribbonwrap"><div class="ribbon"><div class="ticks">'+ticks+'</div>'+
     '<div class="track"><div class="now" style="left:'+pct(h)+'%"><i></i></div><div class="slots">'+slots+'</div></div></div></div>';
@@ -861,23 +942,14 @@ function studentHome(){
     '<div style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.t+'</div>'+
     '<div class="bar" style="margin-top:8px;background:#D8E1E0"><i style="width:'+(c.d/c.l*100)+'%"></i></div></div>'+
     '<span style="color:var(--mute)">'+I.chev(18)+'</span></div>').join('');
-  let streak=''; for(let i=0;i<24;i++) streak+='<i style="background:'+(i>20?'var(--marigold)':'var(--tealSoft)')+'"></i>';
 
   return card(ribbon()+'<div class="wrap" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">'+
-      btn(t.join+' · Coding at 11:30','teal','radio','onclick="go(\'live\')"')+
+      btn(t.join+' · '+(LIVE_SCHEDULE.find(s=>s.live)||LIVE_SCHEDULE[0]||{sub:'class',time:''}).sub+' '+(LIVE_SCHEDULE.find(s=>s.live)?'(Live now)':(LIVE_SCHEDULE[0]||{time:''}).time),'teal','radio','onclick="go(\'live\')"')+
       btn('Unit test at 2:00 pm','ghost','clip','onclick="go(\'assess\')"')+'</div>','p24 hero rise')+
-    '<div class="grid g3 mt20">'+
+    '<div class="mt20">'+
       card('<div class="between">'+eyebrow(t.cont)+'<button class="mono" style="font-size:11px;color:var(--teal)" onclick="go(\'learn\')">'+t.all+' →</button></div>'+
            '<div class="stack mt16">'+cont+'</div>')+
-      '<div class="stack">'+
-        card('<div class="row">'+ring(78,92,'overall')+'<div>'+eyebrow('Mastery')+
-             '<p class="muted mt4">Ahead of your Term 4 target by 6 points. Financial Literacy needs attention.</p></div></div>')+
-        card('<div style="display:flex;align-items:baseline;gap:8px"><span class="display" style="font-size:34px;font-weight:800">24</span>'+
-             '<span class="small">'+t.streak+'</span></div><div class="streak">'+streak+'</div>'+
-             '<p class="muted mt12">Learn for 15 minutes today to keep it running.</p>')+
-      '</div>'+
-    '</div>'+
-    card(eyebrow(t.mastery)+'<div class="stack mt16">'+spine()+'</div>','p20 card mt20');
+    '</div>';
 }
 
 function parentHome(){
@@ -1123,10 +1195,22 @@ const LABS = [
     desc:"Take real readings with virtual instruments — Vernier caliper, screw gauge, simple pendulum, metre scale, and measuring cylinder. Every trial logs error vs. reference just like a practical notebook.",
     tags:["Vernier Caliper","Screw Gauge","Pendulum","Metre Scale","Cylinder"],
     url:"https://bntbooksntoys-crypto.github.io/Quality-Education/",
-    embedUrl:"https://bntbooksntoys-crypto.github.io/measure-lab/",
+    embedUrl:"labs/physics.html",
     color:"#0E7C6B",
     bg:"linear-gradient(135deg,#0E7C6B 0%,#0a5548 100%)",
     icon:'<path d="M9 2v6.5L3.8 18A2 2 0 0 0 5.6 21h12.8a2 2 0 0 0 1.8-3L15 8.5V2"/><path d="M8 2h8M6.5 14h11"/>',
+  },
+  {
+    id:"biology",
+    title:"BioScope — Biology Lab",
+    sub:"Biology · Grades 6–12",
+    desc:"Explore cells under a virtual microscope, study plant and animal cell structures, learn organ systems, conduct virtual dissections, and test yourself on NCERT Biology topics from Class 6 to 12.",
+    tags:["Cell Biology","Microscope","Organ Systems","Genetics","NCERT"],
+    url:"labs/biology.html",
+    embedUrl:"labs/biology.html",
+    color:"#16A34A",
+    bg:"linear-gradient(135deg,#16A34A 0%,#14532d 100%)",
+    icon:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18M6.35 6.35a9 9 0 0 1 11.3 0M6.35 17.65a9 9 0 0 0 11.3 0M3 12h18"/>',
   },
   {
     id:"chemistry",
@@ -1135,34 +1219,10 @@ const LABS = [
     desc:"Explore all 118 elements on an interactive periodic table. Mix elements in a virtual beaker to simulate reactions, build compound formulas, visualise electron shells, and plot property trends.",
     tags:["Periodic Table","Reactions","Compounds","Bohr Model","Trends"],
     url:"https://claude.ai/artifact/Cx1sK7WiKFvTNyCDDovQsb",
-    embedUrl:"https://claude.ai/artifact/Cx1sK7WiKFvTNyCDDovQsb",
+    embedUrl:"labs/chemistry.html",
     color:"#7C3AED",
     bg:"linear-gradient(135deg,#7C3AED 0%,#4c1d95 100%)",
     icon:'<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="11" ry="4.5" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="11" ry="4.5" stroke="currentColor" stroke-width="1.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="11" ry="4.5" stroke="currentColor" stroke-width="1.6" transform="rotate(120 12 12)"/>',
-  },
-  {
-    id:"language",
-    title:"Lingo Passport — Language Lab",
-    sub:"Languages · All Grades",
-    desc:"Zero-to-advanced journey across 6 languages (Spanish, French, German, Italian, Japanese, Tamil). Listen with native TTS, record your pronunciation, and get an instant similarity score.",
-    tags:["Spanish","French","German","Japanese","Tamil","Pronunciation"],
-    url:"https://splendorous-druid-25dcce.netlify.app/labs/language.html",
-    embedUrl:"https://splendorous-druid-25dcce.netlify.app/labs/language.html",
-    color:"#F5A524",
-    bg:"linear-gradient(135deg,#F5A524 0%,#c47d0e 100%)",
-    icon:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/>',
-  },
-  {
-    id:"english",
-    title:"WordMaster — English Lab",
-    sub:"English · All Grades",
-    desc:"Complete English learning studio with 110+ vocabulary words, grammar lessons and drills, reading comprehension passages, pronunciation scoring, mock tests, and a daily progress streak tracker.",
-    tags:["Vocabulary","Grammar","Reading","Pronunciation","Tests"],
-    url:"https://splendorous-druid-25dcce.netlify.app/labs/english.html",
-    embedUrl:"https://splendorous-druid-25dcce.netlify.app/labs/english.html",
-    color:"#C6362F",
-    bg:"linear-gradient(135deg,#C6362F 0%,#8b1a15 100%)",
-    icon:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
   },
 ];
 
@@ -1214,9 +1274,8 @@ function labView(){
   }).join('');
 
   return '<div class="pagehead">'+eyebrow('Interactive Labs')+'<h2 class="display">Virtual Lab Bench</h2>'+
-    '<p class="muted" style="margin-top:6px">Hands-on simulations for Physics, Chemistry, Languages, and English. No setup needed — open and start experimenting.</p></div>'+
-    '<div class="lab-grid">'+cards+'</div>'+
-    '<div class="note mt24">'+I.spark(14)+' Labs open inside the platform. Make sure to allow <strong>microphone access</strong> for the Language and English labs\' pronunciation features.</div>';
+    '<p class="muted" style="margin-top:6px">Hands-on simulations for Physics, Chemistry, and Biology. No setup needed — open and start experimenting.</p></div>'+
+    '<div class="lab-grid">'+cards+'</div>';
 }
 
 function openLab(id){
@@ -1495,15 +1554,13 @@ function awardsView(){
   const uName=u.name||'You';
   const uFirst=uName.split(' ')[0];
   const uGrade=String(u.grade||'').replace(/[^0-9]/g,'')||'?';
+  const uSchool='Kongu Vidyalaya';
   // Compute quiz score for points
   const qzAnswers=state.qz?state.qz.answers:{};
   const correct=Object.values(qzAnswers).filter(v=>v===true).length;
-  const points=correct*50; // 50 pts per correct answer
-  const badges=BADGES.map(b=>card('<div class="badge" style="background:'+(b.tier==='Gold'?'var(--marigoldSoft)':'var(--tealSoft)')+';color:'+(b.tier==='Gold'?'var(--marigold)':'var(--teal)')+'">'+I[b.ic](20)+'</div>'+
-    '<div class="small" style="margin-top:12px;text-transform:uppercase;letter-spacing:.12em">'+b.tier+'</div>'+
-    '<div class="display" style="font-size:16px;font-weight:700">'+b.n+'</div>'+
-    '<div class="muted mt4">'+b.note+'</div>')).join('');
-  // Leaderboard: user is always shown, others are placeholders for their grade
+  const totalQ=Object.keys(qzAnswers).length;
+  const points=correct*50;
+  // Leaderboard
   const lboard=[
     {r:1,n:'Nithya S.',c:uGrade+'-A',p:points+820},
     {r:2,n:uName,c:uGrade+'-B',p:points,me:true},
@@ -1515,22 +1572,270 @@ function awardsView(){
     '<span class="display" style="width:24px;font-size:18px;font-weight:800;color:'+(l.r<=3?'var(--marigold)':'var(--mute)')+'">'+l.r+'</span>'+
     '<div style="flex:1"><div style="font-size:14px;font-weight:500">'+l.n+(l.me?' <span style="color:var(--teal)">· you</span>':'')+'</div>'+
     '<div class="small">Class '+l.c+'</div></div><span class="mono" style="font-size:14px">'+l.p.toLocaleString('en-IN')+'</span></div>').join('');
-  const mile=[["cap","STEM Merit Scholarship","Applications open · you qualify","var(--marigold)"],
-    ["star","Keep completing quizzes","Earn points with every correct answer","var(--teal)"],
-    ["trophy","District coding olympiad","Shortlisted · practice set assigned","var(--teal)"]]
-    .map(m=>'<div class="row" style="align-items:flex-start;background:var(--canvas);border-left:3px solid '+m[3]+';border-radius:12px;padding:16px">'+
-      '<span style="color:'+m[3]+'">'+I[m[0]](18)+'</span><div><div style="font-size:14px;font-weight:500">'+m[1]+'</div>'+
-      '<div style="font-size:12px;color:var(--slate)">'+m[2]+'</div></div></div>').join('');
   const ptLabel=points>0?points.toLocaleString('en-IN')+' points · rank 2 in Grade '+uGrade:'Start quizzes to earn points';
+
+  // ── Certificate definitions: auto-selected from rank/assignments/quizzes/labs/attendance ──
+  const today=new Date();
+  const dateStr=today.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  const quizPct=totalQ>0?Math.round(correct/totalQ*100):0;
+  const assignScore=82; // placeholder from assignment data
+  const attendPct=94;   // placeholder from attendance data
+  const labsCompleted=6; // Lab Explorer badge: 6 experiments
+  const CERTS=[
+    {id:'rank',   label:'Academic Rank Certificate',    icon:'trophy',  color:'#B45309', bg:'#FDF1D9',
+     earned:points>=100, earnedNote:'Rank 2 · Grade '+uGrade,
+     detail:'Class rank based on cumulative quiz and assignment scores'},
+    {id:'assign', label:'Assignment Excellence',        icon:'clip',    color:'#0E7C6B', bg:'#E2F0EC',
+     earned:assignScore>=75, earnedNote:assignScore+'% average score',
+     detail:'Based on scores across all submitted assignments'},
+    {id:'quiz',   label:'Quiz Achiever Certificate',   icon:'star',    color:'#7C3AED', bg:'#EDE9FE',
+     earned:quizPct>=60||correct>=4, earnedNote:correct+' correct · '+quizPct+'% accuracy',
+     detail:'Awarded for quiz performance and consistency'},
+    {id:'lab',    label:'Lab Explorer Certificate',    icon:'flask',   color:'#0369A1', bg:'#E0F2FE',
+     earned:labsCompleted>=1, earnedNote:labsCompleted+' lab experiment'+(labsCompleted!==1?'s':'')+' completed',
+     detail:'Virtual lab experiments across Physics, Chemistry & Biology'},
+    {id:'attend', label:'Attendance Excellence',       icon:'cal',     color:'#15803D', bg:'#DCFCE7',
+     earned:attendPct>=90, earnedNote:attendPct+'% attendance this term',
+     detail:'Awarded for maintaining 90%+ attendance'},
+  ];
+  const earnedCount=CERTS.filter(c=>c.earned).length;
+  const dlBtn='<button onclick="downloadAllCerts()" style="background:var(--teal);color:#fff;border:none;border-radius:10px;padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;justify-content:center">'+
+    I.down(18)+' Download All Certificates ('+earnedCount+') — Single PDF</button>';
+
   return card('<div class="between" style="flex-wrap:wrap"><div>'+eyebrow('Recognition')+
       '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">'+ptLabel+'</h3>'+
       '<p class="muted mt4">'+uFirst+', complete more quizzes to climb the leaderboard!</p></div>'+
-      btn('Download certificates','ghost','down')+'</div>','p24 rise')+
-    '<div class="cards4 mt20">'+badges+'</div>'+
+      '</div>','p24 rise')+
     '<div class="grid g2 mt20">'+
       card(eyebrow('Grade '+uGrade+' leaderboard')+'<div class="divide mt12">'+board+'</div>')+
-      card(eyebrow('Scholarships and milestones')+'<div class="stack mt12">'+mile+'</div>')+
+      card(eyebrow('Download certificates')+'<p class="muted mt4" style="margin-bottom:16px">Certificates auto-generated from your rank, assignments, quizzes, lab experiments and attendance.</p>'+dlBtn)+
     '</div>';
+}
+
+// ── All-in-one PDF Certificate Generator ──
+function downloadAllCerts(){
+  const u=state.user||{};
+  const uName=u.name||'Student';
+  const uGrade=String(u.grade||'').replace(/[^0-9]/g,'')||'?';
+  const school='Kongu Vidyalaya';
+  const today=new Date();
+  const dateStr=today.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  const qzAnswers=state.qz?state.qz.answers:{};
+  const correct=Object.values(qzAnswers).filter(v=>v===true).length;
+  const totalQ=Object.keys(qzAnswers).length;
+  const quizPct=totalQ>0?Math.round(correct/totalQ*100):0;
+  const assignScore=82, attendPct=94, labsCompleted=6, points=correct*50;
+  const ALL_CERTS=[
+    {id:'rank',  earned:points>=100, accent:'#B45309',
+     title:'Academic Rank Certificate',
+     line1:'is ranked 2nd in Grade '+uGrade,
+     line2:'based on cumulative quiz and assignment performance'},
+    {id:'assign',earned:assignScore>=75, accent:'#0E7C6B',
+     title:'Assignment Excellence',
+     line1:'has demonstrated excellence in assignments',
+     line2:'with an average score of 82% across all submissions'},
+    {id:'quiz',  earned:quizPct>=60||correct>=4, accent:'#7C3AED',
+     title:'Quiz Achiever Certificate',
+     line1:'has achieved outstanding quiz performance',
+     line2:correct+' correct answers · '+quizPct+'% accuracy'},
+    {id:'lab',   earned:labsCompleted>=1, accent:'#0369A1',
+     title:'Lab Explorer Certificate',
+     line1:'has successfully completed '+labsCompleted+' virtual lab experiments',
+     line2:'across Physics, Chemistry, and Biology'},
+    {id:'attend',earned:attendPct>=90, accent:'#15803D',
+     title:'Attendance Excellence',
+     line1:'has maintained '+attendPct+'% attendance this term',
+     line2:'demonstrating exceptional commitment to learning'},
+  ];
+  const earned=ALL_CERTS.filter(c=>c.earned);
+  if(!earned.length){alert('No certificates earned yet. Complete quizzes and assignments to earn certificates!');return;}
+
+  function certPage(c,idx,total){
+    const certNo='QE-'+c.id.toUpperCase()+'-'+today.getFullYear()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');
+    const isLast=idx===total-1;
+    // Decorative SVG border pattern (interlocking diamond chain)
+    const borderSvg=`<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%' style='position:absolute;inset:0;pointer-events:none'>
+      <rect x='14' y='14' width='calc(100% - 28px)' height='calc(100% - 28px)' rx='2' fill='none' stroke='#8B6914' stroke-width='2.5'/>
+      <rect x='20' y='20' width='calc(100% - 40px)' height='calc(100% - 40px)' rx='1' fill='none' stroke='#C9A227' stroke-width='1'/>
+      <rect x='24' y='24' width='calc(100% - 48px)' height='calc(100% - 48px)' rx='1' fill='none' stroke='#8B6914' stroke-width='0.5' stroke-dasharray='4 3'/>
+    </svg>`;
+    // Corner ornament (fleur-de-lis style using paths)
+    const cornerSvg=(flip)=>`<svg width='52' height='52' viewBox='0 0 52 52' fill='none' xmlns='http://www.w3.org/2000/svg' style='transform:${flip}'>
+      <path d='M4 4 L4 22 M4 4 L22 4' stroke='#8B6914' stroke-width='2.5' stroke-linecap='round'/>
+      <path d='M4 4 L12 12' stroke='#C9A227' stroke-width='1' stroke-linecap='round'/>
+      <circle cx='14' cy='14' r='3' fill='none' stroke='#8B6914' stroke-width='1.5'/>
+      <path d='M14 11 Q17 8 20 11 Q17 14 14 11Z' fill='#C9A227'/>
+      <path d='M11 14 Q8 17 11 20 Q14 17 11 14Z' fill='#C9A227'/>
+    </svg>`;
+    return `<div class="cert" style="page-break-after:${isLast?'avoid':'always'}">
+  <!-- background texture lines -->
+  <div class="bg-lines"></div>
+  <!-- border rings -->
+  <div class="ring ring1"></div>
+  <div class="ring ring2"></div>
+  <div class="ring ring3"></div>
+  <!-- corner ornaments -->
+  <div class="corner-orn tl">${cornerSvg('none')}</div>
+  <div class="corner-orn tr">${cornerSvg('scaleX(-1)')}</div>
+  <div class="corner-orn bl">${cornerSvg('scaleY(-1)')}</div>
+  <div class="corner-orn br">${cornerSvg('scale(-1)')}</div>
+  <!-- top band -->
+  <div class="top-band"><span class="band-text">${school.toUpperCase()}</span></div>
+  <!-- emblem -->
+  <div class="emblem">
+    <div class="emblem-ring">
+      <div class="emblem-inner">
+        <div class="emblem-q">QE</div>
+        <div class="emblem-sub">EDUCATION</div>
+      </div>
+    </div>
+  </div>
+  <!-- title area -->
+  <div class="cert-label">CERTIFICATE OF</div>
+  <div class="cert-title" style="color:${c.accent}">${c.title.toUpperCase()}</div>
+  <div class="ornament-rule"><span class="rule-left"></span><span class="rule-diamond">◆</span><span class="rule-right"></span></div>
+  <!-- body -->
+  <div class="presented-to">This certificate is proudly presented to</div>
+  <div class="student-name" style="color:${c.accent}">${uName}</div>
+  <div class="student-detail">Grade ${uGrade} &nbsp;·&nbsp; ${school}</div>
+  <div class="achievement-text">${uName} ${c.line1}</div>
+  <div class="achievement-sub">${c.line2}</div>
+  <!-- footer -->
+  <div class="cert-footer">
+    <div class="sig-col">
+      <div class="sig-image"></div>
+      <div class="sig-line"></div>
+      <div class="sig-name">S. Rajkumar</div>
+      <div class="sig-role">Class Teacher</div>
+    </div>
+    <div class="seal-col">
+      <div class="seal">
+        <div class="seal-inner">
+          <div class="seal-no">${certNo}</div>
+          <div class="seal-date">${dateStr}</div>
+        </div>
+      </div>
+      <div class="page-num">${idx+1} / ${total}</div>
+    </div>
+    <div class="sig-col">
+      <div class="sig-image"></div>
+      <div class="sig-line"></div>
+      <div class="sig-name">Dr. K. Meenakshi</div>
+      <div class="sig-role">Principal, ${school}</div>
+    </div>
+  </div>
+  <!-- bottom ribbon -->
+  <div class="bottom-ribbon">
+    <span class="ribbon-text">★ &nbsp; Excellence &nbsp;·&nbsp; Knowledge &nbsp;·&nbsp; Character &nbsp; ★</span>
+  </div>
+</div>`;
+  }
+
+  const pages=earned.map((c,i)=>certPage(c,i,earned.length)).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Certificates — ${uName}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#d4cfc6;font-family:'Inter',sans-serif;padding:30px 20px;display:flex;flex-direction:column;align-items:center;gap:40px}
+  @media print{body{background:#fff;padding:0;gap:0}@page{size:A4 landscape;margin:0}.print-btn{display:none}.cert{box-shadow:none!important}}
+  .print-btn{position:fixed;top:16px;right:16px;background:#1a472a;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.3);letter-spacing:.05em}
+  .print-btn:hover{background:#2d6a4f}
+
+  /* ── CERTIFICATE CARD ── */
+  .cert{
+    width:277mm;min-height:190mm;
+    background:#FBF7EE;
+    position:relative;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:44px 68px 36px;
+    text-align:center;
+    box-shadow:0 12px 40px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.15);
+    overflow:hidden;
+  }
+
+  /* subtle diagonal line texture */
+  .bg-lines{position:absolute;inset:0;pointer-events:none;
+    background-image:repeating-linear-gradient(45deg,rgba(139,105,20,.04) 0,rgba(139,105,20,.04) 1px,transparent 1px,transparent 12px);
+  }
+
+  /* border rings */
+  .ring{position:absolute;pointer-events:none;border-style:solid;}
+  .ring1{inset:10px;border-width:3px;border-color:#8B6914;border-radius:2px;}
+  .ring2{inset:16px;border-width:0.75px;border-color:#C9A227;}
+  .ring3{inset:20px;border-width:0.5px;border-color:#8B6914;opacity:.4;border-style:dashed;border-dash-offset:4;}
+
+  /* corner ornaments */
+  .corner-orn{position:absolute;width:52px;height:52px;}
+  .tl{top:6px;left:6px}
+  .tr{top:6px;right:6px}
+  .bl{bottom:6px;left:6px}
+  .br{bottom:6px;right:6px}
+
+  /* top band */
+  .top-band{position:absolute;top:30px;left:50%;transform:translateX(-50%);white-space:nowrap}
+  .band-text{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.45em;color:#8B6914;text-transform:uppercase}
+
+  /* emblem */
+  .emblem{margin-bottom:8px;margin-top:8px}
+  .emblem-ring{width:66px;height:66px;border-radius:50%;border:2px solid #C9A227;display:flex;align-items:center;justify-content:center;margin:0 auto;background:radial-gradient(circle,#fffbf0 60%,#f5e8c0 100%);box-shadow:0 0 0 1px #8B6914,inset 0 0 0 3px rgba(201,162,39,.3)}
+  .emblem-inner{display:flex;flex-direction:column;align-items:center;gap:0}
+  .emblem-q{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:#8B6914;line-height:1}
+  .emblem-sub{font-size:5px;letter-spacing:.2em;text-transform:uppercase;color:#8B6914;font-family:'Cinzel',serif;opacity:.8}
+
+  /* certificate title */
+  .cert-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.55em;text-transform:uppercase;color:#8B6914;margin-bottom:4px}
+  .cert-title{font-family:'Cinzel',serif;font-size:22px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.2;margin-bottom:10px}
+
+  /* ornament rule */
+  .ornament-rule{display:flex;align-items:center;gap:0;justify-content:center;margin-bottom:12px}
+  .rule-left,.rule-right{height:1px;width:80px;background:linear-gradient(to right,transparent,#C9A227)}
+  .rule-right{background:linear-gradient(to left,transparent,#C9A227)}
+  .rule-diamond{color:#C9A227;font-size:8px;margin:0 6px;line-height:1}
+
+  /* body text */
+  .presented-to{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#6B5B30;margin-bottom:6px}
+  .student-name{font-family:'Cinzel',serif;font-size:34px;font-weight:700;letter-spacing:.04em;line-height:1.1;margin-bottom:6px;text-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .student-detail{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.25em;color:#8B6914;margin-bottom:14px;text-transform:uppercase}
+  .achievement-text{font-family:'Cormorant Garamond',serif;font-size:14px;color:#3D2E0A;font-weight:500;margin-bottom:3px}
+  .achievement-sub{font-family:'Cormorant Garamond',serif;font-size:12.5px;font-style:italic;color:#7A6540;margin-bottom:18px}
+
+  /* footer */
+  .cert-footer{display:flex;justify-content:space-between;align-items:flex-end;width:100%;padding-top:14px;border-top:1px solid rgba(139,105,20,.3);margin-top:auto}
+  .sig-col{text-align:center;flex:1}
+  .sig-image{height:28px;margin-bottom:4px}
+  .sig-line{width:130px;height:1px;background:#3D2E0A;margin:0 auto 5px}
+  .sig-name{font-family:'Cinzel',serif;font-size:9.5px;font-weight:600;color:#3D2E0A;letter-spacing:.06em}
+  .sig-role{font-family:'Cormorant Garamond',serif;font-size:10px;font-style:italic;color:#8B6914;margin-top:2px}
+
+  .seal-col{text-align:center;flex:0 0 auto;padding:0 20px}
+  .seal{width:76px;height:76px;border-radius:50%;border:2px solid #C9A227;background:radial-gradient(circle,#fffbf0,#f0e0a0);box-shadow:0 0 0 1px #8B6914,0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 4px}
+  .seal-inner{padding:6px;text-align:center}
+  .seal-no{font-size:6.5px;font-family:'Courier New',monospace;color:#6B5B30;letter-spacing:.06em;word-break:break-all;line-height:1.4}
+  .seal-date{font-family:'Cinzel',serif;font-size:7px;color:#8B6914;letter-spacing:.05em;margin-top:3px;font-weight:600}
+  .page-num{font-family:'Cinzel',serif;font-size:7px;color:#8B6914;letter-spacing:.15em;margin-top:3px}
+
+  /* bottom ribbon */
+  .bottom-ribbon{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);white-space:nowrap}
+  .ribbon-text{font-family:'Cormorant Garamond',serif;font-size:9.5px;font-style:italic;letter-spacing:.18em;color:#8B6914;opacity:.85}
+</style></head><body>
+<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+${pages}
+</body></html>`;
+  // Use Blob + anchor to avoid popup-blocker (works inside iframes)
+  try{
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.target='_blank'; a.rel='noopener';
+    a.download='Certificates-'+uName.replace(/\s+/g,'_')+'.html';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
+  }catch(e){
+    // fallback: open in new tab
+    const w=window.open('','_blank');
+    if(w){w.document.write(html);w.document.close();}
+  }
 }
 
 /* ─────────── Quiz view ─────────── */
@@ -1712,7 +2017,6 @@ function render(){
 
   const t=T(), me=ME();
   const u=state.user;
-  const roles=ROLES().map(r=>'<button class="chip'+(state.role===r.id?' on':'')+'" onclick="setRole(\''+r.id+'\')">'+r.label+'</button>').join('');
 
   document.getElementById('app').innerHTML =
   '<div class="shell">'+
@@ -1730,9 +2034,15 @@ function render(){
       '<header class="top"><div class="toprow">'+
         '<button class="iconbtn burger" onclick="toggleNav()">'+(state.navOpen?I.close(18):I.menu(18))+'</button>'+
         '<div class="search">'+I.search(16)+'<input placeholder="'+t.search+'" /></div>'+
-        '<button class="iconbtn">'+I.bell(16)+'<span class="dot"></span></button>'+
+        '<div class="notifwrap">'+
+          '<button class="iconbtn" onclick="toggleNotif()">'+I.bell(16)+(state.notifOpen?'':'<span class="dot"></span>')+'</button>'+
+          (state.notifOpen?'<div class="notifpanel">'+
+            '<div class="between" style="margin-bottom:8px"><span class="eyebrow">Notifications</span></div>'+
+            '<div class="notifitem"><div class="ic">'+I.bell(15)+'</div><div><div style="font-size:13px;font-weight:600">Unit test reminder</div>'+
+              '<div class="small muted mt4">Your Mathematics unit test starts at 2:00 pm today.</div></div></div>'+
+          '</div>':'')+
+        '</div>'+
       '</div>'+
-      '<div class="roles"><span class="eyebrow" style="flex-shrink:0">'+t.viewas+'</span>'+roles+'</div>'+
       '<div class="mobnav'+(state.navOpen?' open':'')+'">'+navHTML()+'</div>'+
       '</header>'+
       '<main><div class="pagehead">'+eyebrow(me.label+' workspace')+
@@ -1816,6 +2126,7 @@ function setLang(l){state.lang=l;render();}
 function setFilter(f){state.filter=f;render();}
 function toggleNav(){state.navOpen=!state.navOpen;render();}
 function toggleLib(){state.libOpen=!state.libOpen;render();}
+function toggleNotif(){state.notifOpen=!state.notifOpen;render();}
 function setLibGrade(g){state.libGrade=g;render();}
 function pick(n){if(state.quiz.answers.length===state.quiz.i+1)return;state.quiz.picked=n;render();}
 function checkQ(){const q=state.quiz;if(q.picked===null)return;q.answers.push(q.picked===QUIZ[q.i].a);render();}

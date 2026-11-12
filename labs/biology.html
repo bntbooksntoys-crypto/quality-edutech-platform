@@ -1,0 +1,739 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>BioLab Microscope</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: fixed lab bench — specimen tray (left) · eyepiece viewport (center) · instrument controls (right); stacks on phone */
+:root{
+  --bg:#0e1512;          /* lab bench, deep green-black */
+  --panel:#15201b;
+  --panel2:#1b2a23;
+  --line:#2a3f35;
+  --fg:#e8f0ea;
+  --muted:#9db5a8;
+  --accent:#4fd1a0;      /* fluorescent stain green */
+  --accent2:#e8b64c;     /* brass / tungsten lamp */
+  --danger:#e06c5f;
+  --font-display:"Spectral",Georgia,serif;
+  --font-body:"IBM Plex Sans",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f2f5f1;--panel:#ffffff;--panel2:#e9efe9;--line:#ccd9cf;
+    --fg:#17241d;--muted:#5a6f63;--accent:#158a62;--accent2:#a8771b;--danger:#c0392b;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f2f5f1;--panel:#ffffff;--panel2:#e9efe9;--line:#ccd9cf;
+  --fg:#17241d;--muted:#5a6f63;--accent:#158a62;--accent2:#a8771b;--danger:#c0392b;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);margin:0;padding-block:18px;padding-inline:16px;min-height:100%}
+header.bar{max-width:1240px;margin:0 auto 16px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+header.bar h1{font-family:var(--font-display);font-weight:700;font-size:clamp(22px,3vw,30px);margin:0;letter-spacing:.3px;text-wrap:balance}
+header.bar h1 em{color:var(--accent);font-style:normal}
+.tagline{color:var(--muted);font-size:13px}
+.badge{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--accent2);border:1px solid var(--line);border-radius:4px;padding:3px 8px;letter-spacing:.08em}
+.bench{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr) 270px;gap:16px}
+@media (max-width:980px){.bench{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.panel h2{font-family:var(--font-body);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0 0 10px}
+
+/* search */
+.searchwrap{display:flex;gap:6px;margin-bottom:10px}
+input#search{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:999px;color:var(--fg);font-family:var(--font-body);font-size:13px;padding:8px 14px}
+input#search::placeholder{color:var(--muted)}
+button#go{border:1px solid var(--accent);background:var(--accent);color:#06130d;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
+.searchmsg{font-size:11px;color:var(--muted);margin:-4px 0 10px;min-height:14px}
+.searchmsg b{color:var(--accent)}
+
+/* slide tray */
+.slide{width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:pointer;color:var(--fg);font-family:var(--font-body)}
+.slide:hover{border-color:var(--accent)}
+.slide.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.slide .nm{font-weight:600;font-size:14px}
+.slide .sci{font-family:var(--font-mono);font-size:11px;color:var(--muted);font-style:italic}
+.slide .stain{font-size:11px;color:var(--accent2);margin-top:2px}
+
+/* viewport */
+.scope{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.eyepiece{position:relative;width:min(560px,100%);aspect-ratio:1;max-width:100%}
+canvas#view{width:100%;height:100%;border-radius:50%;display:block;background:#000;box-shadow:0 0 0 10px #10100f,0 0 0 12px var(--line),0 18px 50px rgba(0,0,0,.55)}
+.hud{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);font-family:var(--font-mono);font-size:12px;color:#d7ffe9;background:rgba(0,0,0,.45);padding:4px 10px;border-radius:999px;white-space:nowrap;pointer-events:none}
+.objectives{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.obj{font-family:var(--font-mono);font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);cursor:pointer}
+.obj.active{background:var(--accent);color:#06130d;border-color:var(--accent);font-weight:600}
+.obj .na{font-size:10px;color:inherit;opacity:.7;display:block;text-align:center}
+.hint{font-size:12px;color:var(--muted);text-align:center;max-width:46ch}
+
+/* controls */
+.ctl{margin-bottom:16px}
+.ctl label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.ctl label output{font-family:var(--font-mono);color:var(--fg);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.focusknobs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap}
+button.sm{flex:1;padding:7px 8px;font-size:12px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);cursor:pointer;font-family:var(--font-body)}
+button.sm:hover{border-color:var(--accent)}
+.readout{font-family:var(--font-mono);font-size:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;line-height:1.7;font-variant-numeric:tabular-nums}
+.readout b{color:var(--accent)}
+.readout .warn{color:var(--danger)}
+
+/* info card */
+.info{max-width:1240px;margin:16px auto 0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
+@media (max-width:980px){.info{grid-template-columns:1fr}}
+.info h3{font-family:var(--font-display);font-size:20px;margin:0 0 4px}
+.info .sci{font-family:var(--font-mono);font-style:italic;color:var(--muted);font-size:13px;margin-bottom:10px}
+.info p{max-width:65ch;line-height:1.65;font-size:14.5px;margin:0 0 10px}
+.facts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.fact{font-family:var(--font-mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:4px 8px;color:var(--accent2)}
+textarea#notes{width:100%;min-height:130px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--fg);font-family:var(--font-mono);font-size:13px;padding:10px;resize:vertical}
+.notehead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.notehead span{font-size:11px;color:var(--muted)}
+footer{max-width:1240px;margin:18px auto 0;font-size:12px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+button:focus-visible,.slide:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<header class="bar">
+  <h1>Bio<em>Lab</em> Virtual Microscope</h1>
+  <span class="tagline">Compound light microscope · brightfield</span>
+  <span class="badge">STAGE 76×26 mm</span>
+</header>
+
+<div class="bench">
+  <!-- SLIDE TRAY -->
+  <section class="panel" aria-label="Slide tray">
+    <h2>Find a specimen</h2>
+    <div class="searchwrap">
+      <input type="search" id="search" placeholder="amoeba, mitosis, neuron…" aria-label="Search specimens">
+      <button id="go">View</button>
+    </div>
+    <div class="searchmsg" id="searchMsg">16 slides in the cabinet — or type anything.</div>
+    <h2>Slides</h2>
+    <div id="tray"></div>
+  </section>
+
+  <!-- VIEWPORT -->
+  <section class="scope" aria-label="Eyepiece view">
+    <div class="eyepiece">
+      <canvas id="view" width="900" height="900"></canvas>
+      <div class="hud" id="hud">100× · in focus</div>
+    </div>
+    <div class="objectives" id="objs"></div>
+    <p class="hint">Drag inside the eyepiece to move the stage. Use the coarse knob to get close, then the fine knob to sharpen. Higher objectives need brighter light and finer focus.</p>
+  </section>
+
+  <!-- CONTROLS -->
+  <section class="panel" aria-label="Instrument controls">
+    <h2>Focus</h2>
+    <div class="ctl focusknobs">
+      <div>
+        <label for="coarse">Coarse <output id="coarseOut">0</output></label>
+        <input type="range" id="coarse" min="-100" max="100" value="-62" step="1">
+      </div>
+      <div>
+        <label for="fine">Fine <output id="fineOut">0.0</output></label>
+        <input type="range" id="fine" min="-10" max="10" value="0" step="0.1">
+      </div>
+    </div>
+
+    <h2>Illumination</h2>
+    <div class="ctl">
+      <label for="light">Lamp intensity <output id="lightOut">60%</output></label>
+      <input type="range" id="light" min="10" max="100" value="60" step="1">
+    </div>
+    <div class="ctl">
+      <label for="iris">Iris diaphragm <output id="irisOut">70%</output></label>
+      <input type="range" id="iris" min="20" max="100" value="70" step="1">
+    </div>
+
+    <h2>Stage</h2>
+    <div class="ctl rowbtns">
+      <button class="sm" id="center">Center stage</button>
+      <button class="sm" id="autofocus">Auto-focus</button>
+    </div>
+
+    <h2>Readout</h2>
+    <div class="readout" id="readout"></div>
+  </section>
+</div>
+
+<!-- INFO + NOTEBOOK -->
+<div class="info">
+  <section class="panel">
+    <h3 id="iName"></h3>
+    <div class="sci" id="iSci"></div>
+    <p id="iDesc"></p>
+    <div class="facts" id="iFacts"></div>
+  </section>
+  <section class="panel">
+    <div class="notehead"><h2 style="margin:0">Lab notebook</h2><span id="noteStatus">saved on this device</span></div>
+    <textarea id="notes" placeholder="Record your observations — cell shape, structures visible at each magnification, estimated sizes…"></textarea>
+  </section>
+</div>
+
+<footer>Field diameter shown in the readout is computed from the objective in use (eyepiece 10×). Specimens are procedurally rendered teaching models, not micrographs.</footer>
+
+<script>
+"use strict";
+// ---------- specimen library ----------
+const SPECIMENS=[
+ {id:"onion",nm:"Onion epidermis",sci:"Allium cepa",stain:"Iodine stain",keys:["onion","epidermis","allium","plant cell","cell wall","peel"],
+  desc:"A single layer of boxy plant cells. At 100× the brick-like cell walls are obvious; at 400× look for the darkly stained nucleus inside each cell and the thin line of cytoplasm pressed against the wall by the central vacuole.",
+  facts:["Cell ≈ 250–400 µm long","Plant · epidermal tissue","Look for: nucleus, cell wall"],draw:"onion"},
+ {id:"blood",nm:"Human blood smear",sci:"Homo sapiens",stain:"Wright–Giemsa",keys:["blood","rbc","wbc","red blood","white blood","erythrocyte","leukocyte","platelet","smear"],
+  desc:"Thousands of pink biconcave red cells with pale centers. Scan at 400× to find the rarer white cells — about 1 in 700 — with their large purple lobed nuclei, and tiny platelet fragments scattered between.",
+  facts:["RBC ≈ 7.5 µm","WBC ≈ 12–15 µm","Ratio ≈ 700 : 1"],draw:"blood"},
+ {id:"para",nm:"Paramecium",sci:"Paramecium caudatum",stain:"Live wet mount",live:1,keys:["paramecium","ciliate","slipper","protozoa","pond water"],
+  desc:"A slipper-shaped ciliate protozoan, alive and swimming. Watch the beating cilia along its edge and the two clear contractile vacuoles that pump water out. The oral groove runs diagonally along one side.",
+  facts:["Length ≈ 200–300 µm","Protist · motile","Look for: cilia, vacuoles"],draw:"para"},
+ {id:"leaf",nm:"Leaf cross-section",sci:"Ligustrum sp.",stain:"Safranin / fast green",keys:["leaf","stomata","mesophyll","chloroplast","photosynthesis","guard cell"],
+  desc:"A transverse slice through a privet leaf. From top: cuticle, palisade mesophyll packed with chloroplasts, spongy mesophyll with air spaces, and the lower epidermis punctured by stomata — each guarded by a pair of bean-shaped cells.",
+  facts:["Section ≈ 150 µm thick","Plant · photosynthetic tissue","Look for: stomata, chloroplasts"],draw:"leaf"},
+ {id:"bact",nm:"Bacterial smear",sci:"Bacillus & Staphylococcus",stain:"Gram stain",keys:["bacteria","bacterial","gram","coccus","bacillus","staph","e coli","microbe","germ"],
+  desc:"A mixed smear. Gram-positive cocci stain violet and clump like grape bunches; Gram-negative rods counterstain pink. You need the 100× oil-immersion objective to resolve individual cells at all.",
+  facts:["Coccus ≈ 1 µm","Bacillus ≈ 2–4 µm","Needs 1000× total"],draw:"bact"},
+ {id:"cheek",nm:"Human cheek cells",sci:"Squamous epithelium",stain:"Methylene blue",keys:["cheek","buccal","epithelium","epithelial","squamous","animal cell","human cell"],
+  desc:"Flat, irregular squamous cells scraped from the inside of the cheek. Each pale blue cell carries one small round nucleus near its center. Compare with onion cells: no wall, no fixed shape — the classic animal-vs-plant cell lab.",
+  facts:["Cell ≈ 60–80 µm","Animal · epithelial","Look for: nucleus, no cell wall"],draw:"cheek"},
+ {id:"amoeba",nm:"Amoeba",sci:"Amoeba proteus",stain:"Live wet mount",live:1,keys:["amoeba","ameba","pseudopod","amoeboid"],
+  desc:"A shapeless blob of protoplasm crawling by pushing out pseudopodia. Inside the granular cytoplasm, find the disc-shaped nucleus, food vacuoles with trapped prey, and a clear contractile vacuole that swells and bursts.",
+  facts:["Size ≈ 250–750 µm","Protist · amoeboid motion","Look for: pseudopodia, vacuoles"],draw:"amoeba"},
+ {id:"euglena",nm:"Euglena",sci:"Euglena gracilis",stain:"Live wet mount",live:1,keys:["euglena","flagellate","flagellum","eyespot"],
+  desc:"Green spindle-shaped cells that both photosynthesize and swim. The whip-like flagellum pulls the cell forward, steered by the red-orange eyespot at the front end. Chloroplasts fill the body like green ribbons.",
+  facts:["Length ≈ 50 µm","Protist · plant-animal traits","Look for: flagellum, eyespot"],draw:"euglena"},
+ {id:"yeast",nm:"Yeast suspension",sci:"Saccharomyces cerevisiae",stain:"Methylene blue",keys:["yeast","budding","fungus","fungi","saccharomyces","fermentation"],
+  desc:"Oval fungal cells reproducing by budding — many carry a smaller daughter cell still attached, and some form short chains. Stained (dead) cells take up blue; live ones stay pale, the basis of a classic viability count.",
+  facts:["Cell ≈ 5–10 µm","Fungus · unicellular","Look for: buds, chains"],draw:"yeast"},
+ {id:"pollen",nm:"Pollen grains",sci:"Hibiscus & Helianthus",stain:"Dry mount",keys:["pollen","grain","flower","anther","spore"],
+  desc:"Spiky golden spheres from hibiscus and sunflower anthers. The ornamented outer wall (exine) is sculpted with spines and pores unique to each species — palynologists identify plants from pollen alone.",
+  facts:["Grain ≈ 25–100 µm","Plant · male gametophyte","Look for: spines, pores"],draw:"pollen"},
+ {id:"mitosis",nm:"Onion root tip — mitosis",sci:"Allium cepa",stain:"Acetocarmine squash",keys:["mitosis","root tip","cell division","chromosome","prophase","metaphase","anaphase","telophase","dividing"],
+  desc:"The growth zone of a root, where cells divide constantly. Most cells rest in interphase, but scan at 400× for mitotic figures: condensed chromosome threads (prophase), lined at the equator (metaphase), pulled to poles (anaphase), and pinching in two (telophase).",
+  facts:["Cell ≈ 20–40 µm","Plant · meristem","Look for: all 4 phases"],draw:"mitosis"},
+ {id:"spiro",nm:"Spirogyra filament",sci:"Spirogyra sp.",stain:"Wet mount",keys:["spirogyra","algae","alga","filament","pond scum","green algae"],
+  desc:"Silky green filaments of pond algae. Each cylindrical cell holds one or two emerald chloroplasts wound in a perfect helix — the feature that names the genus — with the nucleus suspended at the center by cytoplasmic strands.",
+  facts:["Cell ≈ 100 µm long","Alga · filamentous","Look for: spiral chloroplast"],draw:"spiro"},
+ {id:"muscle",nm:"Skeletal muscle (l.s.)",sci:"Striated muscle fibers",stain:"H&E",keys:["muscle","striated","skeletal","fiber","tissue","sarcomere"],
+  desc:"Long parallel fibers banded with fine cross-striations — the repeating sarcomeres that contract. Each fiber is a giant multinucleate cell; the flattened nuclei sit pushed against the edges.",
+  facts:["Fiber ⌀ ≈ 50–100 µm","Animal · muscle tissue","Look for: striations, edge nuclei"],draw:"muscle"},
+ {id:"neuron",nm:"Nerve cells",sci:"Multipolar neurons",stain:"Silver stain",keys:["neuron","nerve","brain","neural","axon","dendrite","spinal"],
+  desc:"Star-shaped neuron cell bodies from a spinal cord smear, branching into tapering dendrites, with one long thin axon leaving each cell. The silver stain blackens the cells against a pale field, Golgi's trick that founded neuroscience.",
+  facts:["Cell body ≈ 20–100 µm","Animal · nervous tissue","Look for: dendrites, axon"],draw:"neuron"},
+ {id:"diatom",nm:"Diatom arrangement",sci:"Mixed marine diatoms",stain:"Mounted frustules",keys:["diatom","frustule","plankton","phytoplankton","silica","marine"],
+  desc:"Glass houses of single-celled algae: silica shells (frustules) etched with ribs, pores and radial patterns finer than the eye can follow. Victorian mounters arranged them into rosettes; they also serve as test objects for lens resolution.",
+  facts:["Shell ≈ 20–200 µm","Alga · silica shell","Look for: ribs, symmetry"],draw:"diatom"},
+ {id:"hair",nm:"Human hair",sci:"Keratin shaft",stain:"Dry mount",keys:["hair","keratin","follicle","strand","fur"],
+  desc:"A single shaft at low power: the overlapping cuticle scales tile the surface like roof shingles, over the pigmented cortex that gives hair its color and a faint central medulla. Forensic labs match species and treatment from exactly this view.",
+  facts:["Shaft ⌀ ≈ 70–100 µm","Animal · keratin","Look for: cuticle scales, medulla"],draw:"hair"}
+];
+const OBJECTIVES=[{m:4,na:"0.10"},{m:10,na:"0.25"},{m:40,na:"0.65"},{m:100,na:"1.25 oil"}];
+const EYEPIECE=10;
+
+// ---------- state ----------
+const S={spec:SPECIMENS[0],obj:1,coarse:-62,fine:0,light:60,iris:70,x:0,y:0,t:0};
+let seedBase=1;
+
+// ---------- deterministic rng ----------
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+function hashStr(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+
+// ---------- DOM ----------
+const cv=document.getElementById("view"),ctx=cv.getContext("2d");
+const tray=document.getElementById("tray"),objsEl=document.getElementById("objs");
+const hud=document.getElementById("hud"),readout=document.getElementById("readout");
+const $=id=>document.getElementById(id);
+
+function selectSpec(sp,i){
+  S.spec=sp;seedBase=(i!=null?i*77+1:hashStr(sp.id));S.x=0;S.y=0;
+  document.querySelectorAll(".slide").forEach(s=>s.classList.remove("active"));
+  const b=document.getElementById("slide-"+sp.id);if(b)b.classList.add("active");
+  info();
+}
+function addSlideButton(sp,i,activate){
+  const b=document.createElement("button");b.className="slide";b.id="slide-"+sp.id;
+  b.innerHTML=`<div class="nm">${sp.nm}</div><div class="sci">${sp.sci}</div><div class="stain">${sp.stain}</div>`;
+  b.onclick=()=>selectSpec(sp,i);
+  tray.appendChild(b);
+  if(activate)b.classList.add("active");
+  return b;
+}
+SPECIMENS.forEach((sp,i)=>addSlideButton(sp,i,i===0));
+
+OBJECTIVES.forEach((o,i)=>{
+  const b=document.createElement("button");b.className="obj"+(i===S.obj?" active":"");b.id="obj-"+o.m;
+  b.innerHTML=`${o.m}×<span class="na">NA ${o.na}</span>`;
+  b.onclick=()=>{S.obj=i;document.querySelectorAll(".obj").forEach(x=>x.classList.remove("active"));b.classList.add("active")};
+  objsEl.appendChild(b);
+});
+
+[["coarse","coarse"],["fine","fine"],["light","light"],["iris","iris"]].forEach(([id,key])=>{
+  $(id).addEventListener("input",e=>{S[key]=+e.target.value});
+});
+$("center").onclick=()=>{S.x=0;S.y=0};
+$("autofocus").onclick=()=>{S.coarse=0;S.fine=0;$("coarse").value=0;$("fine").value=0};
+
+// ---------- search ----------
+const searchEl=$("search"),msgEl=$("searchMsg");
+function findSpecimen(q){
+  q=q.trim().toLowerCase();if(!q)return null;
+  let best=null,bestScore=0;
+  for(const sp of SPECIMENS){
+    const hay=[sp.nm,sp.sci,...(sp.keys||[])].map(s=>s.toLowerCase());
+    let score=0;
+    for(const h of hay){
+      if(h===q)score=Math.max(score,100);
+      else if(h.includes(q)||q.includes(h))score=Math.max(score,50+Math.min(h.length,q.length));
+      else{ // word overlap
+        for(const w of q.split(/\s+/))if(w.length>3&&h.includes(w))score=Math.max(score,30+w.length);
+      }
+    }
+    if(score>bestScore){bestScore=score;best=sp}
+  }
+  return bestScore>=30?best:null;
+}
+function makeGenerated(q){
+  const id="gen-"+hashStr(q).toString(36);
+  const existing=SPECIMENS.find(s=>s.id===id);if(existing)return existing;
+  const r=rng(hashStr(q));
+  const shapes=["round","rod","polygonal","spindle"],shape=shapes[Math.floor(r()*4)];
+  const hue=Math.floor(r()*360),size=10+Math.floor(r()*120);
+  const sp={id,nm:q.charAt(0).toUpperCase()+q.slice(1),sci:"Unverified specimen",stain:"Simulated mount",
+    gen:{shape,hue,size,density:.3+r()*.6,live:r()<.3},live:r()<.3?1:0,keys:[q.toLowerCase()],
+    desc:`No prepared slide for “${q}” exists in the cabinet, so the simulator rendered a generic ${shape}-celled mount (~${size} µm) as a stand-in. Treat it as a placeholder for practicing focus and magnification, not as an accurate model of ${q}.`,
+    facts:[`Cell ≈ ${size} µm`,"Generated model","Not biologically verified"],draw:"generic"};
+  SPECIMENS.push(sp);
+  return sp;
+}
+function runSearch(){
+  const q=searchEl.value;if(!q.trim())return;
+  let sp=findSpecimen(q);
+  if(sp){
+    msgEl.innerHTML=`Loaded <b>${sp.nm}</b> from the cabinet.`;
+  }else{
+    sp=makeGenerated(q.trim());
+    if(!document.getElementById("slide-"+sp.id))addSlideButton(sp,null,false);
+    msgEl.innerHTML=`No prepared slide — rendered a <b>generated model</b> of “${sp.nm}”.`;
+  }
+  selectSpec(sp,SPECIMENS.indexOf(sp));
+}
+$("go").onclick=runSearch;
+searchEl.addEventListener("keydown",e=>{if(e.key==="Enter")runSearch()});
+
+// drag to move stage
+let drag=null;
+cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener("pointermove",e=>{if(!drag)return;const mag=OBJECTIVES[S.obj].m;
+  S.x-=(e.clientX-drag.x)*2.2/mag;S.y-=(e.clientY-drag.y)*2.2/mag;
+  S.x=Math.max(-400,Math.min(400,S.x));S.y=Math.max(-400,Math.min(400,S.y));
+  drag={x:e.clientX,y:e.clientY}});
+cv.addEventListener("pointerup",()=>drag=null);
+cv.addEventListener("pointercancel",()=>drag=null);
+
+// lab notebook (per-device convenience)
+const notes=$("notes");
+try{notes.value=localStorage.getItem("biolab-notes")||""}catch(e){}
+notes.addEventListener("input",()=>{try{localStorage.setItem("biolab-notes",notes.value);$("noteStatus").textContent="saved on this device"}catch(e){$("noteStatus").textContent="not saved (storage blocked)"}});
+
+function info(){
+  $("iName").textContent=S.spec.nm;$("iSci").textContent=S.spec.sci+" · "+S.spec.stain;
+  $("iDesc").textContent=S.spec.desc;
+  $("iFacts").innerHTML=S.spec.facts.map(f=>`<span class="fact">${f}</span>`).join("");
+}
+info();
+
+// ---------- specimen painters (draw into an offscreen "slide" at 1px = 1 unit) ----------
+const slideCache={};
+function getSlide(sp){
+  if(slideCache[sp.id])return slideCache[sp.id];
+  const off=document.createElement("canvas");off.width=1200;off.height=1200;
+  const c=off.getContext("2d"),r=rng(hashStr(sp.id)*7+13);
+  PAINT[sp.draw](c,r,sp);
+  slideCache[sp.id]=off;return off;
+}
+const TAU=Math.PI*2;
+const PAINT={
+ onion(c,r){
+   c.fillStyle="#f3e6c0";c.fillRect(0,0,1200,1200);
+   for(let row=0;row<9;row++)for(let col=0;col<5;col++){
+     const w=200+r()*60,h=100+r()*30,x=col*230+(row%2?110:0)+r()*20-60,y=row*135+r()*10;
+     c.fillStyle=`rgba(236,214,160,${.6+r()*.3})`;
+     c.strokeStyle="#9a7f3f";c.lineWidth=5;
+     c.beginPath();c.roundRect(x,y,w,h,18);c.fill();c.stroke();
+     c.fillStyle="#6b4f1d";c.beginPath();
+     c.ellipse(x+w*(.25+r()*.5),y+h*(.3+r()*.4),13+r()*6,11+r()*5,r()*3,0,TAU);c.fill();
+     c.fillStyle="rgba(107,79,29,.35)";c.beginPath();
+     c.ellipse(x+w*.5,y+h*.5,w*.42,h*.36,0,0,TAU);c.fill();
+   }
+ },
+ blood(c,r){
+   c.fillStyle="#fbeef0";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<950;i++){
+     const x=r()*1200,y=r()*1200,rad=15+r()*4;
+     c.fillStyle=`rgba(226,110,120,${.75+r()*.2})`;
+     c.beginPath();c.arc(x,y,rad,0,TAU);c.fill();
+     c.fillStyle="rgba(251,238,240,.75)";c.beginPath();c.arc(x,y,rad*.45,0,TAU);c.fill();
+   }
+   for(let i=0;i<4;i++){
+     const x=150+r()*900,y=150+r()*900;
+     c.fillStyle="rgba(214,222,240,.95)";c.beginPath();c.arc(x,y,30,0,TAU);c.fill();
+     c.fillStyle="#5a3f8f";
+     for(let l=0;l<3;l++){c.beginPath();c.ellipse(x+(r()-0.5)*20,y+(r()-0.5)*20,12,9,r()*3,0,TAU);c.fill()}
+   }
+   for(let i=0;i<120;i++){
+     c.fillStyle="rgba(120,90,160,.7)";c.beginPath();c.arc(r()*1200,r()*1200,3,0,TAU);c.fill();
+   }
+ },
+ para(c,r){
+   c.fillStyle="#e9f2ec";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<280;i++){c.fillStyle=`rgba(140,160,145,${r()*.25})`;c.beginPath();c.arc(r()*1200,r()*1200,1+r()*3,0,TAU);c.fill()}
+   for(let p=0;p<4;p++){
+     const x=200+r()*800,y=200+r()*800,ang=r()*6.3,L=190+r()*60;
+     c.save();c.translate(x,y);c.rotate(ang);
+     c.fillStyle="rgba(190,205,180,.85)";c.strokeStyle="#7a8d74";c.lineWidth=3;
+     c.beginPath();c.ellipse(0,0,L,L*.34,0,0,TAU);c.fill();c.stroke();
+     c.strokeStyle="rgba(122,141,116,.8)";c.lineWidth=1.5;
+     for(let a=0;a<6.3;a+=.12){const cx=Math.cos(a)*L,cy=Math.sin(a)*L*.34;
+       c.beginPath();c.moveTo(cx,cy);c.lineTo(cx*1.07,cy*1.07);c.stroke()}
+     c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle="#9ab094";c.lineWidth=2;
+     c.beginPath();c.arc(-L*.55,0,16,0,TAU);c.fill();c.stroke();
+     c.beginPath();c.arc(L*.55,0,16,0,TAU);c.fill();c.stroke();
+     c.fillStyle="rgba(130,110,150,.65)";c.beginPath();c.ellipse(0,0,L*.28,L*.13,0,0,TAU);c.fill();
+     c.strokeStyle="#7a8d74";c.lineWidth=4;c.beginPath();c.moveTo(-L*.2,L*.3);c.quadraticCurveTo(L*.15,L*.1,L*.3,-L*.05);c.stroke();
+     c.restore();
+   }
+ },
+ leaf(c,r){
+   c.fillStyle="#f5efe2";c.fillRect(0,0,1200,1200);
+   c.fillStyle="#d8b24a";c.fillRect(0,210,1200,14);
+   c.fillStyle="#e9d9a0";for(let x=0;x<1200;x+=60){c.strokeStyle="#b2903c";c.lineWidth=3;c.beginPath();c.roundRect(x+2,226,56,46,8);c.fill();c.stroke()}
+   for(let x=0;x<1200;x+=34){const h=160+r()*30;
+     c.fillStyle="#9fc26a";c.strokeStyle="#5e7c38";c.lineWidth=3;
+     c.beginPath();c.roundRect(x+3,286,28,h,10);c.fill();c.stroke();
+     for(let k=0;k<8;k++){c.fillStyle="#3f6b22";c.beginPath();c.arc(x+8+r()*18,300+r()*(h-28),4.5,0,TAU);c.fill()}}
+   for(let i=0;i<120;i++){const x=r()*1200,y=500+r()*300,rad=16+r()*16;
+     c.fillStyle="rgba(170,200,120,.8)";c.strokeStyle="#6d8a44";c.lineWidth=2.5;
+     c.beginPath();c.ellipse(x,y,rad,rad*.8,r()*3,0,TAU);c.fill();c.stroke();
+     for(let k=0;k<3;k++){c.fillStyle="#46702a";c.beginPath();c.arc(x+(r()-0.5)*rad,y+(r()-0.5)*rad,3.5,0,TAU);c.fill()}}
+   for(let x=0;x<1200;x+=60){c.fillStyle="#e9d9a0";c.strokeStyle="#b2903c";c.lineWidth=3;c.beginPath();c.roundRect(x+2,830,56,42,8);c.fill();c.stroke()}
+   for(let i=0;i<5;i++){const x=90+i*240+r()*60;
+     c.fillStyle="#7da457";c.strokeStyle="#4c6b2e";c.lineWidth=3;
+     c.beginPath();c.ellipse(x-10,851,12,20,.3,0,TAU);c.fill();c.stroke();
+     c.beginPath();c.ellipse(x+10,851,12,20,-.3,0,TAU);c.fill();c.stroke();
+     c.fillStyle="#f5efe2";c.beginPath();c.ellipse(x,851,4,12,0,0,TAU);c.fill();}
+   c.fillStyle="#d8b24a";c.fillRect(0,874,1200,10);
+ },
+ bact(c,r){
+   c.fillStyle="#f6f1ea";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<60;i++){
+     const cx=r()*1200,cy=r()*1200,n=4+Math.floor(r()*8);
+     for(let k=0;k<n;k++){c.fillStyle=`rgba(90,55,140,${.8+r()*.2})`;
+       c.beginPath();c.arc(cx+(r()-0.5)*26,cy+(r()-0.5)*26,4.5+r()*1.5,0,TAU);c.fill()}
+   }
+   for(let i=0;i<140;i++){
+     const x=r()*1200,y=r()*1200,a=r()*3.14;
+     c.save();c.translate(x,y);c.rotate(a);
+     c.fillStyle=`rgba(225,110,130,${.75+r()*.2})`;
+     c.beginPath();c.roundRect(-9,-3,18,6,3);c.fill();c.restore();
+   }
+ },
+ cheek(c,r){
+   c.fillStyle="#eef2f8";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<26;i++){
+     const x=80+r()*1040,y=80+r()*1040,rad=70+r()*40,a0=r()*TAU;
+     c.save();c.translate(x,y);c.rotate(a0);
+     c.fillStyle=`rgba(150,180,220,${.35+r()*.25})`;c.strokeStyle="rgba(70,100,160,.7)";c.lineWidth=2.5;
+     c.beginPath();
+     for(let a=0;a<TAU;a+=.5){const rr=rad*(0.75+r()*.4);c.lineTo(Math.cos(a)*rr,Math.sin(a)*rr*.85)}
+     c.closePath();c.fill();c.stroke();
+     c.fillStyle="#2d4a8a";c.beginPath();c.arc((r()-.5)*rad*.4,(r()-.5)*rad*.4,11+r()*4,0,TAU);c.fill();
+     for(let k=0;k<14;k++){c.fillStyle="rgba(70,100,160,.2)";c.beginPath();c.arc((r()-.5)*rad,(r()-.5)*rad*.8,2,0,TAU);c.fill()}
+     c.restore();
+   }
+ },
+ amoeba(c,r){
+   c.fillStyle="#edf1e9";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<300;i++){c.fillStyle=`rgba(130,140,120,${r()*.2})`;c.beginPath();c.arc(r()*1200,r()*1200,1+r()*3,0,TAU);c.fill()}
+   for(let p=0;p<2;p++){
+     const x=300+r()*600,y=300+r()*600,base=200+r()*80;
+     c.save();c.translate(x,y);
+     c.fillStyle="rgba(200,200,185,.8)";c.strokeStyle="#8a8a72";c.lineWidth=3;
+     c.beginPath();
+     const lobes=7+Math.floor(r()*4),radii=[];
+     for(let k=0;k<lobes;k++)radii.push(base*(.5+r()*.8));
+     for(let k=0;k<=lobes;k++){
+       const a=k/lobes*TAU,rr=radii[k%lobes];
+       const px=Math.cos(a)*rr,py=Math.sin(a)*rr;
+       k===0?c.moveTo(px,py):c.quadraticCurveTo(Math.cos(a-TAU/lobes/2)*rr*1.25,Math.sin(a-TAU/lobes/2)*rr*1.25,px,py);
+     }
+     c.closePath();c.fill();c.stroke();
+     for(let k=0;k<130;k++){c.fillStyle="rgba(120,120,95,.35)";c.beginPath();c.arc((r()-.5)*base,(r()-.5)*base,2+r()*3,0,TAU);c.fill()}
+     c.fillStyle="rgba(110,95,130,.7)";c.strokeStyle="#6d5e82";c.lineWidth=2;
+     c.beginPath();c.ellipse((r()-.5)*base*.4,(r()-.5)*base*.4,34,26,r()*3,0,TAU);c.fill();c.stroke();
+     c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle="#9aa78f";c.beginPath();c.arc(base*.3,(r()-.5)*base*.5,26,0,TAU);c.fill();c.stroke();
+     for(let k=0;k<4;k++){c.fillStyle="rgba(160,150,110,.6)";c.strokeStyle="#8a8a72";c.lineWidth=1.5;
+       c.beginPath();c.arc((r()-.5)*base*.9,(r()-.5)*base*.9,10+r()*9,0,TAU);c.fill();c.stroke()}
+     c.restore();
+   }
+ },
+ euglena(c,r){
+   c.fillStyle="#eaf2ee";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<250;i++){c.fillStyle=`rgba(140,160,145,${r()*.2})`;c.beginPath();c.arc(r()*1200,r()*1200,1+r()*2.5,0,TAU);c.fill()}
+   for(let p=0;p<12;p++){
+     const x=100+r()*1000,y=100+r()*1000,ang=r()*TAU,L=55+r()*25;
+     c.save();c.translate(x,y);c.rotate(ang);
+     c.fillStyle="rgba(90,160,80,.9)";c.strokeStyle="#3e6e36";c.lineWidth=2;
+     c.beginPath();c.moveTo(-L,0);
+     c.quadraticCurveTo(-L*.3,-L*.42,L*.6,-L*.18);c.quadraticCurveTo(L,0,L*.6,L*.18);
+     c.quadraticCurveTo(-L*.3,L*.42,-L,0);c.closePath();c.fill();c.stroke();
+     for(let k=0;k<7;k++){c.fillStyle="rgba(50,110,45,.8)";c.beginPath();
+       c.ellipse(-L*.6+k*L*.22,(r()-.5)*L*.3,7,4,r(),0,TAU);c.fill()}
+     c.fillStyle="#d24b28";c.beginPath();c.arc(L*.55,-L*.08,5,0,TAU);c.fill();
+     c.strokeStyle="rgba(62,110,54,.8)";c.lineWidth=1.8;c.beginPath();
+     c.moveTo(L*.72,0);c.quadraticCurveTo(L*1.3,-L*.3,L*1.7,L*.1);c.stroke();
+     c.restore();
+   }
+ },
+ yeast(c,r){
+   c.fillStyle="#eef1f6";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<220;i++){
+     const x=r()*1200,y=r()*1200,rad=14+r()*8,a=r()*TAU,dead=r()<.3;
+     c.save();c.translate(x,y);c.rotate(a);
+     const col=dead?"rgba(80,110,190,.85)":"rgba(210,220,235,.9)";
+     c.fillStyle=col;c.strokeStyle="#5a6d96";c.lineWidth=2;
+     c.beginPath();c.ellipse(0,0,rad,rad*.78,0,0,TAU);c.fill();c.stroke();
+     if(r()<.5){ // bud
+       c.beginPath();c.ellipse(rad*.95,rad*.3,rad*.45,rad*.38,0,0,TAU);c.fill();c.stroke();
+     }
+     if(!dead){c.fillStyle="rgba(90,109,150,.5)";c.beginPath();c.arc(rad*.2,0,4,0,TAU);c.fill()}
+     c.restore();
+   }
+ },
+ pollen(c,r){
+   c.fillStyle="#f7f2e4";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<40;i++){
+     const x=90+r()*1020,y=90+r()*1020,rad=36+r()*34,spiky=r()<.6;
+     c.save();c.translate(x,y);
+     c.fillStyle=`rgba(230,${150+Math.floor(r()*50)},50,.92)`;c.strokeStyle="#9c6b14";c.lineWidth=2.5;
+     c.beginPath();c.arc(0,0,rad,0,TAU);c.fill();c.stroke();
+     if(spiky){c.strokeStyle="#9c6b14";c.lineWidth=3;
+       for(let a=0;a<TAU;a+=TAU/16){c.beginPath();c.moveTo(Math.cos(a)*rad,Math.sin(a)*rad);
+         c.lineTo(Math.cos(a)*(rad+10+r()*5),Math.sin(a)*(rad+10+r()*5));c.stroke()}}
+     else{c.fillStyle="rgba(156,107,20,.4)";
+       for(let k=0;k<5;k++){c.beginPath();c.arc((r()-.5)*rad,(r()-.5)*rad,4,0,TAU);c.fill()}}
+     c.fillStyle="rgba(156,107,20,.25)";c.beginPath();c.arc(0,0,rad*.55,0,TAU);c.fill();
+     c.restore();
+   }
+ },
+ mitosis(c,r){
+   c.fillStyle="#f6ebe6";c.fillRect(0,0,1200,1200);
+   for(let row=0;row<10;row++)for(let col=0;col<8;col++){
+     const w=130+r()*25,h=105+r()*20,x=col*148+r()*8,y=row*118+r()*6;
+     c.fillStyle=`rgba(240,215,205,${.6+r()*.3})`;c.strokeStyle="#a06a58";c.lineWidth=3;
+     c.beginPath();c.roundRect(x,y,w,h,8);c.fill();c.stroke();
+     const cx=x+w/2,cy=y+h/2,phase=r();
+     c.strokeStyle="#7c2040";c.fillStyle="#7c2040";c.lineWidth=4;
+     if(phase<.62){ // interphase
+       c.fillStyle="rgba(124,32,64,.75)";c.beginPath();c.arc(cx,cy,16+r()*5,0,TAU);c.fill();
+     }else if(phase<.74){ // prophase: tangled threads
+       for(let k=0;k<6;k++){c.beginPath();c.moveTo(cx+(r()-.5)*34,cy+(r()-.5)*30);
+         c.quadraticCurveTo(cx+(r()-.5)*40,cy+(r()-.5)*40,cx+(r()-.5)*34,cy+(r()-.5)*30);c.stroke()}
+     }else if(phase<.84){ // metaphase: plate
+       for(let k=0;k<6;k++){c.beginPath();c.moveTo(cx-4,cy-25+k*10);c.lineTo(cx+4,cy-25+k*10+4);c.stroke()}
+     }else if(phase<.94){ // anaphase: two groups of V
+       for(let s=-1;s<=1;s+=2)for(let k=0;k<5;k++){
+         const vx=cx+s*26,vy=cy-20+k*10;
+         c.beginPath();c.moveTo(vx,vy);c.lineTo(vx+s*9,vy-5);c.moveTo(vx,vy);c.lineTo(vx+s*9,vy+5);c.stroke()}
+     }else{ // telophase: two nuclei + cell plate
+       c.fillStyle="rgba(124,32,64,.7)";
+       c.beginPath();c.arc(cx-28,cy,12,0,TAU);c.fill();
+       c.beginPath();c.arc(cx+28,cy,12,0,TAU);c.fill();
+       c.strokeStyle="#a06a58";c.lineWidth=2.5;c.beginPath();c.moveTo(cx,y+8);c.lineTo(cx,y+h-8);c.stroke();
+     }
+   }
+ },
+ spiro(c,r){
+   c.fillStyle="#edf3ee";c.fillRect(0,0,1200,1200);
+   for(let f=0;f<5;f++){
+     const y0=120+f*230+r()*40,ang=(r()-.5)*.5,W=58;
+     c.save();c.translate(600,y0);c.rotate(ang);c.translate(-650,0);
+     c.fillStyle="rgba(222,236,220,.85)";c.strokeStyle="#5f7d58";c.lineWidth=2.5;
+     c.fillRect(0,-W/2,1300,W);
+     c.strokeRect(0,-W/2,1300,W);
+     for(let x=0;x<1300;x+=110){c.beginPath();c.moveTo(x,-W/2);c.lineTo(x,W/2);c.stroke()}
+     c.strokeStyle="#2f7a35";c.lineWidth=7;c.lineCap="round";
+     c.beginPath();
+     for(let x=0;x<=1300;x+=8){c.lineTo(x,Math.sin(x/34)*W*.33)}
+     c.stroke();
+     c.lineCap="butt";
+     for(let x=55;x<1300;x+=110){c.fillStyle="rgba(95,125,88,.6)";c.beginPath();c.arc(x,0,6,0,TAU);c.fill()}
+     c.restore();
+   }
+ },
+ muscle(c,r){
+   c.fillStyle="#f8ece7";c.fillRect(0,0,1200,1200);
+   for(let f=0;f<11;f++){
+     const y=f*110+20+r()*10,h=74+r()*16,ang=(r()-.5)*.06;
+     c.save();c.translate(600,y+h/2);c.rotate(ang);c.translate(-640,-h/2);
+     c.fillStyle=`rgba(226,140,120,${.8+r()*.15})`;c.strokeStyle="#9c4a38";c.lineWidth=2.5;
+     c.beginPath();c.roundRect(0,0,1280,h,14);c.fill();c.stroke();
+     c.strokeStyle="rgba(140,55,40,.5)";c.lineWidth=2;
+     for(let x=10;x<1280;x+=11){c.beginPath();c.moveTo(x,3);c.lineTo(x,h-3);c.stroke()}
+     for(let k=0;k<6;k++){c.fillStyle="#5c2a4a";
+       c.beginPath();c.ellipse(60+r()*1160,r()<.5?7:h-7,13,5,0,0,TAU);c.fill()}
+     c.restore();
+   }
+ },
+ neuron(c,r){
+   c.fillStyle="#efe9df";c.fillRect(0,0,1200,1200);
+   for(let n=0;n<7;n++){
+     const x=140+r()*920,y=140+r()*920,rad=36+r()*22;
+     c.save();c.translate(x,y);
+     c.strokeStyle="rgba(45,38,30,.85)";c.fillStyle="rgba(45,38,30,.9)";
+     const nd=5+Math.floor(r()*3);
+     for(let k=0;k<nd;k++){ // dendrites
+       const a=k/nd*TAU+r()*.5;c.lineWidth=5;
+       let px=Math.cos(a)*rad*.8,py=Math.sin(a)*rad*.8;
+       c.beginPath();c.moveTo(px,py);
+       for(let s=0;s<3;s++){const len=rad*(1.1+r()*1.3);
+         px+=Math.cos(a+(r()-.5))*len;py+=Math.sin(a+(r()-.5))*len;
+         c.lineTo(px,py);c.lineWidth=Math.max(1,5-s*1.6)}
+       c.stroke();
+     }
+     const aa=r()*TAU;c.lineWidth=2.5;c.beginPath(); // axon
+     c.moveTo(Math.cos(aa)*rad,Math.sin(aa)*rad);
+     c.quadraticCurveTo(Math.cos(aa)*rad*5,Math.sin(aa)*rad*5+(r()-.5)*120,Math.cos(aa)*rad*9,Math.sin(aa)*rad*9+(r()-.5)*200);
+     c.stroke();
+     c.beginPath(); // soma
+     for(let a=0;a<TAU;a+=.4)c.lineTo(Math.cos(a)*rad*(.85+r()*.3),Math.sin(a)*rad*(.85+r()*.3));
+     c.closePath();c.fill();
+     c.fillStyle="#efe9df";c.beginPath();c.arc(0,0,rad*.3,0,TAU);c.fill();
+     c.fillStyle="rgba(45,38,30,.9)";c.beginPath();c.arc(0,0,rad*.13,0,TAU);c.fill();
+     c.restore();
+   }
+ },
+ diatom(c,r){
+   c.fillStyle="#e8ecef";c.fillRect(0,0,1200,1200);
+   for(let i=0;i<30;i++){
+     const x=100+r()*1000,y=100+r()*1000,rad=42+r()*48,kind=r();
+     c.save();c.translate(x,y);c.rotate(r()*TAU);
+     c.strokeStyle="#4a6577";c.fillStyle="rgba(205,222,230,.75)";c.lineWidth=2;
+     if(kind<.45){ // centric: circle with radial ribs
+       c.beginPath();c.arc(0,0,rad,0,TAU);c.fill();c.stroke();
+       for(let a=0;a<TAU;a+=TAU/24){c.beginPath();c.moveTo(Math.cos(a)*rad*.25,Math.sin(a)*rad*.25);
+         c.lineTo(Math.cos(a)*rad*.95,Math.sin(a)*rad*.95);c.stroke()}
+       c.beginPath();c.arc(0,0,rad*.25,0,TAU);c.stroke();
+     }else{ // pennate: boat with transverse ribs
+       c.beginPath();c.ellipse(0,0,rad*1.5,rad*.45,0,0,TAU);c.fill();c.stroke();
+       for(let xx=-rad*1.3;xx<rad*1.3;xx+=9){const hh=rad*.42*Math.sqrt(Math.max(0,1-(xx/(rad*1.5))**2));
+         c.beginPath();c.moveTo(xx,-hh);c.lineTo(xx,hh);c.stroke()}
+       c.beginPath();c.moveTo(-rad*1.45,0);c.lineTo(rad*1.45,0);c.lineWidth=3;c.stroke();
+     }
+     c.restore();
+   }
+ },
+ hair(c,r){
+   c.fillStyle="#f3f1ec";c.fillRect(0,0,1200,1200);
+   for(let hn=0;hn<3;hn++){
+     const y0=250+hn*330+r()*60,ang=(r()-.5)*.35,W=86+r()*18;
+     c.save();c.translate(600,y0);c.rotate(ang);c.translate(-680,0);
+     const col=["#6b4a2a","#3a2c1c","#8a6436"][hn%3];
+     c.fillStyle=col;c.fillRect(0,-W/2,1360,W);
+     c.fillStyle="rgba(255,255,255,.14)";c.fillRect(0,-W/2,1360,W*.28);
+     c.strokeStyle="rgba(0,0,0,.3)";c.lineWidth=2; // cuticle scales
+     for(let x=0;x<1360;x+=26){c.beginPath();c.moveTo(x,-W/2);
+       c.quadraticCurveTo(x+13,0,x,W/2);c.stroke()}
+     c.fillStyle="rgba(0,0,0,.35)"; // medulla
+     for(let x=0;x<1360;x+=16){c.beginPath();c.ellipse(x+8,0,7,W*.09,0,0,TAU);c.fill()}
+     c.restore();
+   }
+ },
+ generic(c,r,sp){
+   const g=sp.gen,base=`hsl(${g.hue},45%,88%)`,cell=(a)=>`hsla(${g.hue},50%,55%,${a})`,edge=`hsl(${g.hue},45%,30%)`;
+   c.fillStyle=base;c.fillRect(0,0,1200,1200);
+   for(let i=0;i<250;i++){c.fillStyle=cell(r()*.12);c.beginPath();c.arc(r()*1200,r()*1200,1+r()*3,0,TAU);c.fill()}
+   const n=Math.floor(40+g.density*160),sz=Math.max(14,Math.min(90,g.size*.7));
+   for(let i=0;i<n;i++){
+     const x=r()*1200,y=r()*1200,a=r()*TAU;
+     c.save();c.translate(x,y);c.rotate(a);
+     c.fillStyle=cell(.55+r()*.3);c.strokeStyle=edge;c.lineWidth=2.5;
+     c.beginPath();
+     if(g.shape==="round")c.arc(0,0,sz*(.7+r()*.5),0,TAU);
+     else if(g.shape==="rod")c.roundRect(-sz,-sz*.32,sz*2,sz*.64,sz*.3);
+     else if(g.shape==="spindle"){c.moveTo(-sz*1.4,0);c.quadraticCurveTo(0,-sz*.55,sz*1.4,0);c.quadraticCurveTo(0,sz*.55,-sz*1.4,0)}
+     else{for(let k=0;k<=6;k++){const aa=k/6*TAU,rr=sz*(.75+r()*.4);c.lineTo(Math.cos(aa)*rr,Math.sin(aa)*rr)}}
+     c.closePath();c.fill();c.stroke();
+     c.fillStyle=`hsla(${(g.hue+40)%360},45%,35%,.8)`;
+     c.beginPath();c.arc((r()-.5)*sz*.5,(r()-.5)*sz*.3,Math.max(3,sz*.16),0,TAU);c.fill();
+     c.restore();
+   }
+ }
+};
+
+// ---------- render loop ----------
+function render(){
+  S.t+=1/60;
+  const sp=S.spec,obj=OBJECTIVES[S.obj],mag=obj.m,total=mag*EYEPIECE;
+  const slide=getSlide(sp);
+  const W=cv.width,H=cv.height,R=W/2;
+
+  // focus error: coarse dominates, fine trims; higher mag → shallower depth of field
+  const ferr=Math.abs(S.coarse+S.fine);
+  const dof=36/Math.sqrt(mag);           // tolerance window
+  const blur=Math.max(0,(ferr-dof*0.25))/dof*7;
+  const inFocus=blur<1.2;
+
+  // brightness: more mag spreads the light thinner
+  const bright=(S.light/100)*(S.iris/100)*(1.35-0.07*S.obj);
+
+  ctx.clearRect(0,0,W,H);
+  ctx.save();
+  ctx.beginPath();ctx.arc(R,R,R-6,0,TAU);ctx.clip();
+
+  // lamp field
+  ctx.fillStyle=`rgb(${Math.round(255*bright)},${Math.round(250*bright)},${Math.round(228*bright)})`;
+  ctx.fillRect(0,0,W,H);
+
+  // specimen: scale = mag; slide coords 1200², centered + stage offset; gentle live drift for motile specimens
+  const sc=mag*0.9;
+  const liveX=sp.live?Math.sin(S.t*.7)*8:0, liveY=sp.live?Math.cos(S.t*.5)*8:0;
+  ctx.save();
+  ctx.translate(R,R);
+  ctx.scale(sc/10,sc/10);
+  ctx.filter=`blur(${(blur*mag/40).toFixed(2)}px)`;
+  ctx.globalAlpha=Math.min(1,bright+0.12);
+  ctx.drawImage(slide,-600+ -S.x+liveX,-600+ -S.y+liveY);
+  ctx.filter="none";ctx.globalAlpha=1;
+  ctx.restore();
+
+  // iris vignette
+  const vg=ctx.createRadialGradient(R,R,R*(S.iris/100)*.85,R,R,R);
+  vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.95)");
+  ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  // eyepiece edge
+  ctx.strokeStyle="rgba(0,0,0,.9)";ctx.lineWidth=14;ctx.beginPath();ctx.arc(R,R,R-8,0,TAU);ctx.stroke();
+  ctx.restore();
+
+  // HUD + readout
+  const field=(18/mag).toFixed(2); // 18mm field number / objective → mm
+  hud.textContent=`${total}× · ${inFocus?"in focus":"out of focus"}`;
+  readout.innerHTML=
+    `objective <b>${mag}×</b> NA ${obj.na}<br>`+
+    `total mag <b>${total}×</b><br>`+
+    `field ⌀ <b>${field} mm</b> (${Math.round(field*1000)} µm)<br>`+
+    `stage x ${S.x.toFixed(0)} · y ${S.y.toFixed(0)}<br>`+
+    (mag>=40&&S.light<55?`<span class="warn">image dim — raise lamp</span><br>`:"")+
+    (inFocus?`focus <b>sharp</b>`:`focus <span class="warn">Δ ${ferr.toFixed(1)}</span>`);
+  $("coarseOut").value=S.coarse;$("fineOut").value=(+S.fine).toFixed(1);
+  $("lightOut").value=S.light+"%";$("irisOut").value=S.iris+"%";
+
+  requestAnimationFrame(render);
+}
+render();
+</script>
+
+</body></html>

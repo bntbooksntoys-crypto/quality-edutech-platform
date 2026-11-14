@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>EdTech Platform</title>
+<title>Quality Education — EdTech Platform</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
@@ -52,38 +52,6 @@ header.top{position:sticky;top:0;z-index:30;background:rgba(237,242,240,.93);bac
 .iconbtn{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px;position:relative;display:grid;place-items:center}
 .dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:99px;background:var(--vermilion)}
 .notifwrap{position:relative}
-
-.qpill{display:flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:14px;background:#a8c8ff;color:#14212B}
-.qpill .lg{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7f5cff,#b44dff);display:grid;place-items:center;flex:none}
-.qpill .lg svg{width:18px;height:18px}
-.qpill{white-space:nowrap}.qpill b{display:block;font-size:14px;line-height:1.1}@media(min-width:701px){.toprow{padding-right:190px}}.qpill span{display:block;font-size:11px;opacity:.7}
-.qmlock{margin-left:auto;opacity:.75;flex:none}
-.qmlockbg{position:fixed;inset:0;background:rgba(10,20,26,.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
-.qmlockbg[hidden]{display:none}
-.qmlockbox{background:#fff;color:#14212B;border-radius:18px;max-width:380px;width:100%;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.qmlockbox .ic{width:52px;height:52px;border-radius:50%;background:#E3F3EF;color:#0E7C6B;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
-.qmlockbox h3{font-size:20px;margin-bottom:8px}
-.qmlockbox p{font-size:14px;line-height:1.55;color:#64727D;margin-bottom:18px}
-.qmlockbox .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.qmlockbox button{border-radius:10px;padding:10px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid #E2E8ED;background:#fff;color:#14212B}
-.qmlockbox button.go{background:#0E7C6B;border-color:#0E7C6B;color:#fff}
-.qmlockbox .x{display:block;margin:12px auto 0;border:0;background:none;font-size:13px;color:#64727D;font-weight:500}
-.qmguest{display:flex;gap:8px;margin-left:10px;flex:none}
-.qmguest[hidden]{display:none}
-.qmguest button{border-radius:10px;padding:8px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink)}
-.qmguest button.go{background:#0E7C6B;border-color:#0E7C6B;color:#fff}
-@media(max-width:700px){.qmguest button{padding:7px 10px;font-size:12px}}
-.qmprof{position:relative;margin-left:10px;flex:none}
-.qmprof[hidden]{display:none}
-.qmav{width:38px;height:38px;border-radius:50%;border:2px solid var(--line);padding:0;overflow:hidden;cursor:pointer;background:linear-gradient(135deg,#7f5cff,#b44dff);color:#fff;font:700 15px var(--display,sans-serif);display:grid;place-items:center}
-.qmav img{width:100%;height:100%;object-fit:cover;display:block}
-.qmav.big{width:44px;height:44px;cursor:default;flex:none}
-.qmmenu{position:absolute;right:0;top:46px;min-width:220px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,30,35,.14);padding:12px;z-index:60}
-.qmmenu[hidden]{display:none}
-.qmhead{display:flex;gap:10px;align-items:center;margin-bottom:8px}
-.qmhead b{display:block;font-size:14px}.qmhead span{font-size:11px;color:var(--mute);word-break:break-all}
-.qmmenu>button{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:14px}
-.qmmenu>button:hover{background:var(--bg)}
 .notifpanel{position:absolute;top:calc(100% + 8px);right:0;width:300px;max-width:80vw;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,30,35,.14);padding:14px;z-index:40}
 .notifitem{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 .notifitem:last-child{border-bottom:none}
@@ -279,17 +247,6 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .auth-switch button{color:var(--teal);font-weight:600;background:none;border:none;cursor:pointer;font:inherit}
 .auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--mute);font-size:12px;font-family:var(--mono)}
 .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--line)}
-/* Coding Space */
-.cs-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:900px){.cs-wrap{grid-template-columns:1fr}}
-.cs-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
-.cs-tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-.cs-tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.cs-run{margin-left:auto;background:#0E7C6B;color:#fff;border:0;border-radius:8px;padding:7px 16px;font:inherit;font-weight:700;cursor:pointer}
-.cs-ghost{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:12px;cursor:pointer}
-.cs-ed{display:block;width:100%;height:440px;border:0;outline:none;resize:vertical;padding:14px;background:#0F1B24;color:#E6EDF3;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2;white-space:pre}
-.cs-pv{display:block;width:100%;height:440px;border:0;background:#fff}
-.cs-hint{padding:10px 14px;font-size:12px;color:var(--mute);border-top:1px solid var(--line)}
 </style>
 <!-- Google Translate -->
 <style>
@@ -388,16 +345,12 @@ window.addEventListener('load',function(){
 });
 </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="sheets-db.js"></script>
 
 <script>
 /* Load assignment and quiz data */
 window.ASSIGNMENTS={};
-fetch('assignments.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(d=>{window.ASSIGNMENTS=d;}).catch(()=>{
-  /* .json not allowed on some free hosts (e.g. Neocities): load the same data from assignments.js instead */
-  var sc=document.createElement('script');sc.src='assignments.js';
-  sc.onload=function(){if(window.state&&state.view==='assess')render();};
-  document.head.appendChild(sc);
-});
+fetch('assignments.json').then(r=>r.json()).then(d=>{window.ASSIGNMENTS=d;}).catch(()=>{});
 window.QUIZZES={};
 fetch('quizzes.json').then(r=>r.json()).then(d=>{window.QUIZZES=d;if(state&&state.view==='quiz')render();}).catch(()=>{});
 
@@ -424,7 +377,6 @@ const I = {
   cap:   s=>S('<path d="M2 8.5 12 4l10 4.5-10 4.5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>',s),
   star:  s=>S('<polygon points="12 3 14.6 9.1 21 9.7 16.2 14 17.6 20.3 12 17 6.4 20.3 7.8 14 3 9.7 9.4 9.1"/>',s),
   trophy:s=>S('<path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/><path d="M10 15h4l1 5H9z"/>',s),
-  code: s=>S('<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>',s),
   flask: s=>S('<path d="M9 2v6.5L3.8 18A2 2 0 0 0 5.6 21h12.8a2 2 0 0 0 1.8-3L15 8.5V2"/><path d="M8 2h8M6.5 14h11"/>',s),
   spark: s=>S('<path d="M12 2.5 14 9l6.5 2-6.5 2-2 6.5-2-6.5L3.5 11 10 9z"/>',s),
   cal:   s=>S('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',s),
@@ -901,17 +853,6 @@ function getUsers(){ try{return JSON.parse(localStorage.getItem('qe_users')||'[]
 function saveUsers(u){ localStorage.setItem('qe_users', JSON.stringify(u)); }
 
 /* ─────────── state ─────────── */
-/* Qmaz Solutions hand-off: opened from Qmaz with ?qmaz_name=&qmaz_email= -> show that account here */
-(function(){
-  try{
-    var q=new URLSearchParams(location.search), n=(q.get('qmaz_name')||'').trim().slice(0,60), e=(q.get('qmaz_email')||'').trim().slice(0,120), g=parseInt(q.get('qmaz_grade'),10);
-    if(!n||!e) return;
-    var old=JSON.parse(localStorage.getItem('qe_user')||'null')||{};
-    localStorage.setItem('qe_user',JSON.stringify({name:n,email:e,grade:(g>=1&&g<=12)?'Grade '+g:(old.grade||'Grade 8'),age:old.age||14}));
-    q.delete('qmaz_name'); q.delete('qmaz_email'); q.delete('qmaz_grade');
-    history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
-  }catch(err){}
-})();
 const state = {
   view:"home",role:"student",lang:"en",navOpen:false,filter:"All",video:null,libOpen:false,notifOpen:false,
   libGrade: (()=>{try{const u=JSON.parse(localStorage.getItem('qe_user')||'null');if(!u||!u.grade)return 8;const m=String(u.grade).match(/\d+/);return m?parseInt(m[0])||8:8;}catch(e){return 8;}})(),
@@ -1003,9 +944,13 @@ function studentHome(){
     '<div class="bar" style="margin-top:8px;background:#D8E1E0"><i style="width:'+(c.d/c.l*100)+'%"></i></div></div>'+
     '<span style="color:var(--mute)">'+I.chev(18)+'</span></div>').join('');
 
-  /* Home now shows Qmaz Solutions (embedded) instead of the schedule / continue-learning cards */
-  return '<iframe id="qmFrame" src="'+QM_URL+'" title="Qmaz Solutions" allow="camera; clipboard-write" '+
-    'style="width:100%;height:calc(100vh - 110px);min-height:560px;border:1px solid var(--line);border-radius:16px;background:#fff;display:block"></iframe>';
+  return card(ribbon()+'<div class="wrap" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">'+
+      btn(t.join+' · '+(LIVE_SCHEDULE.find(s=>s.live)||LIVE_SCHEDULE[0]||{sub:'class',time:''}).sub+' '+(LIVE_SCHEDULE.find(s=>s.live)?'(Live now)':(LIVE_SCHEDULE[0]||{time:''}).time),'teal','radio','onclick="go(\'live\')"')+
+      btn('Unit test at 2:00 pm','ghost','clip','onclick="go(\'assess\')"')+'</div>','p24 hero rise')+
+    '<div class="mt20">'+
+      card('<div class="between">'+eyebrow(t.cont)+'<button class="mono" style="font-size:11px;color:var(--teal)" onclick="go(\'learn\')">'+t.all+' →</button></div>'+
+           '<div class="stack mt16">'+cont+'</div>')+
+    '</div>';
 }
 
 function parentHome(){
@@ -1250,7 +1195,7 @@ const LABS = [
     sub:"Physics · Grades 8–12",
     desc:"Take real readings with virtual instruments — Vernier caliper, screw gauge, simple pendulum, metre scale, and measuring cylinder. Every trial logs error vs. reference just like a practical notebook.",
     tags:["Vernier Caliper","Screw Gauge","Pendulum","Metre Scale","Cylinder"],
-    url:"https://my-first-site-events122.neocities.org/labs/physics.html",
+    url:"https://bntbooksntoys-crypto.github.io/Quality-Education/",
     embedUrl:"labs/physics.html",
     color:"#0E7C6B",
     bg:"linear-gradient(135deg,#0E7C6B 0%,#0a5548 100%)",
@@ -1336,6 +1281,7 @@ function labView(){
 
 function openLab(id){
   state.labOpen=id;
+  if(typeof sbRecordLab==='function'){try{sbRecordLab(id,(state.user||{}).email);}catch(_e){}}
   render();
 }
 
@@ -1350,52 +1296,6 @@ function asDueDate(idx){
 }
 function asDueFmt(d){
   return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-}
-
-
-/* ── Assignment answering ── */
-function asText(q){return String(q.q).replace(/\\n/g,'\n');}
-function asParse(q){
-  const txt=asText(q);
-  if(q.type==='MCQ'||q.type==='Assertion-Reason'){
-    const i=Math.max(txt.lastIndexOf('(a)'),txt.lastIndexOf('(क)'));
-    if(i>=0){
-      const opts=txt.slice(i).split(/(?=\([a-dकखगघ]\)\s)/).map(x=>x.trim()).filter(Boolean);
-      if(opts.length>=2) return {stem:txt.slice(0,i).trim(),opts};
-    }
-  }
-  return {stem:txt,opts:null};
-}
-function asKey(){const a=state.assign;return a.grade+'|'+a.subject;}
-function asAns(i,v){const a=state.assign;a.answers=a.answers||{};const k=asKey();a.answers[k]=a.answers[k]||{};a.answers[k][i]=v;}
-function asEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function asInput(q,i,saved,locked){
-  const p=asParse(q), dis=locked?' disabled':'';
-  const wrap=h=>'<div class="asin" style="margin-top:12px">'+h+'</div>';
-  const radios=(name,opts)=>opts.map(o=>'<label style="display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;cursor:'+(locked?'default':'pointer')+';font-size:14px;line-height:1.5;background:'+(saved===o.v?'var(--tealSoft)':'var(--card)')+'">'+
-    '<input type="radio" name="'+name+'" value="'+asEsc(o.v)+'"'+(saved===o.v?' checked':'')+dis+' onchange="asAns('+i+',this.value);this.closest(\'.asin\').querySelectorAll(\'label\').forEach(l=>l.style.background=l.querySelector(\'input\').checked?\'var(--tealSoft)\':\'var(--card)\')" style="margin-top:3px;accent-color:var(--teal)"><span>'+asEsc(o.t)+'</span></label>').join('');
-  if(p.opts) return {stem:p.stem,html:wrap(radios('as'+i,p.opts.map(o=>({v:o.slice(0,3),t:o}))))};
-  if(q.type==='True/False') return {stem:p.stem,html:wrap(radios('as'+i,[{v:'True',t:'True'},{v:'False',t:'False'}]))};
-  const ta=q.type==='Fill in the blank'
-    ? '<input type="text" placeholder="Type your answer"'+dis+' value="'+asEsc(saved||'')+'" oninput="asAns('+i+',this.value)" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:var(--card)">'
-    : '<textarea rows="'+(/Long|Case|HOTS/.test(q.type)?7:3)+'" placeholder="Write your answer here"'+dis+' oninput="asAns('+i+',this.value)" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;line-height:1.5;resize:vertical;background:var(--card)">'+asEsc(saved||'')+'</textarea>';
-  return {stem:p.stem,html:wrap(ta)};
-}
-function asCheck(q,val){
-  const a=String(q.answer||'');
-  if(q.type==='MCQ'||q.type==='Assertion-Reason'){const m=a.match(/^\(([a-dकखगघ])\)/);return m?(val===('('+m[1]+')')):null;}
-  if(q.type==='True/False'){const m=a.match(/^(true|false)/i);return m?(val===m[1][0].toUpperCase()+m[1].slice(1).toLowerCase()):null;}
-  return null;
-}
-function asSubmit(){
-  const a=state.assign,k=asKey(),qs=((window.ASSIGNMENTS||{})[a.grade]||{})[a.subject].questions||[];
-  const ans=(a.answers&&a.answers[k])||{};
-  const blank=qs.filter((q,i)=>!String(ans[i]||'').trim()).length;
-  if(blank&&!confirm(blank+' question'+(blank>1?'s are':' is')+' not answered. Submit anyway?')) return;
-  let got=0,tot=0;
-  qs.forEach((q,i)=>{const r=asCheck(q,ans[i]);if(r!==null){tot+=q.marks||1;if(r)got+=q.marks||1;}});
-  a.result=a.result||{};a.result[k]={got,tot};
-  a.submitted[k]=true;render();window.scrollTo(0,0);
 }
 
 function assessView(){
@@ -1468,15 +1368,13 @@ function assessView(){
     const typeColor={'MCQ':'var(--teal)','Fill in the blank':'var(--marigold)','True/False':'var(--vermilion)',
       'Short answer':'#7C5CBF','Long answer':'#1A6B6B','Match the following':'#B05E00',
       'Activity':'#0E6B3D','Thinking (HOTS)':'#B00020'}[q.type]||'var(--slate)';
-    const saved=((as.answers||{})[key]||{})[i], inp=asInput(q,i,saved,!!done);
     return '<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:12px">'+
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">'+
       '<span style="font-size:12px;font-weight:700;color:#fff;background:var(--ink);border-radius:6px;padding:2px 8px">Q'+(i+1)+'</span>'+
       '<span style="font-size:11px;font-weight:600;color:'+typeColor+';background:'+typeColor+'22;border-radius:20px;padding:2px 8px">'+q.type+'</span>'+
       '<span class="small" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+q.topic+'</span>'+
       '<span style="font-size:12px;font-weight:600;color:var(--slate)">['+q.marks+' mark'+(q.marks>1?'s':'')+']</span></div>'+
-      '<p style="font-size:14px;line-height:1.6;white-space:pre-wrap">'+asEsc(inp.stem)+'</p>'+inp.html+
-      (done&&asCheck(q,saved)!==null?'<div style="margin-top:8px;font-size:13px;font-weight:600;color:'+(asCheck(q,saved)?'var(--teal)':'var(--vermilion)')+'">'+(asCheck(q,saved)?'✓ Correct':'✗ Not correct — see the answer key')+'</div>':'')+
+      '<p style="font-size:14px;line-height:1.6;white-space:pre-wrap">'+q.q+'</p>'+
       (as.showAnswers?'<div style="margin-top:10px;background:var(--tealSoft);border-left:3px solid var(--teal);border-radius:8px;padding:10px 14px">'+
         '<span style="font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em">Answer</span>'+
         '<p style="font-size:13px;margin-top:4px;line-height:1.5;white-space:pre-wrap">'+q.answer+'</p></div>':'')+
@@ -1489,7 +1387,6 @@ function assessView(){
       ? '<span style="font-size:13px;color:var(--vermilion)">⚠ Overdue · was due '+asDueFmt(due)+'</span>'
       : '<span style="font-size:13px;color:var(--slate)">Due '+asDueFmt(due)+'</span>';
 
-  const res=(as.result||{})[key];
   return '<div>'+
     '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">'+
     '<button onclick="asSub(null)" style="display:flex;align-items:center;gap:4px;font-size:14px;color:var(--teal);font-weight:500;padding:6px 0">'+
@@ -1497,14 +1394,13 @@ function assessView(){
     '<h2 class="display" style="font-size:18px;font-weight:700;flex:1">'+as.subject+'</h2></div>'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">'+
     '<div style="display:flex;align-items:center;gap:12px">'+dueLine+
-    '<span style="font-size:12px;color:var(--mute)">'+subData.book+' · '+qs.length+' Q · '+qs.reduce((a,q)=>a+(q.marks||0),0)+' marks</span></div>'+
+    '<span style="font-size:12px;color:var(--mute)">'+subData.book+' · 10 Q · 20 marks</span></div>'+
     '<div style="display:flex;gap:8px">'+
     (done
       ? '<span style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;background:var(--tealSoft);color:var(--teal)">✓ '+t.submitted+'</span>'
       : '<button onclick="asSubmit()" style="padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;background:var(--teal);color:#fff">'+t.submit+'</button>')+
     '<button onclick="asToggleAns()" style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--line);background:var(--card)">'+
     (as.showAnswers?t.hideAns:t.viewAns)+'</button></div></div>'+
-    (done?'<div style="background:var(--tealSoft);border-radius:12px;padding:14px 18px;margin-bottom:14px;font-size:14px"><b>Submitted.</b> '+(res&&res.tot?'Auto-checked questions (MCQ and True/False): <b>'+res.got+' / '+res.tot+'</b> marks. ':'')+'Written answers will be reviewed by your teacher.</div>':'')+
     qHTML+
     (!done?'<div style="text-align:center;padding:16px 0 8px">'+
       '<button onclick="asSubmit()" style="padding:12px 40px;border-radius:12px;font-size:15px;font-weight:700;background:var(--teal);color:#fff">'+t.submit+'</button></div>':'')+
@@ -2067,63 +1963,26 @@ function qzFinish(){
     const question=(((window.QUIZZES||{})[qz.grade]||{})[qz.subject]||{questions:[]}).questions[qz.i];
     if(question) qz.answers[qz.grade+'|'+qz.subject+'|'+qz.i]=(question.ans===['A','B','C','D'][qz.picked]);
   }
+  try{if(typeof sbSaveQuiz==='function'&&qz.subject){var _pfx=qz.grade+'|'+qz.subject+'|';var _es=Object.entries(qz.answers).filter(function(kv){return kv[0].indexOf(_pfx)===0;});sbSaveQuiz(qz,(state.user||{}).email,_es.filter(function(kv){return kv[1]===true;}).length,_es.length);}}catch(_e){}
   qz.active=false; qz.subject=null; qz.picked=null;
   saveQz(); render(); window.scrollTo(0,0);
-}
-
-/* ─────────── Coding Space ─────────── */
-const CS_START={
- html:'<h1>Hello, coder! 👋</h1>\n<p id="msg">Click the button.</p>\n<button id="btn">Say hi</button>',
- css:'body{font-family:system-ui,sans-serif;text-align:center;padding:30px;background:#F0F7F5}\nh1{color:#0E7C6B}\nbutton{background:#0E7C6B;color:#fff;border:0;border-radius:10px;padding:10px 18px;font-size:16px;cursor:pointer}',
- js:'document.getElementById("btn").onclick=function(){\n  document.getElementById("msg").textContent="Hi! You just wrote code. 🎉";\n};'
-};
-let cs=(function(){try{const v=JSON.parse(localStorage.getItem('qe_coding')||'null');if(v&&v.html!=null)return Object.assign({tab:'html'},v);}catch(e){}return Object.assign({tab:'html'},CS_START);})();
-function csSave(){try{localStorage.setItem('qe_coding',JSON.stringify({html:cs.html,css:cs.css,js:cs.js}));}catch(e){}}
-function csDoc(){
-  return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>'+cs.css+'</style></head><body>'+cs.html+
-    '<scr'+'ipt>try{'+cs.js.replace(/<\/script/gi,'<\\/script')+'}catch(e){document.body.insertAdjacentHTML("beforeend","<pre style=\\"color:#B3261E;white-space:pre-wrap\\">Error: "+String(e.message).replace(/</g,"&lt;")+"</pre>")}</scr'+'ipt></body></html>';
-}
-function csRun(){const f=document.getElementById('csPv');if(f)f.srcdoc=csDoc();}
-function csTab(t){cs.tab=t;render();}
-function csInput(el){cs[cs.tab]=el.value;csSave();}
-function csKey(e){
-  if(e.key==='Tab'){e.preventDefault();const el=e.target,a=el.selectionStart;el.value=el.value.slice(0,a)+'  '+el.value.slice(el.selectionEnd);el.selectionStart=el.selectionEnd=a+2;csInput(el);}
-  else if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();csRun();}
-}
-function csReset(){if(!confirm('Reset to the starter code? Your changes will be lost.'))return;cs=Object.assign({tab:'html'},CS_START);csSave();render();}
-function csDownload(){
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csDoc()],{type:'text/html'}));a.download='my-project.html';
-  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-}
-function codeView(){
-  const tabs=[['html','HTML'],['css','CSS'],['js','JavaScript']].map(t=>'<button class="cs-tab'+(cs.tab===t[0]?' on':'')+'" onclick="csTab(\''+t[0]+'\')">'+t[1]+'</button>').join('');
-  setTimeout(csRun,0);
-  return '<div class="pagehead">'+eyebrow('Build & experiment')+'<h2 class="display">Coding Space</h2>'+
-    '<p class="muted">Write HTML, CSS and JavaScript and see the result live. Your code is saved on this device.</p></div>'+
-    '<div class="cs-wrap"><div class="card"><div class="cs-bar">'+tabs+
-      '<button class="cs-run" onclick="csRun()">▶ Run</button></div>'+
-      '<textarea class="cs-ed" id="csEd" spellcheck="false" autocapitalize="off" autocomplete="off" oninput="csInput(this)" onkeydown="csKey(event)">'+
-      String(cs[cs.tab]).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</textarea>'+
-      '<div class="cs-hint">Tip: press Ctrl + Enter to run. &nbsp; <button class="cs-ghost" onclick="csReset()">Reset</button> <button class="cs-ghost" onclick="csDownload()">Download</button></div></div>'+
-    '<div class="card"><div class="cs-bar"><b>Preview</b></div>'+
-      '<iframe class="cs-pv" id="csPv" title="Preview" sandbox="allow-scripts"></iframe></div></div>';
 }
 
 /* ─────────── shell ─────────── */
 function navHTML(){
   const t=T();
   const items=[["home",t.home,"grid"],["learn",t.learn,"book"],["live",t.live,"radio"],
-    ["assess",t.assess,"clip"],["quiz",t.quiz,"bolt"],["progress",t.progress,"trend"],["awards",t.awards,"medal"],["lab",t.lab,"flask"],["code","Coding Space","code"]];
+    ["assess",t.assess,"clip"],["quiz",t.quiz,"bolt"],["progress",t.progress,"trend"],["awards",t.awards,"medal"],["lab",t.lab,"flask"]];
   return '<div class="nav">'+items.map(n=>'<button class="'+(state.view===n[0]?'on':'')+'" onclick="go(\''+n[0]+'\')">'+
-    I[n[2]](18)+'<span>'+n[1]+'</span>'+(qmIsLocked(n[0])?QM_LOCK:'')+'</button>').join('')+'</div>';
+    I[n[2]](18)+'<span>'+n[1]+'</span></button>').join('')+'</div>';
 }
 function title(){
-  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab,code:"Coding Space"};
+  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab};
   return state.view==="home" ? t.greet+", "+ME().who.split(" ")[0] : map[state.view];
 }
 function bodyHTML(){
   if(state.view==="home") return {student:studentHome,parent:parentHome,teacher:teacherHome,admin:adminHome}[state.role]();
-  return {learn:learnView,live:liveView,assess:assessView,quiz:quizView,progress:progressView,awards:awardsView,lab:labView,code:codeView}[state.view]();
+  return {learn:learnView,live:liveView,assess:assessView,quiz:quizView,progress:progressView,awards:awardsView,lab:labView}[state.view]();
 }
 /* ─────────── auth screens ─────────── */
 function authScreen(){
@@ -2131,7 +1990,7 @@ function authScreen(){
   const isSign = s.screen==='signin';
   return '<div class="auth-bg">'+
     '<div class="auth-box">'+
-      '<div class="auth-brand">'+I.cap(28)+'<div><div class="auth-brand-name">EdTech Platform</div></div></div>'+
+      '<div class="auth-brand">'+I.cap(28)+'<div><div class="auth-brand-name">Quality Education</div><div class="auth-brand-sub">EDTECH PLATFORM</div></div></div>'+
       '<h2 class="auth-title">'+(isSign?'Welcome back':'Create your account')+'</h2>'+
       '<p class="auth-sub">'+(isSign?'Sign in to continue learning':'Join thousands of students learning every day')+'</p>'+
       err+
@@ -2139,9 +1998,6 @@ function authScreen(){
         (!isSign?'<div class="auth-field"><label>Full Name</label><input id="f_name" type="text" placeholder="e.g. Aarthi Ramesh" required autocomplete="name"/></div>':'')+
         '<div class="auth-field"><label>Email Address</label><input id="f_email" type="email" placeholder="you@example.com" required autocomplete="email"/></div>'+
         '<div class="auth-field"><label>Password</label><input id="f_pass" type="password" placeholder="At least 6 characters" required autocomplete="'+(isSign?'current-password':'new-password')+'"/></div>'+
-        (isSign?'<div class="auth-field"><label>Grade</label><select id="f_grade" required><option value="">Select grade</option>'+
-            ['1','2','3','4','5','6','7','8','9','10','11','12'].map(g=>'<option value="Grade '+g+'">Grade '+g+'</option>').join('')+
-          '</select></div>':'')+
         (!isSign?'<div class="auth-row">'+
           '<div class="auth-field"><label>Grade</label><select id="f_grade" required><option value="">Select grade</option>'+
             ['1','2','3','4','5','6','7','8','9','10','11','12'].map(g=>'<option value="Grade '+g+'">Grade '+g+'</option>').join('')+
@@ -2167,9 +2023,16 @@ function render(){
 
   document.getElementById('app').innerHTML =
   '<div class="shell">'+
-    '<aside class="side"><div class="brand"><div class="qpill"><div class="lg">'+QM_SVG+'</div><div><b>Qmaz Solutions</b><span>Dashboard</span></div></div></div>'+
+    '<aside class="side"><div class="brand"><div class="brand-mark">'+I.cap(18)+'</div>'+
+      '<div><h1>Quality Education</h1><p>EDTECH PLATFORM</p></div></div>'+
       navHTML()+
-      '</aside>'+
+      '<div class="whoami">'+
+        '<div class="auth-avatar">'+u.name.charAt(0).toUpperCase()+'</div>'+
+        '<div class="n">'+u.name+'</div>'+
+        '<div class="m">'+u.grade+' · Age '+u.age+'</div>'+
+        '<div class="m" style="margin-top:2px;font-size:10px;word-break:break-all">'+u.email+'</div>'+
+        '<button onclick="doSignOut()" style="margin-top:10px;color:#9FB3BD;font-size:11px;font-family:var(--mono);letter-spacing:.05em;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 10px;width:100%;text-align:center">Sign out</button>'+
+      '</div></aside>'+
     '<div class="main">'+
       '<header class="top"><div class="toprow">'+
         '<button class="iconbtn burger" onclick="toggleNav()">'+(state.navOpen?I.close(18):I.menu(18))+'</button>'+
@@ -2182,16 +2045,15 @@ function render(){
               '<div class="small muted mt4">Your Mathematics unit test starts at 2:00 pm today.</div></div></div>'+
           '</div>':'')+
         '</div>'+
-        '<div class="qmguest" id="qmGuest" hidden><button onclick="qmLoginOpen()">Login</button><button class="go" onclick="qmCmd(\'signup\')">Start for Free</button></div>'+
-        '<div class="qmprof" id="qmProf" hidden><button class="qmav" id="qmAv" onclick="qmToggle(event)" aria-label="Profile"></button>'+
-          '<div class="qmmenu" id="qmMenu" hidden><div class="qmhead"><div class="qmav big" id="qmAvBig"></div><div><b id="qmName"></b><span id="qmMail"></span></div></div>'+
-            '<button onclick="qmCmd(\'photo\')">Change photo</button><button onclick="qmCmd(\'signout\')">Sign out</button></div></div>'+
       '</div>'+
       '<div class="mobnav'+(state.navOpen?' open':'')+'">'+navHTML()+'</div>'+
       '</header>'+
-      '<main>'+((state.view==='home'&&state.role==='student')?'':'<div class="pagehead">'+eyebrow(me.label+' workspace')+
-        '<h2>'+t.greet+', '+u.name.split(' ')[0]+'</h2></div>')+bodyHTML()+
-        '</main>'+
+      '<main><div class="pagehead">'+eyebrow(me.label+' workspace')+
+        '<h2>'+t.greet+', '+u.name.split(' ')[0]+'</h2></div>'+bodyHTML()+
+        '<footer class="legal">'+
+        [["shield","Role-based access"],["globe","3 languages enabled"],["check","Works offline on mobile"]]
+          .map(f=>'<div class="row" style="gap:6px;color:var(--mute)">'+I[f[0]](14)+'<span class="mono" style="font-size:11px">'+f[1]+'</span></div>').join('')+
+        '</footer></main>'+
     '</div>'+
   '</div>';
 }
@@ -2203,18 +2065,17 @@ async function doSignIn(e){
   e.preventDefault();
   const email=document.getElementById('f_email').value.trim().toLowerCase();
   const password=document.getElementById('f_pass').value;
-  const pickedGrade=document.getElementById('f_grade')?document.getElementById('f_grade').value:'';
   state.auth.error=''; state.auth.loading=true; render();
   try {
     const pwHash = await sha256(password);
     const users = getUsers();
     const user = users.find(u=>u.email===email && u.passwordHash===pwHash);
     if(!user) throw new Error('Incorrect email or password.');
-    if(pickedGrade && pickedGrade!==user.grade){ user.grade=pickedGrade; saveUsers(users); }
     const userData = {name:user.name,email:user.email,grade:user.grade,age:user.age};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
     state.user = userData;
+    if(typeof sbRecordLogin==='function'){try{sbRecordLogin(email);}catch(_e){}}
     const _gm1=String(userData.grade).match(/\d+/); state.libGrade=_gm1?parseInt(_gm1[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
@@ -2240,6 +2101,7 @@ async function doSignUp(e){
     const pwHash = await sha256(password);
     users.push({name,email,passwordHash:pwHash,grade,age:Number(age),createdAt:new Date().toISOString()});
     saveUsers(users);
+    if(typeof sbSaveSignup==='function'){try{sbSaveSignup(users[users.length-1]);sbRecordLogin(email);}catch(_e){}}
     const userData = {name,email,grade,age:Number(age)};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
@@ -2263,90 +2125,7 @@ function doSignOut(){
 }
 
 /* ─────────── actions ─────────── */
-
-/* ── Qmaz profile bridge: Qmaz (in the home iframe) sends the signed-in profile; shown in the top bar ── */
-const QM_URL=(/^(localhost|127\.0\.0\.1)$/.test(location.hostname))?'http://localhost:3001':'https://bntbooksntoys-crypto.github.io/Qmaz-Solutions_AI_AGENT/';
-const QM_ORIGIN=new URL(QM_URL).origin;
-const QM_SVG='<svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>';
-let qmProfile=null;
-const QM_ADMIN={email:'admin',pass:'123456'};
-try{if(sessionStorage.getItem('qe_admin')==='1')qmProfile={signedIn:true,name:'Admin',email:QM_ADMIN.email,photo:'',admin:true};}catch(e){}
-function paintQm(){
-  const box=document.getElementById('qmProf'); if(!box) return;
-  const onHome=state.view==='home'&&state.role==='student';
-  const gst=document.getElementById('qmGuest'); if(gst) gst.hidden=!(onHome&&!(qmProfile&&qmProfile.signedIn));
-  const on=!!(qmProfile&&qmProfile.signedIn)&&onHome;
-  box.hidden=!on; if(!on) return;
-  const fill=el=>{el.innerHTML=qmProfile.photo?'<img alt="" src="'+qmProfile.photo.replace(/"/g,'')+'">':String(qmProfile.name||'?').trim().charAt(0).toUpperCase().replace(/[<>&"]/g,'');};
-  fill(document.getElementById('qmAv')); fill(document.getElementById('qmAvBig'));
-  document.getElementById('qmName').textContent=qmProfile.name||''; document.getElementById('qmMail').textContent=qmProfile.email||'';
-}
-function qmToggle(e){e.stopPropagation();const m=document.getElementById('qmMenu');m.hidden=!m.hidden;}
-function qmCmd(cmd){
-  if(qmProfile&&qmProfile.admin){ if(cmd==='signout'){qmAdminOut();} return; }
-  const f=document.getElementById('qmFrame');document.getElementById('qmMenu').hidden=true;if(f&&f.contentWindow)f.contentWindow.postMessage({type:'qmaz-cmd',cmd:cmd},QM_ORIGIN);}
-document.addEventListener('click',()=>{const m=document.getElementById('qmMenu');if(m)m.hidden=true;});
-window.addEventListener('message',e=>{
-  if(e.origin!==QM_ORIGIN||!e.data||e.data.type!=='qmaz-profile') return;
-  if(qmProfile&&qmProfile.admin) return;
-  const d=e.data; qmProfile={signedIn:!!d.signedIn,name:String(d.name||'').slice(0,80),email:String(d.email||'').slice(0,120),photo:(typeof d.photo==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(d.photo))?d.photo:''};
-  paintQm();
-  if(qmIsLocked(state.view)){state.view='home';render();}
-  else{const nv=document.querySelector('.side .nav'); if(nv) nv.outerHTML=navHTML();}
-});
-const _renderQm=render; render=function(){_renderQm();paintQm();};
-/* ── Lock sections until the student signs in to Qmaz ── */
-const QM_LOCKED=['learn','live','assess','quiz','progress','awards','lab','code'];
-const QM_LOCK='<svg class="qmlock" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
-function qmSigned(){return !!(qmProfile&&qmProfile.signedIn);}
-function qmIsLocked(v){return state.role==='student'&&QM_LOCKED.indexOf(v)>=0&&!qmSigned();}
-function qmShowLock(){
-  let m=document.getElementById('qmLockBg');
-  if(!m){m=document.createElement('div');m.id='qmLockBg';m.className='qmlockbg';
-    m.innerHTML='<div class="qmlockbox" role="dialog" aria-modal="true"><div class="ic">'+QM_LOCK.replace('width="15" height="15"','width="26" height="26"').replace(' class="qmlock"','')+'</div>'+
-    '<h3>This section is locked</h3><p>Sign in to Qmaz Solutions to unlock Learn, Live classes, Assignment, Quiz, Progress Report, Achievements, Lab and Coding Space.</p>'+
-    '<div class="row"><button onclick="qmHideLock();qmLoginOpen()">Login</button><button class="go" onclick="qmLockGo(\'signup\')">Start for Free</button></div>'+
-    '<button class="x" onclick="qmHideLock()">Not now</button></div>';
-    m.addEventListener('click',e=>{if(e.target===m)qmHideLock();});document.body.appendChild(m);}
-  m.hidden=false;
-}
-function qmHideLock(){const m=document.getElementById('qmLockBg');if(m)m.hidden=true;}
-function qmLockGo(cmd){
-  qmHideLock(); go('home');
-  const f=document.getElementById('qmFrame'); if(!f) return;
-  const send=()=>{try{f.contentWindow.postMessage({type:'qmaz-cmd',cmd:cmd},QM_ORIGIN);}catch(e){}};
-  f.addEventListener('load',()=>setTimeout(send,400),{once:true});
-}
-function qmLoginOpen(){
-  let m=document.getElementById('qmLgBg');
-  if(!m){m=document.createElement('div');m.id='qmLgBg';m.className='qmlockbg';
-    m.innerHTML='<form class="qmlockbox" style="text-align:left" onsubmit="return qmLoginGo(event)"><h3 style="text-align:center">Login</h3>'+
-    '<div id="qmLgErr" style="color:#B3261E;font-size:13px;margin:8px 0" hidden></div>'+
-    '<label style="font-size:12px;color:#64727D">Username</label><input id="qmLgE" type="text" autocapitalize="none" spellcheck="false" autocomplete="username" style="width:100%;padding:10px;margin:4px 0 10px;border:1px solid #E2E8ED;border-radius:10px">'+
-    '<label style="font-size:12px;color:#64727D">Password</label><input id="qmLgP" type="password" autocomplete="current-password" style="width:100%;padding:10px;margin:4px 0 8px;border:1px solid #E2E8ED;border-radius:10px">'+
-    '<label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-bottom:14px"><input type="checkbox" onchange="document.getElementById(\'qmLgP\').type=this.checked?\'text\':\'password\'"> Show password</label>'+
-    '<div class="row" style="justify-content:center"><button type="submit" class="go">Login</button><button type="button" onclick="document.getElementById(\'qmLgBg\').hidden=true">Cancel</button></div></form>';
-    m.addEventListener('click',e=>{if(e.target===m)m.hidden=true;});document.body.appendChild(m);}
-  m.hidden=false;
-}
-function qmLoginGo(ev){
-  ev.preventDefault();
-  const e=document.getElementById('qmLgE').value.trim().toLowerCase(),pw=document.getElementById('qmLgP').value;
-  document.getElementById('qmLgBg').hidden=true;
-  if((e==='admin'||e===QM_ADMIN.email)&&pw===QM_ADMIN.pass){
-    try{sessionStorage.setItem('qe_admin','1');}catch(_){}
-    qmProfile={signedIn:true,name:'Admin',email:QM_ADMIN.email,photo:'',admin:true};
-    qmHideLock(); render(); return false;
-  }
-  const f=document.getElementById('qmFrame');
-  if(f&&f.contentWindow)f.contentWindow.postMessage({type:'qmaz-cmd',cmd:'signin'},QM_ORIGIN);
-  return false;
-}
-function qmAdminOut(){try{sessionStorage.removeItem('qe_admin');}catch(_){} qmProfile=null; state.view='home'; render();}
-function go(v){
-  if(qmIsLocked(v)){state.navOpen=false;qmShowLock();render();return;}
-  state.view=v;state.navOpen=false;state.labOpen=null;render();window.scrollTo(0,0);
-}
+function go(v){state.view=v;state.navOpen=false;state.labOpen=null;render();window.scrollTo(0,0);}
 function setRole(r){state.role=r;state.view="home";render();}
 function setLang(l){state.lang=l;render();}
 function setFilter(f){state.filter=f;render();}
@@ -2367,6 +2146,7 @@ function prTo(v){state.pr.customTo=v;render();}
 function asSub(s,idx){if(!state.assign)state.assign={grade:null,subject:null,showAnswers:false,submitted:{}};state.assign.subject=s;state.assign.showAnswers=false;render();window.scrollTo(0,0);}
 function asGrade(g){if(!state.assign)state.assign={grade:null,subject:null,showAnswers:false,submitted:{}};state.assign.grade=String(g);state.assign.subject=null;render();}
 function asToggleAns(){state.assign.showAnswers=!state.assign.showAnswers;render();}
+function asSubmit(){const k=state.assign.grade+'|'+state.assign.subject;state.assign.submitted[k]=true;render();}
 
 render();
 </script>

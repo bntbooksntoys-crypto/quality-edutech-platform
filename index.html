@@ -4,6 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Quality Education — EdTech Platform</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0E7C6B">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
@@ -724,7 +729,7 @@ const LIBRARY = [
   {gr:7,t:"Kriti",sub:"Arts",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gekr1dd.zip",read:"https://ncert.nic.in/textbook.php?gekr1=0-20"},
   {gr:7,t:"Khel Yatra",sub:"Physical Education",med:"English",zip:"https://ncert.nic.in/textbook/pdf/geky1dd.zip",read:"https://ncert.nic.in/textbook.php?geky1=0-6"},
   {gr:7,t:"Kaushal Bodh",sub:"Vocational",med:"English",zip:"https://ncert.nic.in/textbook/pdf/gekb1dd.zip",read:"https://ncert.nic.in/textbook.php?gekb1=0-7"},
-  /* ── Grade 6 ── */
+  /* ── Grade 8 ── */
   {gr:8,t:"Poorvi",sub:"English",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hepr1dd.zip",read:"https://ncert.nic.in/textbook.php?hepr1=0-5"},
   {gr:8,t:"Malhar",sub:"Hindi",med:"Hindi",zip:"https://ncert.nic.in/textbook/pdf/hhml1dd.zip",read:"https://ncert.nic.in/textbook.php?hhml1=0-10"},
   {gr:8,t:"Ganita Prakash Part 1",sub:"Maths",med:"English",zip:"https://ncert.nic.in/textbook/pdf/hegp1dd.zip",read:"https://ncert.nic.in/textbook.php?hegp1=0-7"},
@@ -844,9 +849,31 @@ function ROLES(){
 }
 
 /* ─────────── Local Auth (localStorage — no server needed) ─────────── */
+function sha256js(str){
+  const K=[],H=[];let n=2,i=0;const frac=x=>((x-Math.floor(x))*4294967296)|0;
+  while(i<64){let p=true;for(let d=2;d*d<=n;d++)if(n%d===0){p=false;break;}if(p){if(i<8)H[i]=frac(Math.pow(n,1/2));K[i++]=frac(Math.pow(n,1/3));}n++;}
+  const m=Array.from(new TextEncoder().encode(str)),l=m.length*8;m.push(128);while(m.length%64!==56)m.push(0);
+  for(let j=7;j>=0;j--)m.push(j>3?0:(l>>>(j*8))&255);
+  const r=(x,c)=>(x>>>c)|(x<<(32-c));
+  for(let o=0;o<m.length;o+=64){const w=[];for(let t=0;t<64;t++)w[t]=t<16?(m[o+t*4]<<24)|(m[o+t*4+1]<<16)|(m[o+t*4+2]<<8)|m[o+t*4+3]:(((r(w[t-2],17)^r(w[t-2],19)^(w[t-2]>>>10))+w[t-7]+(r(w[t-15],7)^r(w[t-15],18)^(w[t-15]>>>3))+w[t-16])|0);
+    let [a,b,c,d,e,f,g,h]=H;
+    for(let t=0;t<64;t++){const t1=(h+(r(e,6)^r(e,11)^r(e,25))+((e&f)^(~e&g))+K[t]+w[t])|0,t2=((r(a,2)^r(a,13)^r(a,22))+((a&b)^(a&c)^(b&c)))|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;}
+    H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;}
+  return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('');
+}
 async function sha256(str){
+  /* crypto.subtle is missing on plain http:// LAN addresses, so fall back to a JS version (same result) */
+  if(!(window.crypto&&crypto.subtle)) return sha256js(str);
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+/* Tell the school server who signed in. Only runs on the local server (private network address). */
+function qeLog(event,u){
+  try{
+    if(!/^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname)) return;
+    fetch('/api/log',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+      body:JSON.stringify({event:event,name:(u&&u.name)||'',email:(u&&u.email)||'',grade:(u&&u.grade)||''})}).catch(function(){});
+  }catch(e){}
 }
 function getUsers(){ try{return JSON.parse(localStorage.getItem('qe_users')||'[]');}catch(e){return [];} }
 function saveUsers(u){ localStorage.setItem('qe_users', JSON.stringify(u)); }
@@ -858,8 +885,8 @@ const state = {
   liveJoin: null, liveNotes: null, labOpen: null,
   quiz:{i:0,picked:null,answers:[],done:false},
   qz:(()=>{try{return JSON.parse(localStorage.getItem('qe_qz')||'null');}catch(e){return null;}})() || {grade:null,subject:null,active:false,i:0,picked:null,answers:{},done:false},
-  auth:{screen:'app', error:"", loading:false},  /* signin | signup | app */
-  user: (()=>{try{return JSON.parse(localStorage.getItem('qe_user')||'null');}catch(e){return null;}})() || {name:"Student",email:"guest@qe.app",grade:"Grade 8",age:14},
+  auth:{screen:(()=>{try{return (localStorage.getItem('qe_token')&&localStorage.getItem('qe_user'))?'app':'signin';}catch(e){return 'signin';}})(), error:"", loading:false},  /* school server: sign-in is required */  /* signin | signup | app */
+  user: (()=>{try{return JSON.parse(localStorage.getItem('qe_user')||'null');}catch(e){return null;}})() || null,  /* school server: no guest entry, sign-in is required */
 };
 const T = () => STR[state.lang];
 const ME = () => ROLES().find(r=>r.id===state.role);
@@ -2113,11 +2140,11 @@ async function doSignIn(e){
     const pwHash = await sha256(password);
     const users = getUsers();
     const user = users.find(u=>u.email===email && u.passwordHash===pwHash);
-    if(!user) throw new Error('Incorrect email or password.');
+    if(!user){ qeLog('failed',{email:email}); throw new Error('Incorrect email or password.'); }
     const userData = {name:user.name,email:user.email,grade:user.grade,age:user.age};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
-    state.user = userData;
+    state.user = userData; qeLog('signin',userData);
     const _gm1=String(userData.grade).match(/\d+/); state.libGrade=_gm1?parseInt(_gm1[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
@@ -2146,7 +2173,7 @@ async function doSignUp(e){
     const userData = {name,email,grade,age:Number(age)};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
-    state.user = userData;
+    state.user = userData; qeLog('signup',userData);
     const _gm2=String(grade).match(/\d+/); state.libGrade=_gm2?parseInt(_gm2[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
@@ -2158,6 +2185,7 @@ async function doSignUp(e){
 }
 
 function doSignOut(){
+  qeLog('signout',state.user);
   localStorage.removeItem('qe_token');
   localStorage.removeItem('qe_user');
   state.user = null;

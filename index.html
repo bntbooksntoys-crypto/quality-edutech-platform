@@ -409,6 +409,54 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .rbg-item b{display:block;font-size:14px;line-height:1.3}
 .rbg-item span{display:block;font-size:13px;color:var(--slate);line-height:1.45;margin-top:2px}
 .rbg-item em{display:inline-block;font-style:normal;font-size:11px;font-weight:700;color:#0A5C50;background:var(--tealSoft);border-radius:99px;padding:2px 8px;margin-top:5px}
+/* trend analysis */
+.tr-wrap{margin-bottom:26px}
+.tr-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.tr-filter{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tr-pill{padding:7px 14px;border-radius:20px;font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.tr-pill.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tr-filter input{padding:6px 10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:13px;color:var(--ink);background:var(--card)}
+.tr-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media(max-width:1000px){.tr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){.tr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tr-tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.tr-tile b{display:block;font-family:var(--display);font-size:20px;font-weight:700;overflow-wrap:anywhere}
+.tr-tile span{font-size:12px;color:var(--slate)}
+.tr-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:900px){.tr-two{grid-template-columns:1fr}}
+.tr-card{padding:18px}
+.tr-card h4{font-family:var(--display);font-size:16px;font-weight:700}
+.tr-sub{font-size:13px;margin:2px 0 10px}
+.tr-svg{display:block;width:100%;height:auto}
+.tr-svg rect:hover,.tr-svg path[fill="#0E7C6B"]:hover{fill:#0A5C50}
+.tr-tablewrap{max-height:230px;overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px}
+.tr-table{width:100%;border-collapse:collapse;font-size:13px}
+.tr-table th{position:sticky;top:0;background:var(--canvas);text-align:left;font-size:12px;color:var(--slate);padding:8px 10px}
+.tr-table td{padding:7px 10px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tr-bars{display:flex;flex-direction:column;gap:8px}
+.tr-bar{display:grid;grid-template-columns:minmax(90px,150px) 1fr auto;gap:10px;align-items:center;font-size:13px}
+.tr-bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr-bt{height:16px;display:block}
+.tr-bt i{display:block;height:100%;background:#0E7C6B;border-radius:0 4px 4px 0;min-width:3px}
+.tr-bar:hover .tr-bt i{background:#0A5C50}
+.tr-bv{font-variant-numeric:tabular-nums;color:var(--slate);white-space:nowrap}
+/* Immersia Lab */
+.xr-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:900px){.xr-layout{grid-template-columns:1fr}}
+.xr-stage{position:relative;height:420px;border-radius:14px;overflow:hidden;display:flex;background:radial-gradient(circle at 50% 40%,#1B2A4A 0%,#070B16 80%);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.xr-stage:active{cursor:grabbing}
+.xr-stage:fullscreen{height:100vh;border-radius:0}
+.xr-stage.ar{background:#11212D}
+.xr-eye{position:relative;flex:1;perspective:900px;overflow:hidden}
+.xr-stage.stereo .xr-eye+.xr-eye{border-left:2px solid #000}
+.xr-world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.xr-world>*{position:absolute;left:0;top:0;transform-style:preserve-3d}
+.xr-ball{border-radius:50%;display:flex;align-items:center;justify-content:center}
+.xr-ball span{position:absolute;top:100%;margin-top:4px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px #000;white-space:nowrap}
+.xr-orbit{border:1px solid rgba(255,255,255,.28);border-radius:50%;transform:rotateX(90deg)}
+.xr-bond{height:10px;margin-top:-5px;background:#B9BEC4;border-radius:5px;transform-origin:0 50%}
+.xr-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.xr-nocam{position:absolute;inset:0;display:grid;place-items:center;color:#8A99A3;font-size:14px}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1374,6 +1422,18 @@ function liveView(){
 /* ─────────── labView ─────────── */
 const LABS = [
   {
+    id:"immersia",
+    title:"Immersia Lab",
+    sub:"AR · VR · Grades 1–12",
+    desc:"Step inside your lessons. Explore the Solar System, a water molecule and a robot car in virtual reality, or place them in your room with augmented reality.",
+    tags:["Virtual Reality","Augmented Reality","3D Models"],
+    url:"",
+    embedUrl:"",
+    color:"#C2417A",
+    bg:"linear-gradient(135deg,#C2417A 0%,#6B3FC4 100%)",
+    icon:'<path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-3.5l-2-2.5h-3L8.5 17H5a2 2 0 0 1-2-2z"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/>',
+  },
+  {
     id:"robotics",
     title:"Robotics Lab",
     sub:"Robotics · Grades 1–12",
@@ -2092,8 +2152,82 @@ function roboticsView(){
       '<span id="rbTopTx">'+rbConnText()+'</span></div>')+body;
 }
 
+/* ─────────── Immersia Lab: VR and AR viewer ─────────── */
+let xr={mode:'vr',scene:'solar',rx:-18,ry:-30,zoom:1,stereo:false,cam:false,stream:null,raf:0,t0:0,note:'',gyro:false};
+const XR_SCENES={solar:['Solar System','Science: planets orbit the Sun'],water:['Water Molecule','Chemistry: H₂O has a bent shape of about 104.5°'],robot:['Robot Car','Robotics: chassis, wheels and sensor']};
+const XR_PLANETS=[['Mercury',46,10,'#A9A9A9',4.1],['Venus',70,15,'#E3B76B',1.6],['Earth',98,16,'#3D8BFF',1],['Mars',128,13,'#D0552B',0.53],['Jupiter',172,30,'#D9A066',0.2]];
+function xrBall(cls,size,col,x,y,z,label){return '<div class="xr-ball '+cls+'" data-x="'+x+'" data-y="'+y+'" data-z="'+z+'" style="width:'+size+'px;height:'+size+'px;margin:'+(-size/2)+'px 0 0 '+(-size/2)+'px;background:radial-gradient(circle at 32% 30%,#fff 0%,'+col+' 38%,color-mix(in srgb,'+col+' 45%,#000) 100%)">'+(label?'<span>'+label+'</span>':'')+'</div>';}
+function xrSceneHTML(){
+  if(xr.scene==='solar')return XR_PLANETS.map(p=>'<div class="xr-orbit" style="width:'+(p[1]*2)+'px;height:'+(p[1]*2)+'px;margin:'+(-p[1])+'px 0 0 '+(-p[1])+'px"></div>').join('')+
+    xrBall('',54,'#FFC83D',0,0,0,'Sun')+XR_PLANETS.map((p,i)=>xrBall('xr-pl',p[2],p[3],p[1],0,0,p[0]).replace('class="xr-ball','data-i="'+i+'" class="xr-ball')).join('');
+  if(xr.scene==='water'){const a=104.5/2*Math.PI/180,L=92,hx=Math.sin(a)*L,hy=Math.cos(a)*L;
+    const bond=(sx)=>'<div class="xr-bond" style="width:'+L+'px;transform:translateZ(-3px) rotate('+(sx>0?90-104.5/2:90+104.5/2)+'deg)"></div>';
+    return bond(1)+bond(-1)+xrBall('',84,'#E53935',0,0,0,'O')+xrBall('',52,'#E9EEF2',hx,hy,0,'H')+xrBall('',52,'#E9EEF2',-hx,hy,0,'H');}
+  return '<div class="rbx-model" style="position:absolute;left:0;top:0">'+rbBox(150,34,110,0,0,0,'#0E7C6B')+rbBox(86,26,70,-12,-30,0,'#2F6FDB')+rbBox(70,26,14,0,-8,62,'#F5A524')+rbBox(16,62,62,-84,10,-14,'#4A6072')+rbBox(16,62,62,84,10,-14,'#4A6072')+rbBox(22,20,22,0,27,42,'#8A99A3')+'</div>';
+}
+function xrPaint(ts){
+  const eyes=document.querySelectorAll('.xr-world');if(!eyes.length){xr.raf=0;return;}
+  const t=(ts||0)/1000;
+  eyes.forEach((w,e)=>{const off=xr.stereo?(e===0?-2.5:2.5):0,ry=xr.ry+off;
+    w.style.transform='scale('+xr.zoom+') rotateX('+xr.rx+'deg) rotateY('+ry+'deg)';
+    w.querySelectorAll('.xr-ball').forEach(b=>{let x=+b.dataset.x,y=+b.dataset.y,z=+b.dataset.z;
+      if(b.dataset.i!==undefined){const p=XR_PLANETS[+b.dataset.i],a=t*0.5*p[4]+(+b.dataset.i)*1.3;x=Math.cos(a)*p[1];z=Math.sin(a)*p[1];}
+      b.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+(-ry)+'deg) rotateX('+(-xr.rx)+'deg)';});});
+  xr.raf=xr.scene==='solar'?requestAnimationFrame(xrPaint):0;
+}
+function xrKick(){if(!xr.raf)xr.raf=requestAnimationFrame(xrPaint);else if(xr.scene!=='solar')xrPaint(performance.now());}
+function xrLook(dx,dy){xr.ry+=dx;xr.rx=Math.max(-85,Math.min(85,xr.rx+dy));if(xr.scene!=='solar')xrPaint(performance.now());}
+function xrSet(k,v){if(k==='mode'&&v!=='ar')xrCamStop();xr[k]=v;xr.note='';cancelAnimationFrame(xr.raf);xr.raf=0;render();}
+function xrZoom(el){xr.zoom=Number(el.value);if(xr.scene!=='solar')xrPaint(performance.now());}
+function xrFull(){const s=document.getElementById('xrStage');if(!s)return;if(document.fullscreenElement)document.exitFullscreen();else if(s.requestFullscreen)s.requestFullscreen().catch(()=>{});}
+function xrNote(t){xr.note=t;const n=document.getElementById('xrNote');if(n)n.textContent=t;}
+function xrCamStop(){if(xr.stream){xr.stream.getTracks().forEach(t=>t.stop());xr.stream=null;}xr.cam=false;}
+async function xrCam(){
+  if(xr.cam){xrCamStop();render();return;}
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){xrNote('Camera not available here. AR needs a secure (https) or localhost address and a device with a camera.');return;}
+  try{xr.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});xr.cam=true;xr.note='';render();}
+  catch(e){xrNote('Camera not connected. Allow camera access, or check that this device has a camera.');}
+}
+function xrGyro(){
+  const on=e=>{if(e.beta==null)return;xr.gyro=true;xr.rx=Math.max(-85,Math.min(85,e.beta-60));xr.ry=-(e.gamma||0)*1.5-(e.alpha||0);if(xr.scene!=='solar')xrPaint(performance.now());};
+  const go=()=>{window.addEventListener('deviceorientation',on);setTimeout(()=>{if(!xr.gyro)xrNote('No motion sensor found on this device. Drag to look around instead.');},1200);};
+  if(typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission)DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted')go();else xrNote('Motion access was not allowed.');}).catch(()=>xrNote('Motion access was not allowed.'));
+  else if('ondeviceorientation' in window)go();else xrNote('No motion sensor found on this device. Drag to look around instead.');
+}
+function xrWire(){
+  const st=document.getElementById('xrStage');if(!st)return;let px=null,py=null;
+  st.onpointerdown=e=>{px=e.clientX;py=e.clientY;try{st.setPointerCapture(e.pointerId);}catch(_){}};
+  st.onpointermove=e=>{if(px===null)return;xrLook((e.clientX-px)*0.5,-(e.clientY-py)*0.5);px=e.clientX;py=e.clientY;};
+  st.onpointerup=st.onpointercancel=()=>{px=null;};
+  st.onkeydown=e=>{const k={ArrowLeft:[-8,0],ArrowRight:[8,0],ArrowUp:[0,6],ArrowDown:[0,-6]}[e.key];if(k){e.preventDefault();xrLook(k[0],k[1]);}};
+  const v=document.getElementById('xrVid');if(v&&xr.stream){v.srcObject=xr.stream;v.play().catch(()=>{});}
+  xr.raf=0;xrKick();
+}
+function xrClose(){xrCamStop();cancelAnimationFrame(xr.raf);xr.raf=0;state.labOpen=null;render();}
+function immersiaView(){
+  const ar=xr.mode==='ar',eye='<div class="xr-eye"><div class="xr-world">'+xrSceneHTML()+'</div></div>';
+  setTimeout(xrWire,0);
+  const seg=(k,opts)=>'<div class="rbx-seg">'+opts.map(o=>'<button class="'+(xr[k]===o[0]?'on':'')+'" onclick="xrSet(\''+k+'\',\''+o[0]+'\')">'+o[1]+'</button>').join('')+'</div>';
+  return '<div class="rbx-top"><button class="rbx-back" onclick="xrClose()">← All labs</button></div>'+
+    '<div class="pagehead">'+eyebrow('Interactive Labs · AR and VR')+'<h2 class="display">Immersia Lab</h2><p class="muted" style="margin-top:6px">Step inside your lessons. Explore 3D models in virtual reality, or place them in your room with augmented reality.</p></div>'+
+    '<div class="rbx-conn"><span class="rbl-status"><i></i>Not connected</span><span>'+(ar?(xr.cam?'Camera is on. No AR glasses are connected, so this uses the screen.':'No camera or AR glasses are connected yet. Press Start camera.'):'No VR headset is connected. You are viewing on the screen. Use Split view with a phone viewer box.')+'</span></div>'+
+    '<div class="rbx-cbbar">'+seg('mode',[['vr','VR · Virtual reality'],['ar','AR · Augmented reality']])+seg('scene',Object.keys(XR_SCENES).map(k=>[k,XR_SCENES[k][0]]))+'</div>'+
+    '<div class="xr-layout"><div class="card rbx-pad">'+
+      '<div class="xr-stage'+(ar?' ar':'')+(xr.stereo&&!ar?' stereo':'')+'" id="xrStage" tabindex="0" role="application" aria-label="3D scene: '+XR_SCENES[xr.scene][0]+'. Drag or use the arrow keys to look around.">'+
+        (ar?'<video id="xrVid" class="xr-vid" playsinline muted'+(xr.cam?'':' hidden')+'></video>'+(xr.cam?'':'<div class="xr-nocam">Camera is off</div>'):'')+
+        eye+(xr.stereo&&!ar?eye:'')+'</div>'+
+      '<div class="rb-msg" id="xrNote" aria-live="polite">'+(xr.note||XR_SCENES[xr.scene][1]+'. Drag to look around.')+'</div></div>'+
+    '<div class="card rbx-pad"><b>Controls</b>'+
+      '<div class="rbx-ctl"><label for="xrZ">Zoom</label><input id="xrZ" type="range" min="0.5" max="2" step="0.05" value="'+xr.zoom+'" oninput="xrZoom(this)" style="flex:1;min-width:120px;accent-color:#0E7C6B"></div>'+
+      '<div class="rbx-ctl">'+(ar?'<button class="btn teal" onclick="xrCam()">'+(xr.cam?'Stop camera':'Start camera')+'</button>':'<button class="btn '+(xr.stereo?'solid':'ghost')+'" onclick="xrSet(\'stereo\','+(!xr.stereo)+')">'+(xr.stereo?'Single view':'Split view (VR box)')+'</button>')+
+        '<button class="btn ghost" onclick="xrFull()">Full screen</button><button class="btn ghost" onclick="xrGyro()">Look by moving phone</button></div>'+
+      '<div class="rb-link" style="margin-top:14px"><b>'+(ar?'How AR works here':'How VR works here')+'</b><br>'+(ar?'The camera shows your room and the 3D model is drawn on top. Drag to turn the model and use Zoom to size it.':'Split view draws one picture for each eye. Put the phone in a cardboard VR box, go full screen and turn your head to look around.')+'</div>'+
+      '<div class="rb-link"><span class="rb-chip">'+XR_SCENES[xr.scene][1]+'</span><span class="rb-chip">Maths: 3D space and angles</span></div></div></div>';
+}
+
 function labView(){
   if(state.labOpen==='robotics') return roboticsView();
+  if(state.labOpen==='immersia') return immersiaView();
   /* If a lab is open, show full-screen iframe */
   if(state.labOpen){
     const lab = LABS.find(l=>l.id===state.labOpen);
@@ -2141,7 +2275,7 @@ function labView(){
   }).join('');
 
   return '<div class="pagehead">'+eyebrow('Interactive Labs')+'<h2 class="display">Virtual Lab Bench</h2>'+
-    '<p class="muted" style="margin-top:6px">Hands-on simulations for Robotics, Physics, Chemistry, and Biology. No setup needed — open and start experimenting.</p></div>'+
+    '<p class="muted" style="margin-top:6px">Hands-on simulations for AR and VR, Robotics, Physics, Chemistry, and Biology. No setup needed — open and start experimenting.</p></div>'+
     '<div class="lab-grid">'+cards+'</div>';
 }
 
@@ -2351,7 +2485,8 @@ function prDateRange(){
   return {from,to};
 }
 
-function progressView(){
+function progressView(){return trendHTML()+progressViewBase();}
+function progressViewBase(){
   const pr=state.pr;
   const {from,to}=prDateRange();
   const days=prAttDays(from,to);
@@ -2984,7 +3119,7 @@ async function doSignIn(e){
     const userData = {name:user.name,email:user.email,grade:user.grade,age:user.age};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
-    state.user = userData; qeLog('signin',userData);
+    state.user = userData; qeLog('signin',userData); setTimeout(qtBeat,50);
     const _gm1=String(userData.grade).match(/\d+/); state.libGrade=_gm1?parseInt(_gm1[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
@@ -3013,7 +3148,7 @@ async function doSignUp(e){
     const userData = {name,email,grade,age:Number(age)};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
-    state.user = userData; qeLog('signup',userData);
+    state.user = userData; qeLog('signup',userData); setTimeout(qtBeat,50);
     const _gm2=String(grade).match(/\d+/); state.libGrade=_gm2?parseInt(_gm2[0])||8:8;
     state.auth = {screen:'app',error:'',loading:false};
     render();
@@ -3025,6 +3160,7 @@ async function doSignUp(e){
 }
 
 function doSignOut(){
+  qtEnd();
   qeLog('signout',state.user);
   localStorage.removeItem('qe_token');
   localStorage.removeItem('qe_user');
@@ -3033,8 +3169,106 @@ function doSignOut(){
   render();
 }
 
+/* ─────────── Real activity tracking + Trend analysis ─────────── */
+const QT_KEY='qe_activity', QT_TICK=5;
+const QT_NAMES={home:'Home',learn:'Learn',live:'Live classes',assess:'Assignment',quiz:'Quiz',progress:'Progress Report',awards:'Achievements',lab:'Lab'};
+let qt={cur:null,lastSync:0};
+function qtLoad(){try{const d=JSON.parse(localStorage.getItem(QT_KEY)||'null');if(d&&Array.isArray(d.s)&&d.f)return d;}catch(e){}return {s:[],f:{}};}
+function qtStore(d){try{if(d.s.length>2000)d.s=d.s.slice(-2000);localStorage.setItem(QT_KEY,JSON.stringify(d));}catch(e){}}
+function qtDay(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function qtUser(){return state.user&&state.auth.screen==='app'?String(state.user.email||'').toLowerCase():'';}
+function qtSection(){
+  if(state.view==='lab'&&state.labOpen){const l=(typeof LABS!=='undefined')&&LABS.find(x=>x.id===state.labOpen);return l?l.title:'Lab';}
+  return QT_NAMES[state.view]||'Other';
+}
+function qtBeat(){
+  const u=qtUser();if(!u){qt.cur=null;return;}
+  if(document.visibilityState!=='visible')return;
+  const d=qtLoad(),now=Date.now();
+  if(!qt.cur||qt.cur.u!==u){qt.cur={id:now.toString(36)+Math.random().toString(36).slice(2,7),u:u,in:now,out:now};d.s.push(qt.cur);}
+  else{const s=d.s.find(x=>x.id===qt.cur.id);if(s){s.out=now;qt.cur=s;}else{qt.cur.out=now;d.s.push(qt.cur);}
+    const k=u+'|'+qtDay(now),sec=qtSection();d.f[k]=d.f[k]||{};d.f[k][sec]=(d.f[k][sec]||0)+QT_TICK;}
+  qtStore(d);
+  if(now-qt.lastSync>60000)qtSync();
+}
+function qtEnd(){const u=qtUser();if(qt.cur&&u){const d=qtLoad(),s=d.s.find(x=>x.id===qt.cur.id);if(s){s.out=Date.now();qtStore(d);}qtSync();}qt.cur=null;}
+function qtSync(){
+  qt.lastSync=Date.now();
+  try{
+    if(!qt.cur||!state.user)return;
+    if(!/^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname))return;
+    const d=qtLoad(),day=qtDay(Date.now()),s=d.s.find(x=>x.id===qt.cur.id)||qt.cur;
+    fetch('/api/activity',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+      body:JSON.stringify({email:qt.cur.u,name:state.user.name||'',grade:state.user.grade||'',session:{id:s.id,in:s.in,out:s.out},date:day,focus:d.f[qt.cur.u+'|'+day]||{}})}).catch(function(){});
+  }catch(e){}
+}
+setInterval(qtBeat,QT_TICK*1000);
+setTimeout(qtBeat,400);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')qtSync();else qtBeat();});
+window.addEventListener('pagehide',qtSync);
+
+/* ── Trend analysis (reads the real records above) ── */
+let tr={range:'day',from:'',to:''};
+function trRange(){
+  const n=new Date(),y=n.getFullYear(),m=n.getMonth(),today=qtDay(n.getTime());
+  if(tr.range==='month')return [qtDay(new Date(y,m,1).getTime()),today];
+  if(tr.range==='year')return [y+'-01-01',today];
+  if(tr.range==='custom'){let a=tr.from||today,b=tr.to||today;if(a>b){const t=a;a=b;b=t;}return [a,b];}
+  return [today,today];
+}
+function trSet(r){tr.range=r;if(r==='custom'&&!tr.from){const t=qtDay(Date.now());tr.from=qtDay(Date.now()-6*864e5);tr.to=t;}render();}
+function trDate(f,v){tr[f]=v;render();}
+function trDur(sec){sec=Math.round(sec);if(sec<60)return sec+' s';const m=Math.round(sec/60);return m<60?m+' min':Math.floor(m/60)+' h '+(m%60)+' min';}
+function trClock(ts){return new Date(ts).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}
+function trNice(day){const p=day.split('-');return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString([], {day:'numeric',month:'short'});}
+function trendHTML(){
+  if(!state.user)return '';
+  const u=String(state.user.email||'').toLowerCase(),d=qtLoad(),rg=trRange(),from=rg[0],to=rg[1];
+  const ses=d.s.filter(s=>s.u===u&&qtDay(s.in)>=from&&qtDay(s.in)<=to).sort((a,b)=>b.in-a.in);
+  const foc={},perDay={};
+  Object.keys(d.f).forEach(k=>{const i=k.lastIndexOf('|'),ku=k.slice(0,i),day=k.slice(i+1);if(ku!==u||day<from||day>to)return;
+    Object.keys(d.f[k]).forEach(sec=>{foc[sec]=(foc[sec]||0)+d.f[k][sec];perDay[day]=(perDay[day]||0)+d.f[k][sec];});});
+  const total=Object.values(foc).reduce((a,b)=>a+b,0),secs=Object.keys(foc).sort((a,b)=>foc[b]-foc[a]);
+  const avg=ses.length?ses.reduce((a,s)=>a+(s.out-s.in)/1000,0)/ses.length:0;
+  const hrs=ses.map(s=>{const t=new Date(s.in);return t.getHours()*60+t.getMinutes();}).sort((a,b)=>a-b),med=hrs.length?hrs[Math.floor(hrs.length/2)]:null;
+  const usual=med===null?'—':new Date(2000,0,1,Math.floor(med/60),med%60).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  const pill=(k,l)=>'<button class="tr-pill'+(tr.range===k?' on':'')+'" onclick="trSet(\''+k+'\')">'+l+'</button>';
+  const tile=(v,l)=>'<div class="tr-tile"><b>'+v+'</b><span>'+l+'</span></div>';
+  let h='<section class="tr-wrap"><div class="tr-head"><div>'+eyebrow('Real activity on this device')+'<h3 class="display" style="font-size:22px">Trend analysis</h3></div>'+
+    '<div class="tr-filter" role="group" aria-label="Time range">'+pill('day','Today')+pill('month','This month')+pill('year','This year')+pill('custom','Custom')+
+    (tr.range==='custom'?'<input type="date" aria-label="From date" value="'+tr.from+'" max="'+qtDay(Date.now())+'" onchange="trDate(\'from\',this.value)"><span class="muted">to</span><input type="date" aria-label="To date" value="'+tr.to+'" max="'+qtDay(Date.now())+'" onchange="trDate(\'to\',this.value)">':'')+'</div></div>'+
+    '<div class="tr-tiles">'+tile(trDur(total),'Time in the app')+tile(ses.length,'Logins')+tile(ses.length?trDur(avg):'—','Average session')+tile(secs[0]||'—','Most focus')+tile(usual,'Usual login time')+'</div>';
+  if(!ses.length&&!total)return h+'<div class="card tr-card"><p class="muted">No activity is recorded for this range yet. Keep using the app and it will appear here.</p></div></section>';
+  /* use 1: login and logout */
+  const days=[];ses.forEach(s=>{const dy=qtDay(s.in);if(days.indexOf(dy)<0)days.push(dy);});
+  const rows=days.slice(0,14),RW=640,L=62,PW=RW-L-10,RH=22;
+  let tl='<svg viewBox="0 0 '+RW+' '+(rows.length*RH+28)+'" class="tr-svg" role="img" aria-label="Login and logout times by day"><g font-size="10" fill="#5A6B78">';
+  [0,6,12,18,24].forEach(hh=>{const x=L+hh/24*PW;tl+='<path d="M'+x+' 4V'+(rows.length*RH+6)+'" stroke="#E3E9EC"/><text x="'+x+'" y="'+(rows.length*RH+20)+'" text-anchor="middle">'+(hh===0||hh===24?'12 am':hh===12?'12 pm':hh<12?hh+' am':(hh-12)+' pm')+'</text>';});
+  rows.forEach((dy,i)=>{const y=6+i*RH;tl+='<text x="'+(L-8)+'" y="'+(y+13)+'" text-anchor="end">'+trNice(dy)+'</text>';
+    ses.filter(s=>qtDay(s.in)===dy).forEach(s=>{const a=new Date(s.in),b=new Date(Math.max(s.out,s.in)),x1=L+(a.getHours()*60+a.getMinutes())/1440*PW,e=qtDay(b.getTime())===dy?(b.getHours()*60+b.getMinutes())/1440:1,w=Math.max(4,L+e*PW-x1);
+      tl+='<rect x="'+x1.toFixed(1)+'" y="'+(y+3)+'" width="'+w.toFixed(1)+'" height="'+(RH-8)+'" rx="4" fill="#0E7C6B"><title>'+trNice(dy)+': login '+trClock(s.in)+', logout '+trClock(s.out)+' ('+trDur((s.out-s.in)/1000)+')</title></rect>';});});
+  tl+='</g></svg>';
+  h+='<div class="tr-two"><div class="card tr-card"><h4>Login and logout times</h4><p class="muted tr-sub">Each bar runs from login to logout.'+(days.length>14?' Showing the latest 14 days.':'')+'</p>'+tl+
+    '<div class="tr-tablewrap"><table class="tr-table"><thead><tr><th>Date</th><th>Login</th><th>Logout</th><th>Time spent</th></tr></thead><tbody>'+
+    ses.slice(0,60).map(s=>'<tr><td>'+trNice(qtDay(s.in))+'</td><td>'+trClock(s.in)+'</td><td>'+(qt.cur&&qt.cur.id===s.id?'Active now':trClock(s.out))+'</td><td>'+trDur((s.out-s.in)/1000)+'</td></tr>').join('')+'</tbody></table></div></div>';
+  /* use 2: focus */
+  const mx=Math.max(1,...secs.map(s=>foc[s]));
+  let bars='<div class="tr-bars" role="list">'+secs.map(s=>'<div class="tr-bar" role="listitem" title="'+s+': '+trDur(foc[s])+' ('+Math.round(foc[s]/Math.max(1,total)*100)+'%)"><span class="tr-bl">'+s+'</span><span class="tr-bt"><i style="width:'+Math.max(1.5,foc[s]/mx*100).toFixed(1)+'%"></i></span><span class="tr-bv">'+trDur(foc[s])+'</span></div>').join('')+'</div>';
+  /* time per day (or per month for the year view) */
+  const byMonth=tr.range==='year',bk={};Object.keys(perDay).forEach(dy=>{const k=byMonth?dy.slice(0,7):dy;bk[k]=(bk[k]||0)+perDay[dy];});
+  const keys=Object.keys(bk).sort().slice(-31),cm=Math.max(1,...keys.map(k=>bk[k])),CW=640,CH=150,bw=Math.min(34,(CW-40)/Math.max(1,keys.length)-2);
+  let col='';
+  if(keys.length>1){col='<h4 style="margin-top:18px">Time per '+(byMonth?'month':'day')+'</h4><svg viewBox="0 0 '+CW+' '+(CH+26)+'" class="tr-svg" role="img" aria-label="Time in the app per '+(byMonth?'month':'day')+'"><path d="M30 '+CH+'H'+CW+'" stroke="#C9D2D8"/><text x="34" y="10" font-size="10" fill="#5A6B78">Tallest bar: '+trDur(cm)+'</text>';
+    const step=Math.ceil(keys.length/8);
+    keys.forEach((k,i)=>{const x=34+i*((CW-40)/keys.length),hh=Math.max(2,bk[k]/cm*(CH-18)),lab=byMonth?new Date(+k.slice(0,4),+k.slice(5,7)-1,1).toLocaleDateString([], {month:'short'}):trNice(k);
+      col+='<path d="M'+x+' '+CH+'v'+(-hh+4)+'q0 -4 4 -4h'+(bw-8)+'q4 0 4 4v'+(hh-4)+'z" fill="#0E7C6B"><title>'+lab+': '+trDur(bk[k])+'</title></path>'+(i%step===0?'<text x="'+(x+bw/2)+'" y="'+(CH+16)+'" text-anchor="middle" font-size="10" fill="#5A6B78">'+lab+'</text>':'');});
+    col+='</svg>';}
+  h+='<div class="card tr-card"><h4>Where the time goes</h4><p class="muted tr-sub">Time spent in each section, most first.</p>'+(secs.length?bars:'<p class="muted">No focus time yet.</p>')+col+'</div></div></section>';
+  return h;
+}
+
 /* ─────────── actions ─────────── */
-function go(v){state.view=v;state.navOpen=false;state.labOpen=null;render();window.scrollTo(0,0);}
+function go(v){if(typeof xrCamStop==='function')xrCamStop();state.view=v;state.navOpen=false;state.labOpen=null;render();window.scrollTo(0,0);}
 function setRole(r){state.role=r;state.view="home";render();}
 function setLang(l){state.lang=l;render();}
 function setFilter(f){state.filter=f;render();}

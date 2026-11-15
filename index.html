@@ -252,6 +252,41 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .auth-switch button{color:var(--teal);font-weight:600;background:none;border:none;cursor:pointer;font:inherit}
 .auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--mute);font-size:12px;font-family:var(--mono)}
 .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+/* Robotics Lab */
+.rb-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.rb-tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 14px;text-align:left;cursor:pointer;font:inherit;min-width:150px}
+.rb-tab.on{border-color:var(--teal);box-shadow:0 0 0 2px var(--tealSoft)}
+.rb-tab b{display:block;font-size:14px}.rb-tab span{font-size:12px;color:var(--slate)}
+.rb-stars{color:var(--marigold);letter-spacing:2px;font-size:13px}
+.rb-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:900px){.rb-wrap{grid-template-columns:1fr}}
+.rb-pad{padding:16px}
+.rb-world{position:relative;margin:0 auto;background:#0F1B24;border-radius:12px;overflow:hidden;width:100%;max-width:420px;aspect-ratio:1/1}
+.rb-cell{position:absolute;box-sizing:border-box}
+.rb-floor{background:#F7FAF9;border:1px solid #DCE4E4}
+.rb-wall{background:#22343F}
+.rb-goal{background:var(--marigoldSoft);border:2px dashed var(--marigold);display:flex;align-items:center;justify-content:center;font-size:20px}
+.rb-bot{position:absolute;transition:left .28s ease,top .28s ease;display:flex;align-items:center;justify-content:center;z-index:2}
+.rb-bot svg{width:76%;height:76%;transition:transform .28s ease}
+.rb-bot.bump{animation:rbbump .3s}
+@keyframes rbbump{0%,100%{transform:translate(0,0)}30%{transform:translate(-3px,0)}60%{transform:translate(3px,0)}}
+@media(prefers-reduced-motion:reduce){.rb-bot,.rb-bot svg{transition:none}.rb-bot.bump{animation:none}}
+.rb-msg{margin-top:12px;border-radius:10px;padding:10px 12px;font-size:14px;background:var(--canvas);color:var(--ink)}
+.rb-msg.ok{background:var(--tealSoft);color:#0A5C50;font-weight:600}
+.rb-msg.bad{background:var(--redSoft);color:var(--vermilion);font-weight:600}
+.rb-pal{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.rb-add{border:0;border-radius:9px;padding:8px 11px;font:inherit;font-size:13px;font-weight:600;color:#fff;cursor:pointer}
+.rb-add:disabled{opacity:.45;cursor:not-allowed}
+.rb-k-act{background:#2F6FDB}.rb-k-loop{background:#8A4FD6}.rb-k-if{background:#C7791A}.rb-k-end{background:#5A6B78}
+.rb-prog{min-height:210px;max-height:360px;overflow:auto;border:1px dashed var(--line);border-radius:12px;padding:8px;background:var(--canvas)}
+.rb-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.rb-blk{flex:1;border-radius:9px;padding:7px 10px;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;min-width:0}
+.rb-row.cur .rb-blk{outline:3px solid var(--marigold)}
+.rb-mini{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;width:26px;height:26px;font-size:13px;cursor:pointer;flex:none;line-height:1}
+.rb-blk .rb-mini{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.18);color:#fff;width:22px;height:22px}
+.rb-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.rb-link{font-size:12px;color:var(--slate);margin-top:10px;line-height:1.5}
+.rb-chip{display:inline-block;font-size:11px;font-weight:600;border-radius:99px;padding:3px 9px;background:var(--tealSoft);color:#0A5C50;margin:2px 4px 2px 0}
 </style>
 <!-- Google Translate -->
 <style>
@@ -381,6 +416,7 @@ const I = {
   cap:   s=>S('<path d="M2 8.5 12 4l10 4.5-10 4.5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>',s),
   star:  s=>S('<polygon points="12 3 14.6 9.1 21 9.7 16.2 14 17.6 20.3 12 17 6.4 20.3 7.8 14 3 9.7 9.4 9.1"/>',s),
   trophy:s=>S('<path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/><path d="M10 15h4l1 5H9z"/>',s),
+  robot: s=>S('<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><path d="M9 13v1.5M15 13v1.5M2 13v3M22 13v3"/>',s),
   flask: s=>S('<path d="M9 2v6.5L3.8 18A2 2 0 0 0 5.6 21h12.8a2 2 0 0 0 1.8-3L15 8.5V2"/><path d="M8 2h8M6.5 14h11"/>',s),
   spark: s=>S('<path d="M12 2.5 14 9l6.5 2-6.5 2-2 6.5-2-6.5L3.5 11 10 9z"/>',s),
   cal:   s=>S('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',s),
@@ -1253,6 +1289,155 @@ const LABS = [
   },
 ];
 
+/* ─────────── Robotics Lab: robot simulator with block coding ─────────── */
+const RB_MISSIONS=[
+ {id:'m1',name:'1. First Steps',goal:'Drive the robot to the star.',skill:'Sequencing',
+  links:['Maths: counting steps','Maths: right angles (90° turns)'],
+  hint:'Count the squares. Move up, turn right, then move across.',
+  map:['#######','#....G#','#.#####','#S#####'],dir:0,blocks:['move','left','right','repeat','end'],par:[7,9]},
+ {id:'m2',name:'2. Climb the Stairs',goal:'Climb the staircase. Try it with a Repeat block.',skill:'Loops',
+  links:['Maths: patterns','Coding: loops save work'],
+  hint:'One stair is: move, turn left, move, turn right. Repeat it 4 times.',
+  map:['#######','#####G#','####..#','###..##','##..###','#S.####','#######'],dir:1,blocks:['move','left','right','repeat','end'],par:[5,9]},
+ {id:'m3',name:'3. Smart Maze',goal:'Use the wall sensor so the robot finds its own way.',skill:'Sensors and decisions',
+  links:['Physics: ultrasonic distance sensor','Coding: if / else decisions'],
+  hint:'Repeat until goal: if there is a wall ahead, turn left, else move forward.',
+  map:['#######','#.....#','#.###.#','#..G#.#','#####.#','#S....#','#######'],dir:1,blocks:['move','left','right','repeat','until','ifwall','else','end'],par:[4,8]}
+];
+const RB_BLOCKS={
+ move:{label:'Move forward',k:'act'},left:{label:'Turn left',k:'act'},right:{label:'Turn right',k:'act'},
+ repeat:{label:'Repeat',k:'loop',open:true},until:{label:'Repeat until goal',k:'loop',open:true},
+ ifwall:{label:'If wall ahead',k:'if',open:true},else:{label:'Else',k:'if'},end:{label:'End',k:'end'}
+};
+const RB_DX=[0,1,0,-1], RB_DY=[-1,0,1,0];   /* 0 up, 1 right, 2 down, 3 left */
+let rb={m:0,prog:[],running:false,stop:false,msg:'',msgKind:'',bot:null,fast:false};
+function rbDone(){try{return JSON.parse(localStorage.getItem('qe_robotics')||'{}')||{};}catch(e){return {};}}
+function rbSaveDone(id,stars){const d=rbDone();if((d[id]||0)<stars){d[id]=stars;try{localStorage.setItem('qe_robotics',JSON.stringify(d));}catch(e){}}}
+function rbMission(){return RB_MISSIONS[rb.m];}
+function rbStart(){const mp=rbMission().map;for(let y=0;y<mp.length;y++){const x=mp[y].indexOf('S');if(x>=0)return {x:x,y:y,d:rbMission().dir};}return {x:1,y:1,d:1};}
+function rbCell(x,y){const mp=rbMission().map;return (mp[y]&&mp[y][x])||'#';}
+function rbStarsText(n){return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n);}
+function rbCount(){return rb.prog.filter(b=>b.t!=='end'&&b.t!=='else').length;}
+
+function rbPick(i){if(rb.running)return;rb.m=i;rb.prog=[];rb.msg='';rb.msgKind='';rb.bot=null;render();}
+function rbAdd(t){if(rb.running)return;if(rb.prog.length>=40){rbSay('That is a lot of blocks. Try a Repeat block.','bad');return;}
+  rb.prog.push(t==='repeat'?{t:t,n:4}:{t:t});rbPaintProg();}
+function rbDel(i){if(rb.running)return;rb.prog.splice(i,1);rbPaintProg();}
+function rbMove(i,by){if(rb.running)return;const j=i+by;if(j<0||j>=rb.prog.length)return;const a=rb.prog[i];rb.prog[i]=rb.prog[j];rb.prog[j]=a;rbPaintProg();}
+function rbN(i,by){if(rb.running)return;const b=rb.prog[i];b.n=Math.max(2,Math.min(9,(b.n||4)+by));rbPaintProg();}
+function rbClear(){if(rb.running)return;rb.prog=[];rbReset();rbPaintProg();}
+function rbSay(t,kind){rb.msg=t;rb.msgKind=kind||'';const el=document.getElementById('rbMsg');if(el){el.textContent=t;el.className='rb-msg'+(kind?' '+kind:'');}}
+
+/* turn the flat block list into a tree; returns {tree} or {error} */
+function rbParse(){
+  const root=[],stack=[{body:root}];
+  for(let i=0;i<rb.prog.length;i++){
+    const b=rb.prog[i],top=stack[stack.length-1];
+    if(b.t==='move'||b.t==='left'||b.t==='right'){top.body.push({t:b.t,i:i});}
+    else if(b.t==='repeat'||b.t==='until'){const n={t:b.t,n:b.n,i:i,body:[]};top.body.push(n);stack.push({node:n,body:n.body});}
+    else if(b.t==='ifwall'){const n={t:'ifwall',i:i,body:[],other:[]};top.body.push(n);stack.push({node:n,body:n.body});}
+    else if(b.t==='else'){if(!top.node||top.node.t!=='ifwall'||top.inElse)return {error:'"Else" must come inside an "If wall ahead" block.'};top.inElse=true;top.body=top.node.other;}
+    else if(b.t==='end'){if(stack.length<2)return {error:'There is an "End" with nothing to close. Remove it.'};stack.pop();}
+  }
+  return {tree:root};   /* blocks left open are closed automatically */
+}
+function rbPlace(){
+  const mp=rbMission().map,cols=mp[0].length,rows=mp.length,el=document.getElementById('rbBot');if(!el||!rb.bot)return;
+  el.style.left=(rb.bot.x/cols*100)+'%';el.style.top=(rb.bot.y/rows*100)+'%';
+  const sv=el.querySelector('svg');if(sv)sv.style.transform='rotate('+(rb.bot.turns*90)+'deg)';
+}
+function rbReset(){rb.stop=true;rb.running=false;const s=rbStart();rb.bot={x:s.x,y:s.y,d:s.d,turns:s.d};rbPlace();rbHi(-1);rbButtons();if(rb.msgKind!=='ok')rbSay(rbMission().goal,'');}
+function rbHi(i){document.querySelectorAll('#rbProg .rb-row').forEach((r,k)=>r.classList.toggle('cur',k===i));}
+function rbButtons(){const r=document.getElementById('rbRun'),s=document.getElementById('rbStop');if(r)r.disabled=rb.running;if(s)s.disabled=!rb.running;
+  document.querySelectorAll('.rb-add,.rb-mini').forEach(b=>b.disabled=rb.running);}
+const rbWait=ms=>new Promise(r=>setTimeout(r,ms));
+async function rbRun(){
+  if(rb.running)return;
+  if(!rb.prog.length){rbSay('Add some blocks first.','bad');return;}
+  const p=rbParse();if(p.error){rbSay(p.error,'bad');return;}
+  const s=rbStart();rb.bot={x:s.x,y:s.y,d:s.d,turns:s.d};rbPlace();
+  rb.running=true;rb.stop=false;rbButtons();rbSay('Running…','');
+  let steps=0;const delay=()=>rb.fast?120:340;
+  const atGoal=()=>rbCell(rb.bot.x,rb.bot.y)==='G';
+  const wallAhead=()=>rbCell(rb.bot.x+RB_DX[rb.bot.d],rb.bot.y+RB_DY[rb.bot.d])==='#';
+  async function exec(list){
+    for(const n of list){
+      if(rb.stop)return 'stop'; if(atGoal())return 'goal';
+      if(++steps>400)return 'long';
+      rbHi(n.i);
+      if(n.t==='move'){
+        if(wallAhead()){const el=document.getElementById('rbBot');if(el){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');}await rbWait(delay());return 'crash';}
+        rb.bot.x+=RB_DX[rb.bot.d];rb.bot.y+=RB_DY[rb.bot.d];rbPlace();await rbWait(delay());
+      }else if(n.t==='left'){rb.bot.d=(rb.bot.d+3)%4;rb.bot.turns--;rbPlace();await rbWait(delay());}
+      else if(n.t==='right'){rb.bot.d=(rb.bot.d+1)%4;rb.bot.turns++;rbPlace();await rbWait(delay());}
+      else if(n.t==='repeat'){for(let k=0;k<n.n;k++){const r=await exec(n.body);if(r)return r;}}
+      else if(n.t==='until'){if(!n.body.length)return 'empty';while(!atGoal()){const r=await exec(n.body);if(r)return r;if(++steps>400)return 'long';}}
+      else if(n.t==='ifwall'){await rbWait(delay()/3);const r=await exec(wallAhead()?n.body:n.other);if(r)return r;}
+    }
+    return '';
+  }
+  const res=await exec(p.tree);
+  rb.running=false;rbHi(-1);rbButtons();
+  if(res==='stop'){rbSay('Stopped.','');return;}
+  if(atGoal()){
+    const m=rbMission(),c=rbCount(),stars=c<=m.par[0]?3:c<=m.par[1]?2:1;
+    rbSaveDone(m.id,stars);
+    rbSay('Mission complete! '+rbStarsText(stars)+'  You used '+c+' blocks.'+(stars<3?' Use '+m.par[0]+' or fewer for 3 stars.':''),'ok');
+    rbPaintTabs();return;
+  }
+  rbSay(res==='crash'?'Bump! The robot hit a wall. Check your turns and step count.':
+        res==='long'?'The program ran too long without reaching the star. Check your loop.':
+        res==='empty'?'Put some blocks inside "Repeat until goal".':
+        'The program ended before the robot reached the star. Add more steps.','bad');
+}
+function rbStop(){rb.stop=true;}
+function rbSpeed(el){rb.fast=el.checked;}
+
+function rbProgHTML(){
+  if(!rb.prog.length)return '<div class="muted" style="padding:18px;text-align:center">Tap the blocks above to build your program.</div>';
+  let depth=0,h='';
+  rb.prog.forEach((b,i)=>{
+    const def=RB_BLOCKS[b.t];
+    if(b.t==='end'||b.t==='else')depth=Math.max(0,depth-1);
+    h+='<div class="rb-row" style="margin-left:'+(depth*18)+'px"><div class="rb-blk rb-k-'+def.k+'"><span>'+def.label+'</span>'+
+      (b.t==='repeat'?'<button class="rb-mini" aria-label="Fewer times" onclick="rbN('+i+',-1)">−</button><span>'+b.n+' times</span><button class="rb-mini" aria-label="More times" onclick="rbN('+i+',1)">+</button>':'')+'</div>'+
+      '<button class="rb-mini" aria-label="Move up" onclick="rbMove('+i+',-1)">↑</button><button class="rb-mini" aria-label="Move down" onclick="rbMove('+i+',1)">↓</button><button class="rb-mini" aria-label="Remove" onclick="rbDel('+i+')">✕</button></div>';
+    if(def.open||b.t==='else')depth++;
+  });
+  return h;
+}
+function rbPaintProg(){const el=document.getElementById('rbProg');if(el)el.innerHTML=rbProgHTML();const c=document.getElementById('rbCnt');if(c)c.textContent=rbCount();}
+function rbTabsHTML(){const d=rbDone();return RB_MISSIONS.map((m,i)=>'<button class="rb-tab'+(i===rb.m?' on':'')+'" onclick="rbPick('+i+')"><b>'+m.name+'</b><span>'+m.skill+'</span><div class="rb-stars" aria-label="'+(d[m.id]||0)+' of 3 stars">'+rbStarsText(d[m.id]||0)+'</div></button>').join('');}
+function rbPaintTabs(){const el=document.getElementById('rbTabs');if(el)el.innerHTML=rbTabsHTML();}
+function rbWorldHTML(){
+  const mp=rbMission().map,cols=mp[0].length,rows=mp.length,w=100/cols,hh=100/rows;let h='';
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const c=mp[y][x];
+    h+='<div class="rb-cell '+(c==='#'?'rb-wall':c==='G'?'rb-goal':'rb-floor')+'" style="left:'+(x*w)+'%;top:'+(y*hh)+'%;width:'+w+'%;height:'+hh+'%">'+(c==='G'?'⭐':'')+'</div>';}
+  h+='<div class="rb-bot" id="rbBot" style="width:'+w+'%;height:'+hh+'%"><svg viewBox="0 0 40 40" aria-label="Robot"><rect x="7" y="10" width="26" height="24" rx="6" fill="#0E7C6B"/><path d="M20 2 28 12H12z" fill="#F5A524"/><circle cx="15" cy="21" r="3" fill="#fff"/><circle cx="25" cy="21" r="3" fill="#fff"/><rect x="14" y="27" width="12" height="3" rx="1.5" fill="#fff"/></svg></div>';
+  return '<div class="rb-world" style="aspect-ratio:'+cols+'/'+rows+'">'+h+'</div>';
+}
+function roboticsView(){
+  const m=rbMission();
+  if(!rb.bot){const s=rbStart();rb.bot={x:s.x,y:s.y,d:s.d,turns:s.d};}
+  setTimeout(()=>{rbPlace();rbButtons();},0);
+  return '<div class="pagehead">'+eyebrow('Build & explore')+'<h2 class="display">Robotics Lab</h2>'+
+    '<p class="muted">Program the robot with blocks and watch it drive. No kit needed.</p></div>'+
+    '<div class="rb-tabs" id="rbTabs">'+rbTabsHTML()+'</div>'+
+    '<div class="rb-wrap">'+
+      '<div class="card rb-pad">'+rbWorldHTML()+
+        '<div id="rbMsg" class="rb-msg'+(rb.msgKind?' '+rb.msgKind:'')+'" aria-live="polite">'+(rb.msg||m.goal)+'</div>'+
+        '<div class="rb-link"><b>What you learn:</b><br>'+m.links.map(l=>'<span class="rb-chip">'+l+'</span>').join('')+'</div>'+
+        '<details class="rb-link"><summary style="cursor:pointer;font-weight:600">Need a hint?</summary>'+m.hint+'</details></div>'+
+      '<div class="card rb-pad"><div style="font-weight:700;margin-bottom:8px">Blocks</div><div class="rb-pal">'+
+        m.blocks.map(t=>'<button class="rb-add rb-k-'+RB_BLOCKS[t].k+'" onclick="rbAdd(\''+t+'\')">+ '+RB_BLOCKS[t].label+'</button>').join('')+'</div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b>Your program</b><span class="muted" style="font-size:12px">Blocks used: <b id="rbCnt">'+rbCount()+'</b> · 3 stars at '+m.par[0]+' or fewer</span></div>'+
+        '<div class="rb-prog" id="rbProg">'+rbProgHTML()+'</div>'+
+        '<div class="rb-acts"><button class="btn teal" id="rbRun" onclick="rbRun()">▶ Run</button><button class="btn ghost" id="rbStop" onclick="rbStop()">■ Stop</button>'+
+        '<button class="btn ghost" onclick="rbReset()">Reset robot</button><button class="btn ghost" onclick="rbClear()">Clear blocks</button>'+
+        '<label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-left:auto"><input type="checkbox" onchange="rbSpeed(this)"'+(rb.fast?' checked':'')+'> Fast</label></div></div>'+
+    '</div>';
+}
+
 function labView(){
   /* If a lab is open, show full-screen iframe */
   if(state.labOpen){
@@ -2042,17 +2227,17 @@ function qzFinish(){
 function navHTML(){
   const t=T();
   const items=[["home",t.home,"grid"],["learn",t.learn,"book"],["live",t.live,"radio"],
-    ["assess",t.assess,"clip"],["quiz",t.quiz,"bolt"],["progress",t.progress,"trend"],["awards",t.awards,"medal"],["lab",t.lab,"flask"]];
+    ["assess",t.assess,"clip"],["quiz",t.quiz,"bolt"],["progress",t.progress,"trend"],["awards",t.awards,"medal"],["lab",t.lab,"flask"],["robotics","Robotics Lab","robot"]];
   return '<div class="nav">'+items.map(n=>'<button class="'+(state.view===n[0]?'on':'')+'" onclick="go(\''+n[0]+'\')">'+
     I[n[2]](18)+'<span>'+n[1]+'</span></button>').join('')+'</div>';
 }
 function title(){
-  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab};
+  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab,robotics:"Robotics Lab"};
   return state.view==="home" ? t.greet+", "+ME().who.split(" ")[0] : map[state.view];
 }
 function bodyHTML(){
   if(state.view==="home") return {student:studentHome,parent:parentHome,teacher:teacherHome,admin:adminHome}[state.role]();
-  return {learn:learnView,live:liveView,assess:assessView,quiz:quizView,progress:progressView,awards:awardsView,lab:labView}[state.view]();
+  return {learn:learnView,live:liveView,assess:assessView,quiz:quizView,progress:progressView,awards:awardsView,lab:labView,robotics:roboticsView}[state.view]();
 }
 /* ─────────── auth screens ─────────── */
 function authScreen(){

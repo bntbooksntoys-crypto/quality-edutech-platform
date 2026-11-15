@@ -333,6 +333,52 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .rbx-ext{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--ink);background:var(--card);text-decoration:none}
 .rbx-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:var(--slate)}
 .rbx-legend span{display:inline-flex;align-items:center;gap:6px}.rbx-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+/* circuit builder */
+.rbx-cbbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.rbx-cbwrap{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:start}
+.rbx-tray{display:flex;flex-direction:column;gap:6px;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:8px}
+.rbx-tray button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:4px 8px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-align:left;min-height:42px}
+.rbx-tray button svg{width:34px;height:34px;flex:none}
+.rbx-tray button:disabled,.rbx-seg button:disabled{opacity:.45;cursor:not-allowed}
+.rbx-tray button:not(:disabled):hover{border-color:var(--teal)}
+@media(max-width:700px){.rbx-cbwrap{grid-template-columns:1fr}.rbx-tray{flex-direction:row;flex-wrap:wrap}.rbx-tray button{flex:1 1 130px}}
+/* Scratch-style blocks */
+.rbs-wrap{display:grid;grid-template-columns:190px minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:1100px){.rbs-wrap{grid-template-columns:170px minmax(0,1fr)}.rbs-wrap>:nth-child(3){grid-column:1/-1}}
+@media(max-width:640px){.rbs-wrap{grid-template-columns:1fr}}
+.rbs-pal{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+@media(max-width:640px){.rbs-pal{flex-direction:row;flex-wrap:wrap;align-items:center}.rbs-cat{flex-basis:100%}}
+.rbs-cat{font-size:12px;font-weight:700;color:var(--slate);margin-top:6px;display:flex;align-items:center;gap:6px}
+.rbs-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.rbs-blk{display:flex;align-items:center;gap:8px;border:0;border-radius:6px 10px 10px 6px;padding:8px 10px;font:inherit;font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;cursor:grab;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);text-align:left;white-space:nowrap}
+.rbs-blk>span:first-child{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rbs-mo{background:#4C97FF}.rbs-ct{background:#E6960A}.rbs-bad{background:#C6362F}
+.rbs-hat{display:inline-block;background:#D9A400;color:#fff;font-weight:700;font-size:13px;padding:10px 14px 7px;border-radius:18px 18px 6px 6px;margin-bottom:3px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+.rbs-prog{background:#F9F9F9;border-style:solid;display:flex;flex-direction:column;align-items:flex-start;min-height:250px}
+.rbs-prog .rbs-blk{min-width:150px}
+.rbs-c{margin-bottom:3px}
+.rbs-c>.rbs-blk{margin-bottom:0;border-radius:6px 10px 10px 0}
+.rbs-in{border-left:14px solid #E6960A;padding:3px 0 0 4px;min-height:22px;min-width:150px}
+.rbs-mid{margin:0;border-radius:0 10px 10px 0}
+.rbs-foot{background:#E6960A;height:16px;min-width:110px;width:60%;border-radius:0 8px 8px 6px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);display:flex;align-items:center;justify-content:flex-end}
+.rbs-tools{display:none;gap:3px;margin-left:auto;padding-left:8px}
+.rb-row:hover>.rbs-tools,.rb-row:focus-within>.rbs-tools{display:inline-flex}
+@media(hover:none){.rbs-tools{display:inline-flex}}
+.rbs-foot .rbs-tools .rb-mini{height:14px;width:20px;font-size:10px;border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.18);color:#fff}
+.rbs-num{background:#fff;color:#11212D;border-radius:99px;padding:1px 9px;font-size:12px}
+.rbs-hex{background:#5CB1D6;border-radius:4px;padding:2px 8px;font-size:12px;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,8px 100%,0 50%);padding:2px 14px}
+.rb-row.cur{outline:3px solid #FFF27A;outline-offset:1px}
+/* My Robot */
+.rbl-status{display:inline-flex;align-items:center;gap:7px;border-radius:99px;padding:5px 12px;font-size:13px;font-weight:700;background:var(--redSoft);color:var(--vermilion)}
+.rbl-status i{width:9px;height:9px;border-radius:50%;background:var(--vermilion);display:inline-block}
+.rbl-status.on{background:var(--tealSoft);color:#0A5C50}.rbl-status.on i{background:var(--teal)}
+.rbl-arena{position:relative;aspect-ratio:200/120;border-radius:12px;border:6px solid #22343F;overflow:hidden;background:#F7FAF9;background-image:linear-gradient(#E3EAE8 1px,transparent 1px),linear-gradient(90deg,#E3EAE8 1px,transparent 1px);background-size:10% 16.667%}
+.rbl-bot{position:absolute;width:12%;transform:translate(-50%,-50%)}
+.rbl-bot svg{display:block;width:100%}
+.rbl-pad{display:grid;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center;margin:16px 0}
+.rbl-pad button{height:64px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;cursor:pointer}
+.rbl-pad button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.rbl-pad button[data-c="S"]{background:var(--redSoft);color:var(--vermilion);border-color:transparent}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1301,8 +1347,8 @@ const LABS = [
     id:"robotics",
     title:"Robotics Lab",
     sub:"Robotics · Grades 1–12",
-    desc:"Learn how robots are made: build a circuit and light an LED, explore a 3D robot model, then code a robot with Scratch-style blocks. No kit needed.",
-    tags:["Circuits","3D Modeling","Scratch Coding"],
+    desc:"Learn how robots are made: build circuits with real parts, explore a 3D robot model, code with Scratch-style blocks, then drive a robot. No kit needed.",
+    tags:["Circuits","3D Modeling","Scratch Coding","My Robot"],
     url:"",
     embedUrl:"",
     color:"#5B3FC4",
@@ -1405,7 +1451,6 @@ function rbPlace(){
   const sv=el.querySelector('svg');if(sv)sv.style.transform='rotate('+(rb.bot.turns*90)+'deg)';
 }
 function rbReset(){rb.stop=true;rb.running=false;const s=rbStart();rb.bot={x:s.x,y:s.y,d:s.d,turns:s.d};rbPlace();rbHi(-1);rbButtons();if(rb.msgKind!=='ok')rbSay(rbMission().goal,'');}
-function rbHi(i){document.querySelectorAll('#rbProg .rb-row').forEach((r,k)=>r.classList.toggle('cur',k===i));}
 function rbButtons(){const r=document.getElementById('rbRun'),s=document.getElementById('rbStop');if(r)r.disabled=rb.running;if(s)s.disabled=!rb.running;
   document.querySelectorAll('.rb-add,.rb-mini').forEach(b=>b.disabled=rb.running);}
 const rbWait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1451,19 +1496,6 @@ async function rbRun(){
 function rbStop(){rb.stop=true;}
 function rbSpeed(el){rb.fast=el.checked;}
 
-function rbProgHTML(){
-  if(!rb.prog.length)return '<div class="muted" style="padding:18px;text-align:center">Tap the blocks above to build your program.</div>';
-  let depth=0,h='';
-  rb.prog.forEach((b,i)=>{
-    const def=RB_BLOCKS[b.t];
-    if(b.t==='end'||b.t==='else')depth=Math.max(0,depth-1);
-    h+='<div class="rb-row" style="margin-left:'+(depth*18)+'px"><div class="rb-blk rb-k-'+def.k+'"><span>'+def.label+'</span>'+
-      (b.t==='repeat'?'<button class="rb-mini" aria-label="Fewer times" onclick="rbN('+i+',-1)">−</button><span>'+b.n+' times</span><button class="rb-mini" aria-label="More times" onclick="rbN('+i+',1)">+</button>':'')+'</div>'+
-      '<button class="rb-mini" aria-label="Move up" onclick="rbMove('+i+',-1)">↑</button><button class="rb-mini" aria-label="Move down" onclick="rbMove('+i+',1)">↓</button><button class="rb-mini" aria-label="Remove" onclick="rbDel('+i+')">✕</button></div>';
-    if(def.open||b.t==='else')depth++;
-  });
-  return h;
-}
 function rbPaintProg(){const el=document.getElementById('rbProg');if(el)el.innerHTML=rbProgHTML();const c=document.getElementById('rbCnt');if(c)c.textContent=rbCount();}
 function rbTabsHTML(){const d=rbDone();return RB_MISSIONS.map((m,i)=>'<button class="rb-tab'+(i===rb.m?' on':'')+'" onclick="rbPick('+i+')"><b>'+m.name+'</b><span>'+m.skill+'</span><div class="rb-stars" aria-label="'+(d[m.id]||0)+' of 3 stars">'+rbStarsText(d[m.id]||0)+'</div></button>').join('');}
 function rbPaintTabs(){const el=document.getElementById('rbTabs');if(el)el.innerHTML=rbTabsHTML();}
@@ -1475,9 +1507,9 @@ function rbWorldHTML(){
   return '<div class="rb-world" style="aspect-ratio:'+cols+'/'+rows+'">'+h+'</div>';
 }
 /* ─────────── Robotics Lab pages: Overview, Circuits, 3D Modeling, Scratch Coding ─────────── */
-rb.tab='home'; rb.c={v:6,r:330,on:false}; rb.rot={x:-22,y:-35,explode:false};
-function rbTab(t){if(rb.running)rb.stop=true;rb.tab=t;render();window.scrollTo(0,0);}
-function rbClose(){if(rb.running)rb.stop=true;rb.tab='home';state.labOpen=null;render();}
+rb.tab='home';  rb.rot={x:-22,y:-35,explode:false};
+function rbTab(t){if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.cb)rb.cb.sim=false;rb.tab=t;render();window.scrollTo(0,0);}
+function rbClose(){if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.cb)rb.cb.sim=false;rb.tab='home';state.labOpen=null;render();}
 
 /* parts gallery (realistic colour drawings) */
 const RB_SV=(p)=>'<svg viewBox="0 0 56 56" aria-hidden="true">'+p+'</svg>';
@@ -1514,70 +1546,119 @@ function rbBatterySVG(v){
        '<text x="'+(x+w/2)+'" y="'+(up?130:188)+'" text-anchor="middle" font-size="'+(n===2?13:10)+'" font-weight="800" fill="#1D1D1F">+</text>';}
   return h+'<text x="65" y="222" text-anchor="middle" font-size="10" fill="#5A6B78">'+n+' × AA cells</text>';
 }
-function rbCircuitCalc(){const c=rb.c,ma=c.on?Math.max(0,(c.v-2)/c.r*1000):0;return {ma:ma,bright:Math.min(1,ma/20),over:ma>25};}
-function rbCircuitPaint(){
-  const c=rb.c,k=rbCircuitCalc(),g=id=>document.getElementById(id);if(!g('rbcLed'))return;
-  const lit=k.ma>0&&!k.over;
-  g('rbcBat').innerHTML=rbBatterySVG(c.v);
-  g('rbcKnob').setAttribute('x',c.on?186:162);g('rbcSwT').textContent=c.on?'ON':'OFF';
-  const b=rbBands(c.r);['rbcB1','rbcB2','rbcB3'].forEach((id,i)=>g(id).setAttribute('fill',RB_BAND[b[i]][1]));
-  g('rbcCode').textContent='Colour bands: '+RB_BAND[b[0]][0]+', '+RB_BAND[b[1]][0]+', '+RB_BAND[b[2]][0]+', gold = '+c.r+' Ω';
-  g('rbcLed').setAttribute('fill',k.over?'#4A4F55':lit?'#FF3B30':'#B3413B');
-  g('rbcLedTop').setAttribute('opacity',k.over?0.1:lit?0.9:0.45);
-  g('rbcGlow').setAttribute('opacity',lit?(0.25+k.bright*0.75).toFixed(2):0);
-  g('rbcBurn').style.display=k.over?'':'none';
-  g('rbcFlow').style.display=lit?'':'none';
-  g('rbcV').textContent=c.v+' V';g('rbcR').textContent=c.r+' Ω';g('rbcI').textContent=k.ma.toFixed(1)+' mA';
-  const m=g('rbcMsg');
-  m.className='rb-msg'+(k.over?' bad':lit?' ok':'');
-  m.textContent=!c.on?'The switch is OFF, so no current flows. Slide it ON.':
-    k.over?'Too much current ('+k.ma.toFixed(0)+' mA). The LED burns out! Use a bigger resistor.':
-    k.ma<=0?'The battery voltage is too low to light this LED.':
-    k.ma<4?'The LED glows dimly. A smaller resistor lets more current flow.':
-    'The LED lights up safely at '+k.ma.toFixed(1)+' mA. Safe range is up to 20 mA.';
-  document.querySelectorAll('#rbcVolts button').forEach(x=>x.classList.toggle('on',Number(x.dataset.v)===c.v));
-  g('rbcSwBtn').textContent=c.on?'Switch OFF':'Switch ON';
+/* ── Circuit builder: pick parts, then start the simulation ── */
+rb.cb={v:6,sim:false,sel:-1,parts:[{t:'switch',on:false},{t:'resistor',r:330},{t:'led'}]};
+const RB_CB_SLOTS=[[190,96],[290,96],[390,96],[390,244],[250,244]];
+const RB_CB_NAME={led:'LED',resistor:'Resistor',switch:'Switch',motor:'DC motor',buzzer:'Buzzer'};
+const RB_CB_BG='#F3EFE4';
+function rbCbCalc(){
+  const c=rb.cb,ps=c.parts,o={ma:0,rsum:0,state:'idle',burn:false,spin:false,beep:false,lit:false,bright:0};
+  if(!c.sim){o.state='stopped';return o;}
+  if(!ps.length){o.state='short';return o;}
+  const nLed=ps.filter(p=>p.t==='led').length;
+  o.rsum=ps.reduce((a,p)=>a+(p.t==='resistor'?p.r:p.t==='motor'?20:p.t==='buzzer'?150:0),0);
+  if(ps.some(p=>p.t==='switch'&&!p.on)){o.state='open';return o;}
+  if(o.rsum===0&&nLed===0){o.state='short';return o;}
+  const vd=c.v-2*nLed;
+  if(vd<=0){o.state='lowv';return o;}
+  o.ma=vd/(o.rsum+1)*1000;
+  if(nLed&&o.ma>25){o.burn=true;o.state='burn';return o;}
+  o.state='run';o.lit=nLed>0&&o.ma>=1;o.bright=Math.min(1,o.ma/20);
+  o.spin=ps.some(p=>p.t==='motor')&&o.ma>=60;o.beep=ps.some(p=>p.t==='buzzer')&&o.ma>=5;
+  return o;
 }
-function rbCV(v){rb.c.v=v;rbCircuitPaint();}
-function rbCR(el){rb.c.r=Number(el.value);rbCircuitPaint();}
-function rbCS(){rb.c.on=!rb.c.on;rbCircuitPaint();}
-function rbCircuitsHTML(){
-  const W1='M104 124 C 132 124, 124 62, 150 62',W2='M212 62 H 246',W3='M342 62 C 408 62, 408 232, 352 232',W4='M336 224 C 318 252, 170 256, 140 214 S 126 176, 104 176';
-  const svg='<svg viewBox="0 0 420 262" style="width:100%;max-width:520px;display:block;margin:0 auto" role="img" aria-label="A battery pack wired through a slide switch and a resistor to a red LED">'+
+function rbCbPartSVG(p,i,k){
+  const xy=RB_CB_SLOTS[i],sel=rb.cb.sel===i&&!rb.cb.sim;let h='';
+  const lead=(a,b)=>'<path d="M'+a+' 0H'+b+'" stroke="#9AA3AB" stroke-width="3" stroke-linecap="round"/>';
+  if(p.t==='resistor'){const b=rbBands(p.r);
+    h='<rect x="-34" y="-5" width="68" height="10" fill="'+RB_CB_BG+'"/>'+lead(-36,-26)+lead(26,36)+
+      '<rect x="-28" y="-13" width="56" height="26" rx="12" fill="#E3C89A" stroke="#C9AD7C"/><rect x="-24" y="-10" width="48" height="5" rx="2.5" fill="#fff" opacity=".35"/>'+
+      [-17,-6,5].map((x,j)=>'<rect x="'+x+'" y="-12.5" width="6" height="25" fill="'+RB_BAND[b[j]][1]+'"/>').join('')+'<rect x="17" y="-11.5" width="5" height="23" fill="#C9A227"/>'+
+      '<text y="30" text-anchor="middle" font-size="10" fill="#5A6B78">'+p.r+' Ω</text>';
+  }else if(p.t==='switch'){
+    h='<rect x="-36" y="-5" width="72" height="10" fill="'+RB_CB_BG+'"/><rect x="-37" y="-5" width="10" height="10" rx="2" fill="#B9BEC4"/><rect x="27" y="-5" width="10" height="10" rx="2" fill="#B9BEC4"/>'+
+      '<rect x="-30" y="-16" width="60" height="32" rx="4" fill="#2B2F33"/><rect x="-24" y="-9" width="48" height="18" rx="3" fill="#111"/>'+
+      '<rect x="'+(p.on?4:-20)+'" y="-12" width="20" height="24" rx="3" fill="#E4E7EA" stroke="#9AA3AB"/>'+
+      '<text y="32" text-anchor="middle" font-size="10" font-weight="700" fill="#11212D">'+(p.on?'ON':'OFF')+'</text>';
+  }else if(p.t==='led'){const lit=k.lit,burn=k.burn;
+    h=(lit?'<circle cx="0" cy="-42" r="52" fill="url(#rbcGg)" opacity="'+(0.25+k.bright*0.75).toFixed(2)+'"/>':'')+
+      '<rect x="-7" y="-5" width="14" height="10" fill="'+RB_CB_BG+'"/><path d="M-8 0V-16M8 0V-16" stroke="#9AA3AB" stroke-width="3.5" stroke-linecap="round"/>'+
+      '<path d="M-20 -21V-45a20 20 0 0 1 40 0v24z" fill="'+(burn?'#4A4F55':lit?'#FF3B30':'#B3413B')+'"/><rect x="-24" y="-22" width="48" height="7" rx="2" fill="#8E2F2A"/>'+
+      '<path d="M-13 -45a13 13 0 0 1 10-13" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="'+(burn?0.1:lit?0.9:0.45)+'"/>'+
+      (burn?'<path d="M-8 -50l16 16M8 -50l-16 16" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M-4 -70c-6-8 6-10 0-18M6 -72c-5-7 5-9 0-16" stroke="#8A99A3" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'')+
+      '<text y="20" text-anchor="middle" font-size="10" fill="#5A6B78">LED</text>';
+  }else if(p.t==='motor'){
+    h='<rect x="-30" y="-5" width="60" height="10" fill="'+RB_CB_BG+'"/>'+lead(-36,-24)+lead(24,36)+
+      '<circle r="26" fill="#B9BEC4" stroke="#8C959D" stroke-width="2"/><circle r="19" fill="#D9DDE1"/>'+
+      '<g>'+(k.spin?'<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.5s" repeatCount="indefinite"/>':'')+
+      '<rect x="-21" y="-4" width="42" height="8" rx="4" fill="#F2C230"/><rect x="-4" y="-21" width="8" height="42" rx="4" fill="#F2C230"/></g><circle r="5" fill="#6B7780"/>'+
+      '<text y="42" text-anchor="middle" font-size="10" fill="#5A6B78">Motor'+(k.spin?' · spinning':'')+'</text>';
+  }else if(p.t==='buzzer'){
+    h='<rect x="-28" y="-5" width="56" height="10" fill="'+RB_CB_BG+'"/>'+lead(-36,-22)+lead(22,36)+
+      '<circle r="23" fill="#1D1D1F"/><circle r="17" fill="#33383D"/><circle r="4" fill="#000"/>'+
+      (k.beep?'<g fill="none" stroke="#C7791A" stroke-width="3" stroke-linecap="round"><path d="M18 -30a26 26 0 0 1 14 14"/><path d="M22 -42a40 40 0 0 1 22 22"/><animate attributeName="opacity" values="1;0.2;1" dur="0.5s" repeatCount="indefinite"/></g>':'')+
+      '<text y="38" text-anchor="middle" font-size="10" fill="#5A6B78">Buzzer'+(k.beep?' · beeping':'')+'</text>';
+  }
+  return '<g transform="translate('+xy[0]+','+xy[1]+')" onclick="rbCbClick('+i+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();rbCbClick('+i+')}" tabindex="0" role="button" aria-label="'+RB_CB_NAME[p.t]+(p.t==='switch'?(p.on?', on':', off'):'')+'" style="cursor:pointer">'+
+    (sel?'<rect x="-44" y="-72" width="88" height="120" rx="8" fill="none" stroke="#2F6FDB" stroke-width="2" stroke-dasharray="5 4"/>':'')+h+'</g>';
+}
+function rbCbMsg(k){
+  const ps=rb.cb.parts,has=t=>ps.some(p=>p.t===t);
+  if(k.state==='stopped')return ['Build your circuit, then press Start simulation.',''];
+  if(k.state==='short')return ['Short circuit! The wire joins + straight to −, so the battery gets hot. Add a part.','bad'];
+  if(k.state==='open')return ['A switch is OFF, so the circuit is open and no current flows. Tap the switch.',''];
+  if(k.state==='lowv')return ['The battery voltage is too low. Each LED needs about 2 V. Use a bigger battery or fewer LEDs.','bad'];
+  if(k.state==='burn')return ['Too much current ('+k.ma.toFixed(0)+' mA). The LED burns out! Add a resistor or use a bigger one.','bad'];
+  const out=[];
+  if(has('led'))out.push(k.ma<4?'the LED glows dimly':'the LED lights up');
+  if(has('motor'))out.push(k.spin?'the motor spins':'the motor gets too little current to spin');
+  if(has('buzzer'))out.push(k.beep?'the buzzer beeps':'the buzzer is silent');
+  if(!out.length)return ['Current flows at '+k.ma.toFixed(1)+' mA, but there is nothing to light, spin or beep. Add an LED, motor or buzzer.',''];
+  const s=out.join(', ');return [s.charAt(0).toUpperCase()+s.slice(1)+'. Current: '+k.ma.toFixed(1)+' mA.',(k.lit||k.spin||k.beep)?'ok':''];
+}
+function rbCbInner(){
+  const c=rb.cb,k=rbCbCalc(),flow=k.state==='run';
+  const RED='M104 124 C128 124,122 96,146 96 H470 Q484 96 484 110 V170',BLK='M484 170 V230 Q484 244 470 244 H170 C140 244,140 176,104 176';
+  const svg='<svg viewBox="0 0 520 290" style="width:100%;display:block" role="group" aria-label="Circuit workspace">'+
     '<defs><radialGradient id="rbcGg"><stop offset="0" stop-color="#FF3B30" stop-opacity=".85"/><stop offset="1" stop-color="#FF3B30" stop-opacity="0"/></radialGradient></defs>'+
-    '<rect x="4" y="4" width="412" height="254" rx="14" fill="#F3EFE4" stroke="#DDD6C4"/>'+
-    /* wires */
-    '<g fill="none" stroke-width="5" stroke-linecap="round"><path d="'+W1+'" stroke="#D32F2F"/><path d="'+W2+'" stroke="#D32F2F"/><path d="'+W3+'" stroke="#D32F2F"/><path d="'+W4+'" stroke="#1D1D1F"/></g>'+
-    '<g id="rbcFlow" fill="none" stroke="#FFE27A" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 13">'+[W1,W2,W3,W4].map(d=>'<path d="'+d+'"><animate attributeName="stroke-dashoffset" from="16" to="0" dur="0.55s" repeatCount="indefinite"/></path>').join('')+'</g>'+
-    /* battery */
-    '<g id="rbcBat"></g><circle cx="104" cy="124" r="4" fill="#D32F2F"/><circle cx="104" cy="176" r="4" fill="#1D1D1F"/>'+
-    /* slide switch */
-    '<rect x="146" y="57" width="10" height="10" rx="2" fill="#B9BEC4"/><rect x="206" y="57" width="10" height="10" rx="2" fill="#B9BEC4"/>'+
-    '<rect x="152" y="46" width="60" height="32" rx="4" fill="#2B2F33"/><rect x="158" y="53" width="48" height="18" rx="3" fill="#111"/>'+
-    '<rect id="rbcKnob" x="162" y="50" width="20" height="24" rx="3" fill="#E4E7EA" stroke="#9AA3AB"/><text id="rbcSwT" x="182" y="96" text-anchor="middle" font-size="11" font-weight="700" fill="#11212D">OFF</text><text x="182" y="38" text-anchor="middle" font-size="10" fill="#5A6B78">Slide switch</text>'+
-    /* resistor */
-    '<path d="M244 62H270M318 62H344" stroke="#9AA3AB" stroke-width="3" stroke-linecap="round"/>'+
-    '<rect x="266" y="49" width="56" height="26" rx="12" fill="#E3C89A" stroke="#C9AD7C"/><rect x="270" y="52" width="48" height="5" rx="2.5" fill="#fff" opacity=".35"/>'+
-    '<rect id="rbcB1" x="278" y="49.5" width="6" height="25"/><rect id="rbcB2" x="289" y="49.5" width="6" height="25"/><rect id="rbcB3" x="300" y="49.5" width="6" height="25"/><rect x="312" y="50.5" width="5" height="23" fill="#C9A227"/>'+
-    '<text x="294" y="38" text-anchor="middle" font-size="10" fill="#5A6B78">Resistor</text>'+
-    /* LED */
-    '<circle id="rbcGlow" cx="344" cy="148" r="58" fill="url(#rbcGg)" opacity="0"/>'+
-    '<path d="M336 176V224" stroke="#9AA3AB" stroke-width="3.5" stroke-linecap="round"/><path d="M352 176V232" stroke="#9AA3AB" stroke-width="3.5" stroke-linecap="round"/>'+
-    '<path id="rbcLed" d="M324 172V146a20 20 0 0 1 40 0v26z" fill="#B3413B"/><rect x="320" y="170" width="48" height="7" rx="2" fill="#8E2F2A"/>'+
-    '<path id="rbcLedTop" d="M331 146a13 13 0 0 1 10-13" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".45"/>'+
-    '<g id="rbcBurn" style="display:none"><path d="M336 140l16 16M352 140l-16 16" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M340 118c-6-8 6-10 0-18M350 116c-5-7 5-9 0-16" stroke="#8A99A3" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>'+
-    '<text x="298" y="160" text-anchor="middle" font-size="10" fill="#5A6B78">LED</text><text x="358" y="246" font-size="9" fill="#5A6B78">+ long leg</text>'+
+    '<rect x="2" y="2" width="516" height="286" rx="14" fill="'+RB_CB_BG+'" stroke="#DDD6C4"/>'+
+    '<g fill="none" stroke-width="5" stroke-linecap="round"><path d="'+RED+'" stroke="#D32F2F"/><path d="'+BLK+'" stroke="#1D1D1F"/></g>'+
+    (flow?'<g fill="none" stroke="#FFE27A" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 13">'+[RED,BLK].map(d=>'<path d="'+d+'"><animate attributeName="stroke-dashoffset" from="16" to="0" dur="0.55s" repeatCount="indefinite"/></path>').join('')+'</g>':'')+
+    '<g>'+rbBatterySVG(c.v)+'</g><circle cx="104" cy="124" r="4" fill="#D32F2F"/><circle cx="104" cy="176" r="4" fill="#1D1D1F"/>'+
+    (k.state==='short'?'<text x="65" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#C6362F">HOT!</text>':'')+
+    c.parts.map((p,i)=>rbCbPartSVG(p,i,k)).join('')+
+    (c.parts.length<5&&!c.sim?'<g transform="translate('+RB_CB_SLOTS[c.parts.length][0]+','+RB_CB_SLOTS[c.parts.length][1]+')"><rect x="-34" y="-16" width="68" height="32" rx="8" fill="#fff" fill-opacity=".7" stroke="#8A99A3" stroke-dasharray="5 4"/><text y="4" text-anchor="middle" font-size="10" fill="#5A6B78">next part</text></g>':'')+
     '</svg>';
-  setTimeout(rbCircuitPaint,0);
-  return '<div class="rbx-two"><div class="card rbx-pad"><div style="font-weight:700;margin-bottom:8px">Try it: light an LED</div>'+svg+
-      '<div id="rbcMsg" class="rb-msg" aria-live="polite"></div></div>'+
-    '<div class="card rbx-pad"><div style="font-weight:700">Controls</div>'+
-      '<div class="rbx-ctl"><label>Battery</label><div class="rbx-seg" id="rbcVolts">'+[3,6,9].map(v=>'<button data-v="'+v+'" onclick="rbCV('+v+')">'+v+' V</button>').join('')+'</div></div>'+
-      '<div class="rbx-ctl"><label for="rbcRs">Resistor</label><input id="rbcRs" type="range" min="50" max="1000" step="10" value="'+rb.c.r+'" oninput="rbCR(this)" style="flex:1;min-width:140px;accent-color:#0E7C6B"></div>'+
-      '<div class="rb-link" id="rbcCode" style="margin-top:6px"></div>'+
-      '<div class="rbx-ctl"><button class="btn teal" id="rbcSwBtn" onclick="rbCS()">Switch ON</button></div>'+
-      '<div class="rbx-read"><div><b id="rbcV"></b><span>Voltage</span></div><div><b id="rbcR"></b><span>Resistance</span></div><div><b id="rbcI"></b><span>Current</span></div></div>'+
-      '<div class="rb-link"><b>The rule (Ohm\'s law):</b> current = (battery voltage − 2 V for the LED) ÷ resistance.<br><span class="rb-chip">Physics: Ohm\'s law</span><span class="rb-chip">Physics: resistor colour code</span><span class="rb-chip">Maths: division and units</span></div></div></div>'+
+  const m=rbCbMsg(k),sp=c.parts[c.sel];
+  let selH='<span class="muted" style="font-size:13px">'+(c.sim?'Stop the simulation to change parts. You can still tap a switch.':'Tap a part on the board to select it.')+'</span>';
+  if(sp&&!c.sim){
+    selH='<b style="font-size:14px">'+RB_CB_NAME[sp.t]+'</b>'+
+      (sp.t==='resistor'?'<div class="rbx-seg">'+[100,220,330,1000].map(r=>'<button class="'+(sp.r===r?'on':'')+'" onclick="rbCbR('+r+')">'+(r===1000?'1 kΩ':r+' Ω')+'</button>').join('')+'</div>':'')+
+      '<button class="btn ghost" onclick="rbCbDel()">Remove</button>'+
+      (sp.t==='resistor'?'<span class="muted" style="font-size:12px;flex-basis:100%">Colour bands: '+rbBands(sp.r).map(x=>RB_BAND[x][0]).join(', ')+', gold</span>':'');
+  }
+  return '<div class="rbx-cbbar"><div class="rbx-seg">'+[3,6,9].map(v=>'<button class="'+(c.v===v?'on':'')+'" onclick="rbCbV('+v+')"'+(c.sim?' disabled':'')+'>'+v+' V</button>').join('')+'</div>'+
+      '<button class="btn '+(c.sim?'solid':'teal')+'" style="margin-left:auto" onclick="rbCbSim()">'+(c.sim?'■ Stop simulation':'▶ Start simulation')+'</button></div>'+
+    '<div class="rbx-cbwrap"><div class="rbx-tray" aria-label="Parts tray">'+['led','resistor','switch','motor','buzzer'].map(t=>{const pi=RB_PARTS.find(x=>x[0]===RB_CB_NAME[t]);
+        return '<button onclick="rbCbAdd(\''+t+'\')"'+((c.sim||c.parts.length>=5)?' disabled':'')+'>'+RB_SV(pi[2])+'<span>'+RB_CB_NAME[t]+'</span></button>';}).join('')+
+      '<button onclick="rbCbClear()"'+(c.sim?' disabled':'')+' style="justify-content:center"><span>Clear board</span></button></div>'+
+    '<div style="min-width:0">'+svg+'</div></div>'+
+    '<div class="rbx-ctl" style="min-height:38px">'+selH+'</div>'+
+    '<div class="rb-msg'+(m[1]?' '+m[1]:'')+'" aria-live="polite">'+m[0]+'</div>'+
+    '<div class="rbx-read"><div><b>'+c.v+' V</b><span>Battery</span></div><div><b>'+k.rsum+' Ω</b><span>Total resistance</span></div><div><b>'+k.ma.toFixed(1)+' mA</b><span>Current</span></div></div>';
+}
+function rbCbPaint(){const el=document.getElementById('rbCb');if(el)el.innerHTML=rbCbInner();}
+function rbCbAdd(t){const c=rb.cb;if(c.sim||c.parts.length>=5)return;c.parts.push(t==='resistor'?{t:t,r:330}:t==='switch'?{t:t,on:false}:{t:t});c.sel=c.parts.length-1;rbCbPaint();}
+function rbCbClick(i){const c=rb.cb,p=c.parts[i];if(!p)return;if(p.t==='switch')p.on=!p.on;if(!c.sim)c.sel=i;rbCbPaint();}
+function rbCbDel(){const c=rb.cb;if(c.sim||c.sel<0)return;c.parts.splice(c.sel,1);c.sel=-1;rbCbPaint();}
+function rbCbR(r){const p=rb.cb.parts[rb.cb.sel];if(p&&p.t==='resistor'&&!rb.cb.sim){p.r=r;rbCbPaint();}}
+function rbCbV(v){if(rb.cb.sim)return;rb.cb.v=v;rbCbPaint();}
+function rbCbSim(){rb.cb.sim=!rb.cb.sim;rb.cb.sel=-1;rbCbPaint();}
+function rbCbClear(){if(rb.cb.sim)return;rb.cb.parts=[];rb.cb.sel=-1;rbCbPaint();}
+function rbCircuitsHTML(){
+  return '<div class="card rbx-pad"><div style="font-weight:700;margin-bottom:10px">Circuit workspace</div><div id="rbCb">'+rbCbInner()+'</div>'+
+      '<div class="rb-link"><b>The rule (Ohm\'s law):</b> current = (battery voltage − 2 V for each LED) ÷ total resistance. Parts in a row share the same current.<br>'+
+      '<span class="rb-chip">Physics: Ohm\'s law</span><span class="rb-chip">Physics: series circuits</span><span class="rb-chip">Physics: resistor colour code</span><span class="rb-chip">Maths: division and units</span></div></div>'+
     '<div class="rbx-h">Parts you will use</div><div class="rbx-sub">The building blocks of every robot circuit.</div>'+
     '<div class="rbx-grid4">'+RB_PARTS.map(p=>'<div class="card rbx-part">'+RB_SV(p[2])+'<b>'+p[0]+'</b><span>'+p[1]+'</span></div>').join('')+'</div>';
 }
@@ -1620,7 +1701,7 @@ function rb3dHTML(){
   const steps=[['Sketch your idea','Draw the robot on paper and write the sizes.'],['Measure the parts','Measure motors and sensors so they fit. Practise with the Vernier caliper in the Physics lab.'],
     ['Build the 3D model','Join simple shapes: boxes, cylinders and holes.'],['Export the file','Save the model as an STL file for printing.'],
     ['Slice and print','Slicer software turns the model into layers for the 3D printer.'],['Assemble and test','Fit the motors, wheels and sensors, then test the robot.']];
-  const mats=[['3D printer','Builds the part layer by layer.'],['PLA filament','The plastic the printer melts. Made from plants.'],['Design software','Free tools that run in a browser.'],['Caliper','Measures parts to a tenth of a millimetre.']];
+  const mats=[['3D printer','Builds the part layer by layer.'],['PLA filament','The plastic the printer melts. Made from plants.'],['Design software','Free 3D design tools that run in a browser.'],['Caliper','Measures parts to a tenth of a millimetre.']];
   setTimeout(rbModelWire,0);
   return '<div class="rbx-two"><div class="card rbx-pad"><div style="font-weight:700;margin-bottom:8px">Robot car model</div>'+
       '<div class="rbx-stage" id="rbStage" tabindex="0" role="application" aria-label="3D robot model. Drag or use the arrow keys to rotate.">'+model+'</div>'+
@@ -1628,44 +1709,140 @@ function rb3dHTML(){
       '<div class="rbx-legend"><span><i style="background:#0E7C6B"></i>Chassis</span><span><i style="background:#2F6FDB"></i>Electronics box</span><span><i style="background:#F5A524"></i>Sensor mount</span><span><i style="background:#4A6072"></i>Wheels</span><span><i style="background:#8A99A3"></i>Caster wheel</span></div></div>'+
     '<div class="card"><div class="rbx-pad" style="padding-bottom:4px"><div style="font-weight:700">From idea to robot part</div></div>'+
       steps.map((s,i)=>'<div class="rbx-step"><i>'+(i+1)+'</i><div><b>'+s[0]+'</b><span>'+s[1]+'</span></div></div>').join('')+
-      '<div class="rbx-pad" style="padding-top:6px"><a class="rbx-ext" href="https://www.tinkercad.com/" target="_blank" rel="noopener">Open Tinkercad (free 3D design) ↗</a>'+
+      '<div class="rbx-pad" style="padding-top:6px">'+
       '<div class="rb-link"><span class="rb-chip">Maths: 3D shapes and volume</span><span class="rb-chip">Physics: measurement</span></div></div></div></div>'+
     '<div class="rbx-h">Materials and tools</div><div class="rbx-sub">What a school needs for 3D modeling and printing.</div>'+
     '<div class="rbx-grid4">'+mats.map(m=>'<div class="card rbx-part"><b>'+m[0]+'</b><span>'+m[1]+'</span></div>').join('')+'</div>';
 }
 function rbHomeHTML(){
   const d=rbDone(),stars=RB_MISSIONS.reduce((a,m)=>a+(d[m.id]||0),0);
-  const st=[['#C7791A','Circuits','Meet the parts of a robot and light an LED with a battery, switch and resistor.','circuits','Explore circuits'],
+  const st=[['#C7791A','Circuits','Pick real parts, wire them to a battery and start the simulation.','circuits','Build a circuit'],
     ['#2F6FDB','3D Modeling','Turn and take apart a robot car model, and see how parts are designed and printed.','model','Explore 3D modeling'],
-    ['#8A4FD6','Scratch Coding','Snap code blocks together and drive the robot through three missions.','code','Start coding']];
-  return '<div class="rbx-hero"><h3>Design it. Build it. Code it.</h3><p>Three stations take you from a simple circuit to a robot that finds its own way. Everything runs in the browser, so no kit is needed.</p></div>'+
-    '<div class="rbx-grid3">'+st.map((s,i)=>'<div class="card rbx-st"><div class="rbx-num" style="background:'+s[0]+'">'+(i+1)+'</div><h4>'+s[1]+'</h4><p>'+s[2]+'</p>'+
+    ['#8A4FD6','Scratch Coding','Snap code blocks together and drive the robot through three missions.','code','Start coding'],
+    ['#0E7C6B','My Robot','Drive a robot with a remote control and read its distance sensor.','live','Drive the robot']];
+  return '<div class="rbx-hero"><h3>Design it. Build it. Code it.</h3><p>Four stations take you from a simple circuit to driving a robot. Everything runs in the browser, so no kit is needed.</p></div>'+
+    '<div class="rbx-grid4">'+st.map((s,i)=>'<div class="card rbx-st"><div class="rbx-num" style="background:'+s[0]+'">'+(i+1)+'</div><h4>'+s[1]+'</h4><p>'+s[2]+'</p>'+
       (s[3]==='code'?'<div class="rb-stars" aria-label="'+stars+' of 9 stars">'+stars+' / 9 ★ earned</div>':'')+
       '<button class="btn solid" onclick="rbTab(\''+s[3]+'\')">'+s[4]+'</button></div>').join('')+'</div>';
+}
+/* Scratch-style program: nested blocks, drag and drop or tap */
+const RB_CAT=[['Motion','mo',['move','left','right']],['Control','ct',['repeat','until','ifwall','else','end']]];
+function rbBlockLabel(b,i){
+  if(b.t==='repeat')return 'repeat <button class="rb-mini" aria-label="Fewer times" onclick="rbN('+i+',-1)">−</button><span class="rbs-num">'+b.n+'</span><button class="rb-mini" aria-label="More times" onclick="rbN('+i+',1)">+</button>';
+  return {move:'move forward',left:'turn left ↺',right:'turn right ↻',until:'repeat until <span class="rbs-hex">at goal</span>',ifwall:'if <span class="rbs-hex">wall ahead</span> then',else:'else',end:''}[b.t];
+}
+function rbProgHTML(){
+  let h='<div class="rbs-hat">when ▶ Run clicked</div>',open=0;
+  const tools=i=>'<span class="rbs-tools"><button class="rb-mini" aria-label="Move up" onclick="rbMove('+i+',-1)">↑</button><button class="rb-mini" aria-label="Move down" onclick="rbMove('+i+',1)">↓</button><button class="rb-mini" aria-label="Remove" onclick="rbDel('+i+')">✕</button></span>';
+  const drag=i=>' draggable="true" ondragstart="rbDragRow(event,'+i+')" ondragover="event.preventDefault()" ondrop="rbDropRow(event,'+i+')"';
+  rb.prog.forEach((b,i)=>{
+    const k=RB_BLOCKS[b.t].k==='act'?'mo':'ct';
+    if(b.t==='end'){if(open>0){h+='</div><div class="rbs-foot rb-row" data-i="'+i+'"'+drag(i)+'>'+tools(i)+'</div></div>';open--;}else h+='<div class="rbs-blk rbs-bad rb-row" data-i="'+i+'"'+drag(i)+'><span>end (nothing to close)</span>'+tools(i)+'</div>';return;}
+    if(b.t==='else'){if(open>0)h+='</div><div class="rbs-blk rbs-ct rbs-mid rb-row" data-i="'+i+'"'+drag(i)+'><span>else</span>'+tools(i)+'</div><div class="rbs-in">';else h+='<div class="rbs-blk rbs-bad rb-row" data-i="'+i+'"'+drag(i)+'><span>else (needs an "if" block)</span>'+tools(i)+'</div>';return;}
+    if(RB_BLOCKS[b.t].open){h+='<div class="rbs-c"><div class="rbs-blk rbs-ct rb-row" data-i="'+i+'"'+drag(i)+'><span>'+rbBlockLabel(b,i)+'</span>'+tools(i)+'</div><div class="rbs-in">';open++;return;}
+    h+='<div class="rbs-blk rbs-'+k+' rb-row" data-i="'+i+'"'+drag(i)+'><span>'+rbBlockLabel(b,i)+'</span>'+tools(i)+'</div>';
+  });
+  while(open-->0)h+='</div><div class="rbs-foot"></div></div>';
+  if(!rb.prog.length)h+='<div class="muted" style="padding:14px 4px;font-size:13px">Drag blocks here, or tap a block to add it.</div>';
+  return h;
+}
+function rbHi(i){document.querySelectorAll('#rbProg .rb-row').forEach(r=>r.classList.toggle('cur',Number(r.dataset.i)===i));}
+function rbDragNew(e,t){e.dataTransfer.setData('text/plain','new:'+t);e.dataTransfer.effectAllowed='copy';}
+function rbDragRow(e,i){e.stopPropagation();e.dataTransfer.setData('text/plain','row:'+i);e.dataTransfer.effectAllowed='move';}
+function rbInsert(d,at){
+  if(rb.running||!d)return;const a=d.split(':');
+  if(a[0]==='new'&&RB_BLOCKS[a[1]]){if(rb.prog.length>=40)return;rb.prog.splice(at,0,a[1]==='repeat'?{t:'repeat',n:4}:{t:a[1]});}
+  else if(a[0]==='row'){const from=Number(a[1]);if(!(from>=0&&from<rb.prog.length))return;const it=rb.prog.splice(from,1)[0];rb.prog.splice(from<at?at-1:at,0,it);}
+  rbPaintProg();
+}
+function rbDropRow(e,i){e.preventDefault();e.stopPropagation();rbInsert(e.dataTransfer.getData('text/plain'),i);}
+function rbDropEnd(e){e.preventDefault();rbInsert(e.dataTransfer.getData('text/plain'),rb.prog.length);}
+function rbPaletteHTML(m){
+  return RB_CAT.map(c=>{const list=c[2].filter(t=>m.blocks.indexOf(t)>=0);if(!list.length)return '';
+    return '<div class="rbs-cat"><i class="rbs-dot rbs-'+c[1]+'"></i>'+c[0]+'</div>'+list.map(t=>'<button class="rbs-blk rbs-'+c[1]+' rb-add" draggable="true" ondragstart="rbDragNew(event,\''+t+'\')" onclick="rbAdd(\''+t+'\')">'+
+      ({move:'move forward',left:'turn left ↺',right:'turn right ↻',repeat:'repeat ( 4 )',until:'repeat until ⟨at goal⟩',ifwall:'if ⟨wall ahead⟩ then',else:'else',end:'end'}[t])+'</button>').join('');}).join('');
 }
 function rbCodeHTML(){
   const m=rbMission();
   if(!rb.bot){const s=rbStart();rb.bot={x:s.x,y:s.y,d:s.d,turns:s.d};}
   setTimeout(()=>{rbPlace();rbButtons();},0);
   return '<div class="rb-tabs" id="rbTabs">'+rbTabsHTML()+'</div>'+
-    '<div class="rb-wrap">'+
+    '<div class="rbs-wrap">'+
+      '<div class="card rb-pad rbs-pal"><div style="font-weight:700;margin-bottom:6px">Blocks</div>'+rbPaletteHTML(m)+'</div>'+
+      '<div class="card rb-pad"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;flex-wrap:wrap"><b>Your program</b><span class="muted" style="font-size:12px">Blocks: <b id="rbCnt">'+rbCount()+'</b> · 3 stars at '+m.par[0]+' or fewer</span></div>'+
+        '<div class="rb-prog rbs-prog" id="rbProg" ondragover="event.preventDefault()" ondrop="rbDropEnd(event)">'+rbProgHTML()+'</div>'+
+        '<div class="rb-acts"><button class="btn teal" id="rbRun" onclick="rbRun()">▶ Run</button><button class="btn ghost" id="rbStop" onclick="rbStop()">■ Stop</button>'+
+        '<button class="btn ghost" onclick="rbReset()">Reset</button><button class="btn ghost" onclick="rbClear()">Clear</button>'+
+        '<label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-left:auto"><input type="checkbox" onchange="rbSpeed(this)"'+(rb.fast?' checked':'')+'> Fast</label></div></div>'+
       '<div class="card rb-pad">'+rbWorldHTML()+
         '<div id="rbMsg" class="rb-msg'+(rb.msgKind?' '+rb.msgKind:'')+'" aria-live="polite">'+(rb.msg||m.goal)+'</div>'+
         '<div class="rb-link"><b>What you learn:</b><br>'+m.links.map(l=>'<span class="rb-chip">'+l+'</span>').join('')+'</div>'+
         '<details class="rb-link"><summary style="cursor:pointer;font-weight:600">Need a hint?</summary>'+m.hint+'</details></div>'+
-      '<div class="card rb-pad"><div style="font-weight:700;margin-bottom:8px">Blocks</div><div class="rb-pal">'+
-        m.blocks.map(t=>'<button class="rb-add rb-k-'+RB_BLOCKS[t].k+'" onclick="rbAdd(\''+t+'\')">+ '+RB_BLOCKS[t].label+'</button>').join('')+'</div>'+
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;flex-wrap:wrap"><b>Your program</b><span class="muted" style="font-size:12px">Blocks used: <b id="rbCnt">'+rbCount()+'</b> · 3 stars at '+m.par[0]+' or fewer</span></div>'+
-        '<div class="rb-prog" id="rbProg">'+rbProgHTML()+'</div>'+
-        '<div class="rb-acts"><button class="btn teal" id="rbRun" onclick="rbRun()">▶ Run</button><button class="btn ghost" id="rbStop" onclick="rbStop()">■ Stop</button>'+
-        '<button class="btn ghost" onclick="rbReset()">Reset robot</button><button class="btn ghost" onclick="rbClear()">Clear blocks</button>'+
-        '<label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-left:auto"><input type="checkbox" onchange="rbSpeed(this)"'+(rb.fast?' checked':'')+'> Fast</label></div></div>'+
-    '</div>'+
-    '<div class="rb-link" style="margin-top:14px">These blocks work like Scratch blocks. To make games and stories too: <a class="rbx-ext" href="https://scratch.mit.edu/" target="_blank" rel="noopener">Open Scratch ↗</a></div>';
+    '</div>';
+}
+
+/* ── My Robot: drive a preview robot; a real robot can be linked over USB ── */
+rb.live={x:100,y:60,a:0,cmd:'S',speed:5,raf:0,last:0,link:false,note:'',port:null,writer:null};
+const RB_AW=200, RB_AH=120;   /* arena size in cm */
+function rbLiveDist(){const L=rb.live,r=L.a*Math.PI/180,dx=Math.cos(r),dy=Math.sin(r);let t=1e9;
+  if(dx>0)t=Math.min(t,(RB_AW-L.x)/dx);if(dx<0)t=Math.min(t,(0-L.x)/dx);if(dy>0)t=Math.min(t,(RB_AH-L.y)/dy);if(dy<0)t=Math.min(t,(0-L.y)/dy);
+  return Math.max(0,t-9);}
+function rbLivePaint(){
+  const L=rb.live,g=id=>document.getElementById(id);if(!g('rbLv'))return;
+  g('rbLv').style.left=(L.x/RB_AW*100)+'%';g('rbLv').style.top=(L.y/RB_AH*100)+'%';g('rbLvIn').style.transform='rotate('+L.a+'deg)';
+  const d=rbLiveDist();g('rbLvD').textContent=d.toFixed(0)+' cm';g('rbLvA').textContent=(((Math.round(L.a)%360)+360)%360)+'°';
+  g('rbLvC').textContent={F:'Forward',B:'Backward',L:'Turning left',R:'Turning right',S:'Stopped'}[L.cmd];
+  document.querySelectorAll('.rbl-pad button').forEach(b=>b.classList.toggle('on',b.dataset.c===L.cmd&&L.cmd!=='S'));
+  g('rbLvSt').className='rbl-status'+(L.link?' on':'');g('rbLvSt').innerHTML='<i></i>'+(L.link?'Connected':'Not connected');
+  g('rbLvBtn').textContent=L.link?'Disconnect':'Connect robot';
+  g('rbLvNote').textContent=L.note||(L.link?'Your buttons now drive the real robot too.':'No robot is connected. The buttons drive the preview robot only.');
+  g('rbLvMode').textContent=L.link?'Real robot + preview':'Preview only';
+}
+function rbLiveTick(ts){
+  const L=rb.live;if(!document.getElementById('rbLv')||L.cmd==='S'){L.raf=0;return;}
+  const dt=Math.min(0.05,(ts-(L.last||ts))/1000);L.last=ts;const v=8+L.speed*6,r=L.a*Math.PI/180;
+  if(L.cmd==='L')L.a-=120*dt;else if(L.cmd==='R')L.a+=120*dt;
+  else{const s=(L.cmd==='F'?1:-1)*v*dt;
+    if(L.cmd==='F'&&rbLiveDist()<=2){L.cmd='S';L.note='Obstacle ahead! The robot stopped by itself.';rbLiveSend('S');rbLivePaint();L.raf=0;return;}
+    L.x=Math.max(10,Math.min(RB_AW-10,L.x+Math.cos(r)*s));L.y=Math.max(10,Math.min(RB_AH-10,L.y+Math.sin(r)*s));}
+  rbLivePaint();L.raf=requestAnimationFrame(rbLiveTick);
+}
+function rbLiveCmd(c){const L=rb.live;L.cmd=c;L.note='';L.last=0;rbLiveSend(c);rbLivePaint();if(c!=='S'&&!L.raf)L.raf=requestAnimationFrame(rbLiveTick);}
+function rbLiveSpeed(el){rb.live.speed=Number(el.value);const o=document.getElementById('rbLvSp');if(o)o.textContent=el.value;}
+function rbLiveSend(c){const L=rb.live;if(L.link&&L.writer){L.writer.write(new TextEncoder().encode(c)).catch(()=>rbLiveDrop('The robot stopped answering.'));}}
+function rbLiveDrop(note){const L=rb.live;try{if(L.writer)L.writer.releaseLock();}catch(e){}try{if(L.port)L.port.close();}catch(e){}L.port=null;L.writer=null;L.link=false;L.note=note||'';rbLivePaint();}
+async function rbLiveConnect(){
+  const L=rb.live;
+  if(L.link){rbLiveSend('S');rbLiveDrop('Robot disconnected.');return;}
+  if(!('serial' in navigator)){L.note='Not connected. This browser cannot link to a robot here. Use Chrome or Edge on a computer, on a secure (https) or localhost address.';rbLivePaint();return;}
+  try{
+    const port=await navigator.serial.requestPort();await port.open({baudRate:9600});
+    L.port=port;L.writer=port.writable.getWriter();L.link=true;L.note='';
+    port.addEventListener('disconnect',()=>rbLiveDrop('The robot was unplugged.'));
+  }catch(e){L.note='Not connected. No robot was selected.';}
+  rbLivePaint();
+}
+function rbLiveKey(e){const c={ArrowUp:'F',ArrowDown:'B',ArrowLeft:'L',ArrowRight:'R',' ':'S'}[e.key];if(c){e.preventDefault();rbLiveCmd(c);}}
+function rbLiveHTML(){
+  setTimeout(rbLivePaint,0);
+  const btn=(c,l,a)=>'<button data-c="'+c+'" aria-label="'+a+'" onclick="rbLiveCmd(\''+c+'\')">'+l+'</button>';
+  return '<div class="rbx-two">'+
+    '<div class="card rbx-pad"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><b>Robot preview</b><span class="rbl-status" id="rbLvSt"><i></i>Not connected</span></div>'+
+      '<div class="rbl-arena" tabindex="0" onkeydown="rbLiveKey(event)" aria-label="Robot arena. Use the arrow keys to drive and space to stop."><div class="rbl-bot" id="rbLv"><div id="rbLvIn">'+
+        '<svg viewBox="0 0 60 48" aria-hidden="true"><rect x="8" y="0" width="16" height="8" rx="2" fill="#22343F"/><rect x="8" y="40" width="16" height="8" rx="2" fill="#22343F"/><rect x="4" y="6" width="46" height="36" rx="8" fill="#0E7C6B"/><rect x="14" y="14" width="20" height="20" rx="3" fill="#2F6FDB"/><rect x="46" y="12" width="8" height="24" rx="2" fill="#F5A524"/><circle cx="50" cy="18" r="2.5" fill="#fff"/><circle cx="50" cy="30" r="2.5" fill="#fff"/></svg>'+
+      '</div></div></div>'+
+      '<div class="rbx-read"><div><b id="rbLvD"></b><span>Distance sensor</span></div><div><b id="rbLvA"></b><span>Heading</span></div><div><b id="rbLvC"></b><span>Motors</span></div></div>'+
+      '<div class="rb-msg" id="rbLvNote" aria-live="polite"></div></div>'+
+    '<div class="card rbx-pad"><b>Remote control</b>'+
+      '<div class="rbl-pad"><span></span>'+btn('F','▲','Forward')+'<span></span>'+btn('L','◀','Turn left')+btn('S','■','Stop')+btn('R','▶','Turn right')+'<span></span>'+btn('B','▼','Backward')+'<span></span></div>'+
+      '<div class="rbx-ctl"><label for="rbLvS">Speed</label><input id="rbLvS" type="range" min="1" max="10" value="'+rb.live.speed+'" oninput="rbLiveSpeed(this)" style="flex:1;min-width:120px;accent-color:#0E7C6B"><b id="rbLvSp">'+rb.live.speed+'</b></div>'+
+      '<div class="rbx-ctl"><button class="btn solid" id="rbLvBtn" onclick="rbLiveConnect()">Connect robot</button><span class="muted" style="font-size:13px">Mode: <b id="rbLvMode"></b></span></div>'+
+      '<details class="rb-link"><summary style="cursor:pointer;font-weight:600">How a real robot connects</summary>Plug an Arduino robot into the computer with a USB cable and press Connect robot. The page sends one letter for each button at 9600 baud: F forward, B backward, L left, R right, S stop. The robot program reads the letter and drives its motors.</details>'+
+      '<div class="rb-link"><span class="rb-chip">Physics: speed and distance</span><span class="rb-chip">Maths: angles</span><span class="rb-chip">Coding: sending commands</span></div></div></div>';
 }
 function roboticsView(){
-  const tabs=[['home','Overview'],['circuits','1. Circuits'],['model','2. 3D Modeling'],['code','3. Scratch Coding']];
-  const body=rb.tab==='circuits'?rbCircuitsHTML():rb.tab==='model'?rb3dHTML():rb.tab==='code'?rbCodeHTML():rbHomeHTML();
+  const tabs=[['home','Overview'],['circuits','1. Circuits'],['model','2. 3D Modeling'],['code','3. Scratch Coding'],['live','4. My Robot']];
+  const body=rb.tab==='circuits'?rbCircuitsHTML():rb.tab==='model'?rb3dHTML():rb.tab==='code'?rbCodeHTML():rb.tab==='live'?rbLiveHTML():rbHomeHTML();
   return '<div class="rbx-top"><button class="rbx-back" onclick="rbClose()">← All labs</button></div>'+
     '<div class="pagehead">'+eyebrow('Interactive Labs · Robotics')+'<h2 class="display">Robotics Lab</h2>'+
     '<p class="muted" style="margin-top:6px">Circuits, 3D modeling and block coding in one place.</p></div>'+

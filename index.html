@@ -1050,7 +1050,7 @@ function ROLES(){
     {id:"student",label:"Student",who:n,meta:g+' · Student'},
     {id:"parent",label:"Parent",who:"Guardian",meta:"Guardian of "+n},
     {id:"teacher",label:"Teacher",who:"S. Rajkumar",meta:"Mathematics · 4 sections"},
-    {id:"admin",label:"Administrator",who:"Principal's office",meta:"Kongu Vidyalaya"},
+    {id:"admin",label:"Administrator",who:"Principal's office",meta:"QE ASSISTANT"},
   ];
 }
 
@@ -1230,7 +1230,7 @@ function adminHome(){
     .map(g=>'<div class="row" style="align-items:flex-start;background:var(--canvas);border-radius:10px;padding:12px">'+
       '<span style="color:var(--teal)">'+I[g[0]](18)+'</span><div><div style="font-size:14px;font-weight:500">'+g[1]+'</div>'+
       '<div style="font-size:12px;color:var(--slate)">'+g[2]+'</div></div></div>').join('');
-  return card(eyebrow('Kongu Vidyalaya · Academic year 2026–27')+
+  return card(eyebrow('QE ASSISTANT · Academic year 2026–27')+
     '<h3 class="display" style="font-size:24px;font-weight:800;margin-top:4px">Institution snapshot</h3>'+
     '<div class="grid g4 mt20">'+tiles+'</div>','p24 rise')+
     '<div class="grid g2 mt20">'+
@@ -2672,7 +2672,7 @@ function awardsView(){
   const uName=u.name||'You';
   const uFirst=uName.split(' ')[0];
   const uGrade=String(u.grade||'').replace(/[^0-9]/g,'')||'?';
-  const uSchool='Kongu Vidyalaya';
+  const uSchool='QE ASSISTANT';
   // Compute quiz score for points
   const qzAnswers=state.qz?state.qz.answers:{};
   const correct=Object.values(qzAnswers).filter(v=>v===true).length;
@@ -2735,7 +2735,7 @@ function downloadAllCerts(){
   const u=state.user||{};
   const uName=u.name||'Student';
   const uGrade=String(u.grade||'').replace(/[^0-9]/g,'')||'?';
-  const school='Kongu Vidyalaya';
+  const school='QE ASSISTANT';
   const today=new Date();
   const dateStr=today.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
   const qzAnswers=state.qz?state.qz.answers:{};

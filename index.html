@@ -1671,6 +1671,9 @@ const RB_TK_DEF={
  npn:{n:'Transistor (NPN)',g:'3. Active components',t:[[-26,62],[0,62],[26,62]],tl:['C','B','E'],note:'A small current into B (base) switches on the path from C to E.'},
  ic555:{n:'555 timer IC (blinker)',g:'3. Active components',t:[[-26,62],[0,62],[26,62]],tl:['+','−','OUT'],note:'With 4.5 V or more on + and −, OUT switches on and off twice a second.'},
  reg:{n:'Voltage regulator (5 V)',g:'3. Active components',t:[[-26,62],[0,62],[26,62]],tl:['IN','GND','OUT'],note:'Give IN at least 6.5 V and OUT stays at a steady 5 V.'},
+ uno:{n:'Arduino Uno',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['5V','GND','D13','D9'],box:[150,130],board:[5,'D13','D9'],note:'Powered by USB. The 5V pin gives 5 V. Set each output pin to Off, On or Blink.'},
+ esp32:{n:'ESP32 board',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['3V3','GND','G2','G4'],box:[150,130],board:[3.3,'G2','G4'],note:'Powered by USB. Has Wi-Fi and Bluetooth. Its pins work at 3.3 V. Set each output pin to Off, On or Blink.'},
+ esp8266:{n:'ESP8266 board',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['3V3','GND','D1','D2'],box:[150,130],board:[3.3,'D1','D2'],note:'Powered by USB. Has Wi-Fi. Its pins work at 3.3 V. Set each output pin to Off, On or Blink.'},
  led:{n:'LED',g:'4. Output devices and sensors',t:[[-8,30],[8,30]]},
  bulb:{n:'Light bulb',g:'4. Output devices and sensors',t:[[-10,30],[10,30]]},
  buzz:{n:'Buzzer',g:'4. Output devices and sensors',t:[[-42,0],[42,0]]},
@@ -1686,7 +1689,7 @@ const RB_TK_DEF={
  solder:{n:'Solder wire and flux',g:'5. Boards, wires and tools',t:[],note:'Used to join parts for good on a real board. It does not change the simulation.'},
  tape:{n:'Heat shrink and tape',g:'5. Boards, wires and tools',t:[],note:'Covers bare wires on a real circuit. It does not change the simulation.'}
 };
-const RB_TK_POWER=['bat9','bat3','holder','coin','solar'];
+const RB_TK_POWER=['bat9','bat3','holder','coin','solar','uno','esp32','esp8266'];
 function rbTkExample(){return {id:6,parts:[{id:1,k:'bat9',x:140,y:300,r:0},{id:2,k:'sw',x:300,y:130,r:0,on:false},{id:3,k:'res',x:480,y:130,r:0,ohm:330},{id:4,k:'led',x:660,y:230,r:0,col:'red'}],
   wires:[{a:[1,0],b:[2,0],c:'#D32F2F'},{a:[2,1],b:[3,0],c:'#D32F2F'},{a:[3,1],b:[4,0],c:'#D32F2F'},{a:[4,1],b:[1,1],c:'#1D1D1F'}]};}
 rb.tk=(function(){let d=null;try{d=JSON.parse(localStorage.getItem('qe_circuit')||'null');}catch(e){}
@@ -1712,6 +1715,8 @@ function rbTkBranches(p,n){
    case 'npn':{const be=D(1,2,0.7),ce={p:p,a:n(0),b:n(2),kind:'S',on:false,gon:1/3,test:()=>(be.i||0)>0.0001};return [ce,be];}
    case 'reg':{const inn=R(0,1,2000),o={p:p,a:n(2),b:n(1),kind:'C',on:false,g:1,v:5,test:()=>(inn.dv||0)>=6.5};return [o,inn];}
    case 'ic555':{const sup=R(0,1,1500),o={p:p,a:n(2),b:n(1),kind:'C',on:false,g:0.1,v:0,test:()=>(sup.dv||0)>=4.5,pre:()=>{o.v=rb.tk.phase?Math.max(0,(sup.dv||0)-1.5):0;}};return [o,sup];}
+   case 'uno':case 'esp32':case 'esp8266':{const vcc=RB_TK_DEF[p.k].board[0],hi=m=>m==='on'||(m==='blink'&&!!rb.tk.phase);
+     return [V(0,1,1,vcc),hi(p.m1)?V(2,1,25,vcc):R(2,1,25),hi(p.m2)?V(3,1,25,vcc):R(3,1,25)];}
    case 'sw':case 'btn':case 'bread':case 'perf':case 'pcb':case 'solder':case 'tape':return [];
    default:return [R(0,1,rbTkOhm(p))];
   }
@@ -1761,7 +1766,7 @@ function rbTkSolve(){
       if(p.k==='trafo')out.V[p.id]=g.br[1].dv||0;
       if(p.k==='led'&&!p.burnt&&i>0.03){p.burnt=true;again=true;}
       if(p.k==='fuse'&&!p.blown&&Math.abs(i)>0.5){p.blown=true;again=true;}
-      if((p.k==='bat9'||p.k==='bat3'||p.k==='holder')&&(-i>1.5||e.a===e.b))out.short=true;});
+      if((p.k==='bat9'||p.k==='bat3'||p.k==='holder'||RB_TK_DEF[p.k].board)&&(-i>1.5||e.a===e.b))out.short=true;});
     if(!again)break;
   }
   return out;
@@ -1829,6 +1834,15 @@ function rbTkDraw(p,R,mini){
     (R&&!mini?'<text y="-36" text-anchor="middle" font-size="10" font-weight="700" fill="#11212D">'+(R.X[p.id]?'switch CLOSED':'switch open')+'</text>':'');
   case 'therm':return lead(-10,22,-14,58)+lead(10,22,14,58)+'<circle cx="0" cy="-6" r="30" fill="#E07B1A"/><circle cx="-10" cy="-16" r="8" fill="#fff" opacity=".3"/><text y="0" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">NTC</text>';
   case 'clip':return '<g transform="translate(-56,-56) scale(2)">'+RB_GI.clip+'</g>';
+  case 'uno':case 'esp32':case 'esp8266':{const d=RB_TK_DEF[p.k].board,pin=(x,m)=>{const hi=R&&(m==='on'||(m==='blink'&&!!rb.tk.phase));return '<circle cx="'+x+'" cy="34" r="4" fill="'+(hi?'#2ECC71':'#55606A')+'"/>';};
+    const legs=lead(-45,70,-45,46)+lead(-15,70,-15,46)+lead(15,70,15,46)+lead(45,70,45,46);
+    if(p.k==='uno')return legs+'<rect x="-68" y="-54" width="136" height="100" rx="8" fill="#00878F"/><rect x="-78" y="-40" width="30" height="26" rx="2" fill="#C9CED3" stroke="#8C959D"/><rect x="-74" y="6" width="24" height="22" rx="2" fill="#1D1D1F"/>'+
+      '<rect x="-14" y="-6" width="70" height="20" rx="2" fill="#1D1D1F"/><rect x="-40" y="-52" width="100" height="9" fill="#1D1D1F"/><rect x="-10" y="37" width="70" height="9" fill="#1D1D1F"/>'+
+      '<text x="12" y="-22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">ARDUINO</text><text x="12" y="-10" text-anchor="middle" font-size="8" font-weight="700" fill="#CFF3F5">UNO</text><circle cx="-36" cy="-24" r="3" fill="'+(R?'#2ECC71':'#55606A')+'"/>'+pin(15,p.m1)+pin(45,p.m2);
+    const esp=p.k==='esp32';
+    return legs+'<rect x="-60" y="-54" width="120" height="100" rx="6" fill="'+(esp?'#1D1D1F':'#14315C')+'"/><rect x="-36" y="-50" width="72" height="52" rx="3" fill="#C9CED3" stroke="#8C959D"/>'+
+      '<path d="M-28 -44h8v10h8v-10h8v10h8v-10h8v10h8v-10h8" fill="none" stroke="#8C959D" stroke-width="2"/><text y="-12" text-anchor="middle" font-size="12" font-weight="800" fill="#11212D">'+(esp?'ESP32':'ESP8266')+'</text>'+
+      '<rect x="-12" y="30" width="24" height="14" rx="2" fill="#C9CED3" stroke="#8C959D"/><g fill="#D7B84A">'+[-52,-44,44,52].map(x=>'<circle cx="'+x+'" cy="10" r="2.2"/><circle cx="'+x+'" cy="20" r="2.2"/>').join('')+'</g><circle cx="-48" cy="-44" r="3" fill="'+(R?'#2ECC71':'#55606A')+'"/>'+pin(15,p.m1).replace('cy="34"','cy="24"')+pin(45,p.m2).replace('cy="34"','cy="24"');}
   case 'bread':{const pp=RB_PARTS.find(x=>x[0]==='Breadboard');return '<g transform="translate(-140,-140) scale(5)">'+pp[2]+'</g>';}
   case 'perf':return '<g transform="translate(-140,-140) scale(5)">'+RB_GI.perf+'</g>';
   case 'pcb':return '<g transform="translate(-140,-140) scale(5)">'+RB_GI.pcb+'</g>';
@@ -1859,6 +1873,7 @@ function rbTkMsg(R){
   const w=rbTkWorks(R);
   if(w.length){const s=w.join(', ');return [s.charAt(0).toUpperCase()+s.slice(1)+'.','ok'];}
   if(!t.parts.some(p=>RB_TK_POWER.indexOf(p.k)>=0))return ['There is no battery. Add a power source.',''];
+  if(t.parts.some(p=>p.m1==='blink'||p.m2==='blink'))return ['A board pin is set to Blink, so its output switches on and off.','ok'];
   const mx=Math.max(0,...t.parts.filter(p=>RB_TK_POWER.indexOf(p.k)>=0).map(p=>Math.abs((R.I||{})[p.id]||0)));
   if(mx>0.0008)return ['Current is flowing ('+(mx*1000).toFixed(1)+' mA), but nothing lights, spins or beeps yet. Add an LED, bulb, motor or buzzer, or tap a part to read it.',''];
   return ['No current is flowing. Check that the path is closed from + all the way back to −, switches are ON and LEDs face the right way.',''];
@@ -1866,7 +1881,7 @@ function rbTkMsg(R){
 function rbTkSvg(R){
   const t=rb.tk;let h='<rect width="'+RB_TK_W+'" height="'+RB_TK_H+'" rx="14" fill="'+RB_TK_BG+'"/><g fill="#D9D1BC">';
   for(let x=30;x<RB_TK_W;x+=30)for(let y=30;y<RB_TK_H;y+=30)h+='<circle cx="'+x+'" cy="'+y+'" r="1.3"/>';h+='</g>';
-  t.parts.slice().sort((a,b)=>(RB_TK_DEF[b.k].box?1:0)-(RB_TK_DEF[a.k].box?1:0)).forEach(p=>{const sel=t.sel&&t.sel.t==='p'&&t.sel.id===p.id,bx=RB_TK_DEF[p.k].box||[104,104];
+  t.parts.slice().sort((a,b)=>((RB_TK_DEF[b.k].box&&!RB_TK_DEF[b.k].t.length)?1:0)-((RB_TK_DEF[a.k].box&&!RB_TK_DEF[a.k].t.length)?1:0)).forEach(p=>{const sel=t.sel&&t.sel.t==='p'&&t.sel.id===p.id,bx=RB_TK_DEF[p.k].box||[104,104];
     h+='<g data-part="'+p.id+'" transform="translate('+p.x+','+p.y+') rotate('+(p.r*90)+')" style="cursor:'+(t.sim?'pointer':'grab')+'">'+
       '<rect x="'+(-bx[0]/2)+'" y="'+(-bx[1]/2-(bx[1]===104?4:0))+'" width="'+bx[0]+'" height="'+(bx[1]+(RB_TK_DEF[p.k].t.some(q=>q[1]>50)?20:0))+'" rx="10" fill="'+(sel?'rgba(47,111,219,.08)':'transparent')+'" stroke="'+(sel?'#2F6FDB':'none')+'" stroke-width="2" stroke-dasharray="5 4"/>'+rbTkDraw(p,R,false)+'</g>';});
   t.wires.forEach((w,i)=>{const pa=rbTkPart(w.a[0]),pb=rbTkPart(w.b[0]);if(!pa||!pb)return;const a=rbTkTerm(pa,w.a[1]),b=rbTkTerm(pb,w.b[1]);
@@ -1891,6 +1906,7 @@ function rbTkInspector(R){
   if(p.k==='led'&&ed)h+='<div class="rbx-seg">'+Object.keys(RB_LEDC).map(c=>'<button class="'+((p.col||'red')===c?'on':'')+'" onclick="rbTkSet(\'col\',\''+c+'\')">'+c+'</button>').join('')+'</div>';
   if(p.k==='pot')h+='<label for="rbTkR" style="font-size:13px">Turn knob</label><input id="rbTkR" type="range" min="0" max="100" value="'+(p.pct==null?50:p.pct)+'" oninput="rbTkSlide(\'pct\',this)" style="width:150px;accent-color:#0E7C6B"><span id="rbTkRv" class="muted" style="font-size:12px">'+rbTkOhm(p)+' Ω</span>';
   if(p.k==='ldr')h+='<label for="rbTkR" style="font-size:13px">Light</label><input id="rbTkR" type="range" min="0" max="100" value="'+(p.light==null?50:p.light)+'" oninput="rbTkSlide(\'light\',this)" style="width:150px;accent-color:#0E7C6B"><span id="rbTkRv" class="muted" style="font-size:12px">'+rbTkOhm(p)+' Ω</span>';
+  if(RB_TK_DEF[p.k].board&&ed)h+=[1,2].map(n=>'<span style="font-size:13px;font-weight:600">'+RB_TK_DEF[p.k].board[n]+'</span><div class="rbx-seg">'+[['off','Off'],['on','On'],['blink','Blink']].map(o=>'<button class="'+((p['m'+n]||'off')===o[0]?'on':'')+'" onclick="rbTkSet(\'m'+n+'\',\''+o[0]+'\')">'+o[1]+'</button>').join('')+'</div>').join('');
   if(p.k==='therm')h+='<label for="rbTkR" style="font-size:13px">Temperature</label><input id="rbTkR" type="range" min="0" max="100" value="'+(p.temp==null?25:p.temp)+'" oninput="rbTkSlide(\'temp\',this)" style="width:150px;accent-color:#0E7C6B"><span id="rbTkRv" class="muted" style="font-size:12px">'+rbTkOhm(p)+' Ω</span>';
   if(RB_TK_DEF[p.k].note)h+='<span class="muted" style="font-size:12px;flex-basis:100%">'+RB_TK_DEF[p.k].note+'</span>';
   if(ed)h+='<button class="btn ghost" onclick="rbTkRot()">Rotate</button><button class="btn ghost" onclick="rbTkDel()">Delete</button>';
@@ -1912,7 +1928,7 @@ function rbTkPaint(svgOnly){
 function rbTkAdd(k){
   const t=rb.tk;if(t.sim||t.parts.length>=40)return;
   const n=t.parts.length,p={id:t.id++,k:k,x:150+(n%6)*120+Math.floor(n/24)*30,y:110+(Math.floor(n/6)%4)*110+Math.floor(n/24)*30,r:0};
-  if(k==='res')p.ohm=330;if(k==='led')p.col='red';if(k==='sw')p.on=false;if(k==='pot')p.pct=50;if(k==='ldr')p.light=50;if(k==='therm')p.temp=25;if(RB_TK_DEF[k].box){p.x=450;p.y=270;}
+  if(k==='res')p.ohm=330;if(k==='led')p.col='red';if(k==='sw')p.on=false;if(k==='pot')p.pct=50;if(k==='ldr')p.light=50;if(k==='therm')p.temp=25;if(RB_TK_DEF[k].board){p.m1='blink';p.m2='off';}if(RB_TK_DEF[k].box&&!RB_TK_DEF[k].t.length){p.x=450;p.y=270;}
   t.parts.push(p);t.sel={t:'p',id:p.id};t.pend=null;rbTkSave();rbTkPaint();
 }
 function rbTkSet(f,v){const t=rb.tk,p=t.sel&&rbTkPart(t.sel.id);if(!p||t.sim)return;p[f]=v;rbTkSave();rbTkPaint();}
@@ -1925,7 +1941,7 @@ function rbTkDel(){
   t.sel=null;t.pend=null;rbTkSave();rbTkPaint();
 }
 function rbTkColor(c){const t=rb.tk;t.color=c;if(!t.sim&&t.sel&&t.sel.t==='w'&&t.wires[t.sel.i]){t.wires[t.sel.i].c=c;rbTkSave();}rbTkPaint();}
-function rbTkBlink(){const t=rb.tk;clearInterval(t.blink);t.blink=0;t.phase=1;if(t.sim&&t.parts.some(p=>p.k==='ic555'))t.blink=setInterval(()=>{if(!t.sim||!document.getElementById('rbTk')){clearInterval(t.blink);t.blink=0;return;}t.phase=t.phase?0:1;rbTkPaint(true);},500);}
+function rbTkBlink(){const t=rb.tk;clearInterval(t.blink);t.blink=0;t.phase=1;if(t.sim&&t.parts.some(p=>p.k==='ic555'||p.m1==='blink'||p.m2==='blink'))t.blink=setInterval(()=>{if(!t.sim||!document.getElementById('rbTk')){clearInterval(t.blink);t.blink=0;return;}t.phase=t.phase?0:1;rbTkPaint(true);},500);}
 function rbTkSim(){const t=rb.tk;t.sim=!t.sim;t.pend=null;t.drag=null;rbTkBlink();t.parts.forEach(p=>{delete p.burnt;delete p.blown;delete p.down;});rbTkPaint();}
 function rbTkClear(){const t=rb.tk;if(t.sim)return;if(t.parts.length&&!confirm('Remove every part and wire from the workspace?'))return;t.parts=[];t.wires=[];t.sel=null;t.pend=null;rbTkSave();rbTkPaint();}
 function rbTkLoad(){const t=rb.tk;if(t.sim)return;if(t.parts.length&&!confirm('Replace your circuit with the example LED circuit?'))return;const e=rbTkExample();t.parts=e.parts;t.wires=e.wires;t.id=e.id;t.sel=null;t.pend=null;rbTkSave();rbTkPaint();}
@@ -1959,7 +1975,7 @@ function rbTkWire(){
 function rbCircuitsHTML(){
   const groups=[];Object.keys(RB_TK_DEF).forEach(k=>{const g=RB_TK_DEF[k].g;let o=groups.find(x=>x[0]===g);if(!o){o=[g,[]];groups.push(o);}o[1].push(k);});
   const tray=groups.map(g=>'<div class="rbtk-grp">'+g[0]+'</div>'+g[1].map(k=>{const s={k:k,ohm:330,col:'red',pct:50,light:50,temp:25,on:false};
-    return '<button onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
+    return '<button onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].board?'-84 -70 168 150':RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
   const cols=[['#D32F2F','Red'],['#1D1D1F','Black'],['#2E9E4F','Green'],['#1E63D0','Blue'],['#F2C230','Yellow']];
   setTimeout(rbTkWire,0);
   return '<div class="card rbx-pad"><div class="rbx-cbbar"><b>Circuit workspace</b><span class="muted" id="rbTkCnt" style="font-size:12px"></span>'+
@@ -1995,7 +2011,7 @@ const RB_GI={
 };
 function rbGIcon(ref){
   if(RB_GI[ref])return '<svg viewBox="0 0 56 56" aria-hidden="true">'+RB_GI[ref]+'</svg>';
-  if(RB_TK_DEF[ref])return '<svg viewBox="'+(RB_TK_DEF[ref].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw({k:ref,ohm:330,col:'red',pct:50,light:60,temp:25,on:false},null,true)+'</svg>';
+  if(RB_TK_DEF[ref])return '<svg viewBox="'+(RB_TK_DEF[ref].board?'-84 -70 168 150':RB_TK_DEF[ref].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw({k:ref,ohm:330,col:'red',pct:50,light:60,temp:25,on:false},null,true)+'</svg>';
   const p=RB_PARTS.find(x=>x[0]===ref);return p?RB_SV(p[2]):'';
 }
 const RB_GUIDE=[
@@ -2016,7 +2032,10 @@ const RB_GUIDE=[
   ['Zener Diode','Regulates voltage by letting current flow backward once a set voltage is reached.','zener',1],
   ['Transistor (BJT, MOSFET)','Works as a fast electronic switch, or amplifies weak signals.','npn',1],
   ['Integrated Circuit (IC / microchip)','Packs thousands of tiny transistors and resistors into one chip, such as the 555 timer or a microcontroller.','ic555',1],
-  ['Voltage Regulator','Keeps a constant, steady output voltage even when the input changes.','reg',1]]],
+  ['Voltage Regulator','Keeps a constant, steady output voltage even when the input changes.','reg',1],
+  ['Arduino Uno','A beginner microcontroller board. Its pins work at 5 V and switch lights, motors and buzzers.','uno',1],
+  ['ESP32','A fast microcontroller board with Wi-Fi and Bluetooth built in. Its pins work at 3.3 V.','esp32',1],
+  ['ESP8266','A low-cost microcontroller board with Wi-Fi built in. Its pins work at 3.3 V.','esp8266',1]]],
  ['4. Output Devices and Sensors','Light, sound, motion and sensing','These parts turn electricity into light, sound or motion, or react to the surroundings.','#0E7C6B',[
   ['LED (light emitting diode)','Gives out light when current passes through it in the correct direction.','led',1],
   ['Incandescent Bulb / Lamp','Makes light by heating a thin wire filament.','bulb',1],
@@ -2041,13 +2060,14 @@ function rbGuideHTML(){
 
 /* ── Microcontrollers: a short guide ── */
 const RB_MCU_LIST=[
- ['ATmega328P','8-bit','The chip on the Arduino Uno. A favourite for first robots.'],
+ ['Arduino Uno (ATmega328P)','8-bit','The best-known beginner board. A favourite for first robots.'],
  ['Intel 8051','8-bit','A classic chip with memory, timers and ports all on board.'],
  ['PIC16','8-bit','Small and cheap. Common in simple controllers and toys.'],
  ['MSP430','16-bit','Very low power, so it suits battery devices and meters.'],
  ['PIC24','16-bit','More precise maths than 8-bit chips, for motor control.'],
  ['STM32','32-bit','Fast ARM chips used in drones, printers and machines.'],
  ['ESP32','32-bit','Has Wi-Fi and Bluetooth built in, for connected robots.'],
+ ['ESP8266','32-bit','A low-cost chip with Wi-Fi built in, for smart-home projects.'],
  ['RP2040','32-bit','The chip on the Raspberry Pi Pico. Easy to code in Python.']
 ];
 const RB_MCU_TYPES=[

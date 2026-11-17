@@ -2157,7 +2157,7 @@ function rbConnText(){
     code:'No robot is connected. Your program drives the on-screen robot.',live:'No robot is connected. The remote drives the preview robot only.'}[rb.tab]||'';
 }
 function rbLivePaint(){
-  const ts=document.getElementById('rbTopSt');if(ts){ts.className='rbl-status'+(rb.live.link?' on':'');ts.innerHTML='<i></i>'+(rb.live.link?'Connected':'Connected');
+  const ts=document.getElementById('rbTopSt');if(ts){ts.className='rbl-status'+(rb.live.link?' on':'');ts.innerHTML='<i></i>'+(rb.live.link?'Connected':'Not connected');
     const tx=document.getElementById('rbTopTx');if(tx)tx.textContent=rbConnText();}
   const L=rb.live,g=id=>document.getElementById(id);if(!g('rbLv'))return;
   g('rbLv').style.left=(L.x/RB_AW*100)+'%';g('rbLv').style.top=(L.y/RB_AH*100)+'%';g('rbLvIn').style.transform='rotate('+L.a+'deg)';

@@ -469,6 +469,27 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .rbm-type h5{font-family:var(--display);font-size:15px;font-weight:700;margin-bottom:6px}
 .rbm-type p{font-size:13px;color:var(--slate);line-height:1.5;margin-top:4px}
 .rbm-type p b{color:var(--ink)}
+/* workspace toolbar, search and code panel */
+.rbtk-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:6px 8px;margin-bottom:10px}
+.rbtk-bar>i{width:1px;height:22px;background:var(--line);margin:0 4px}
+.rbtk-tb{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;min-height:32px}
+.rbtk-tb:hover:not(:disabled){border-color:var(--teal)}
+.rbtk-tb:disabled{opacity:.4;cursor:not-allowed}
+.rbtk-lab{font-size:12px;color:var(--slate);font-weight:600;min-width:38px;text-align:center}
+.rbtk-search{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;font-size:13px;margin-bottom:6px;background:var(--card);color:var(--ink)}
+.rbtk-tray button{cursor:grab}
+.rbtk-svg{cursor:default;aspect-ratio:5/3}
+.rbtk-code{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;background:var(--card)}
+.rbtk-codegrid{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:640px){.rbtk-codegrid{grid-template-columns:1fr}}
+.rbtk-pre{background:#0F1B24;color:#E6EDF3;border-radius:10px;padding:12px 14px;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:auto;margin:0;white-space:pre}
+.rbtk-serial{min-height:44px;max-height:150px;margin-top:6px;color:#7CFC8A}
+.rbtk-code button.rbs-num{border:0;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.rbtk-code button.rbs-num:disabled{opacity:.7;cursor:not-allowed}
+.rbm-eg{display:inline-block;font-style:normal;font-size:11px;font-weight:700;color:#0A5C50;background:var(--tealSoft);border-radius:99px;padding:2px 9px;margin-top:7px}
+.rbm-table{width:100%;border-collapse:collapse;font-size:14px}
+.rbm-table th{text-align:left;font-size:12px;color:var(--slate);background:var(--canvas);padding:10px 14px}
+.rbm-table td{padding:10px 14px;border-top:1px solid var(--line)}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1610,7 +1631,7 @@ function rbWorldHTML(){
 }
 /* ─────────── Robotics Lab pages: Overview, Circuits, 3D Modeling, Scratch Coding ─────────── */
 rb.tab='home';  rb.rot={x:-22,y:-35,explode:false};
-function rbTab(t){if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.tk){rb.tk.sim=false;rb.tk.pend=null;rb.tk.drag=null;}rb.tab=t;render();window.scrollTo(0,0);}
+function rbTab(t){if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.tk){rb.tk.sim=false;rb.tk.pend=null;rb.tk.drag=null;clearInterval(rb.tk.tick);rb.tk.tick=0;}rb.tab=t;render();window.scrollTo(0,0);}
 function rbClose(){if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.tk){rb.tk.sim=false;rb.tk.pend=null;rb.tk.drag=null;}rb.tab='home';state.labOpen=null;render();}
 
 /* parts gallery (realistic colour drawings) */
@@ -1671,9 +1692,9 @@ const RB_TK_DEF={
  npn:{n:'Transistor (NPN)',g:'3. Active components',t:[[-26,62],[0,62],[26,62]],tl:['C','B','E'],note:'A small current into B (base) switches on the path from C to E.'},
  ic555:{n:'555 timer IC (blinker)',g:'3. Active components',t:[[-26,62],[0,62],[26,62]],tl:['+','−','OUT'],note:'With 4.5 V or more on + and −, OUT switches on and off twice a second.'},
  reg:{n:'Voltage regulator (5 V)',g:'3. Active components',t:[[-26,62],[0,62],[26,62]],tl:['IN','GND','OUT'],note:'Give IN at least 6.5 V and OUT stays at a steady 5 V.'},
- uno:{n:'Arduino Uno',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['5V','GND','D13','D9'],box:[150,130],board:[5,'D13','D9'],note:'Powered by USB. The 5V pin gives 5 V. Set each output pin to Off, On or Blink.'},
- esp32:{n:'ESP32 board',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['3V3','GND','G2','G4'],box:[150,130],board:[3.3,'G2','G4'],note:'Powered by USB. Has Wi-Fi and Bluetooth. Its pins work at 3.3 V. Set each output pin to Off, On or Blink.'},
- esp8266:{n:'ESP8266 board',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['3V3','GND','D1','D2'],box:[150,130],board:[3.3,'D1','D2'],note:'Powered by USB. Has Wi-Fi. Its pins work at 3.3 V. Set each output pin to Off, On or Blink.'},
+ uno:{n:'Arduino Uno',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['5V','GND','D13','D9'],box:[150,130],board:[5,'D13','D9'],note:'Powered by USB. The 5V pin gives 5 V. Press Code to program its two output pins.'},
+ esp32:{n:'ESP32 board',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['3V3','GND','G2','G4'],box:[150,130],board:[3.3,'G2','G4'],note:'Powered by USB. Has Wi-Fi and Bluetooth. Its pins work at 3.3 V. Press Code to program its two output pins.'},
+ esp8266:{n:'ESP8266 board',g:'3. Active components',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:['3V3','GND','D1','D2'],box:[150,130],board:[3.3,'D1','D2'],note:'Powered by USB. Has Wi-Fi. Its pins work at 3.3 V. Press Code to program its two output pins.'},
  led:{n:'LED',g:'4. Output devices and sensors',t:[[-8,30],[8,30]]},
  bulb:{n:'Light bulb',g:'4. Output devices and sensors',t:[[-10,30],[10,30]]},
  buzz:{n:'Buzzer',g:'4. Output devices and sensors',t:[[-42,0],[42,0]]},
@@ -1696,7 +1717,6 @@ rb.tk=(function(){let d=null;try{d=JSON.parse(localStorage.getItem('qe_circuit')
   if(!d||!Array.isArray(d.parts)||!Array.isArray(d.wires))d=rbTkExample();
   d.parts=d.parts.filter(p=>p&&RB_TK_DEF[p.k]);
   return Object.assign(d,{sim:false,sel:null,pend:null,drag:null,mouse:null,color:'#D32F2F',res:null});})();
-function rbTkSave(){const t=rb.tk;try{localStorage.setItem('qe_circuit',JSON.stringify({id:t.id,parts:t.parts.map(p=>{const q=Object.assign({},p);delete q.burnt;delete q.blown;delete q.down;return q;}),wires:t.wires}));}catch(e){}}
 function rbTkPart(id){return rb.tk.parts.find(p=>p.id===id);}
 function rbTkTerm(p,i){const l=RB_TK_DEF[p.k].t[i],a=p.r*Math.PI/2,c=Math.round(Math.cos(a)),s=Math.round(Math.sin(a));return [p.x+l[0]*c-l[1]*s,p.y+l[0]*s+l[1]*c];}
 function rbTkOhm(p){return p.k==='res'?p.ohm:p.k==='pot'?10+Math.round((p.pct==null?50:p.pct)*100):p.k==='ldr'?Math.round(20000-((p.light==null?50:p.light)/100)*19500):
@@ -1715,8 +1735,8 @@ function rbTkBranches(p,n){
    case 'npn':{const be=D(1,2,0.7),ce={p:p,a:n(0),b:n(2),kind:'S',on:false,gon:1/3,test:()=>(be.i||0)>0.0001};return [ce,be];}
    case 'reg':{const inn=R(0,1,2000),o={p:p,a:n(2),b:n(1),kind:'C',on:false,g:1,v:5,test:()=>(inn.dv||0)>=6.5};return [o,inn];}
    case 'ic555':{const sup=R(0,1,1500),o={p:p,a:n(2),b:n(1),kind:'C',on:false,g:0.1,v:0,test:()=>(sup.dv||0)>=4.5,pre:()=>{o.v=rb.tk.phase?Math.max(0,(sup.dv||0)-1.5):0;}};return [o,sup];}
-   case 'uno':case 'esp32':case 'esp8266':{const vcc=RB_TK_DEF[p.k].board[0],hi=m=>m==='on'||(m==='blink'&&!!rb.tk.phase);
-     return [V(0,1,1,vcc),hi(p.m1)?V(2,1,25,vcc):R(2,1,25),hi(p.m2)?V(3,1,25,vcc):R(3,1,25)];}
+   case 'uno':case 'esp32':case 'esp8266':{const vcc=RB_TK_DEF[p.k].board[0];
+     return [V(0,1,1,vcc),p.o1?V(2,1,25,vcc):R(2,1,25),p.o2?V(3,1,25,vcc):R(3,1,25)];}
    case 'sw':case 'btn':case 'bread':case 'perf':case 'pcb':case 'solder':case 'tape':return [];
    default:return [R(0,1,rbTkOhm(p))];
   }
@@ -1834,15 +1854,15 @@ function rbTkDraw(p,R,mini){
     (R&&!mini?'<text y="-36" text-anchor="middle" font-size="10" font-weight="700" fill="#11212D">'+(R.X[p.id]?'switch CLOSED':'switch open')+'</text>':'');
   case 'therm':return lead(-10,22,-14,58)+lead(10,22,14,58)+'<circle cx="0" cy="-6" r="30" fill="#E07B1A"/><circle cx="-10" cy="-16" r="8" fill="#fff" opacity=".3"/><text y="0" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">NTC</text>';
   case 'clip':return '<g transform="translate(-56,-56) scale(2)">'+RB_GI.clip+'</g>';
-  case 'uno':case 'esp32':case 'esp8266':{const d=RB_TK_DEF[p.k].board,pin=(x,m)=>{const hi=R&&(m==='on'||(m==='blink'&&!!rb.tk.phase));return '<circle cx="'+x+'" cy="34" r="4" fill="'+(hi?'#2ECC71':'#55606A')+'"/>';};
+  case 'uno':case 'esp32':case 'esp8266':{const d=RB_TK_DEF[p.k].board,pin=(x,m)=>{const hi=R&&!!m;return '<circle cx="'+x+'" cy="34" r="4" fill="'+(hi?'#2ECC71':'#55606A')+'"/>';};
     const legs=lead(-45,70,-45,46)+lead(-15,70,-15,46)+lead(15,70,15,46)+lead(45,70,45,46);
     if(p.k==='uno')return legs+'<rect x="-68" y="-54" width="136" height="100" rx="8" fill="#00878F"/><rect x="-78" y="-40" width="30" height="26" rx="2" fill="#C9CED3" stroke="#8C959D"/><rect x="-74" y="6" width="24" height="22" rx="2" fill="#1D1D1F"/>'+
       '<rect x="-14" y="-6" width="70" height="20" rx="2" fill="#1D1D1F"/><rect x="-40" y="-52" width="100" height="9" fill="#1D1D1F"/><rect x="-10" y="37" width="70" height="9" fill="#1D1D1F"/>'+
-      '<text x="12" y="-22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">ARDUINO</text><text x="12" y="-10" text-anchor="middle" font-size="8" font-weight="700" fill="#CFF3F5">UNO</text><circle cx="-36" cy="-24" r="3" fill="'+(R?'#2ECC71':'#55606A')+'"/>'+pin(15,p.m1)+pin(45,p.m2);
+      '<text x="12" y="-22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">ARDUINO</text><text x="12" y="-10" text-anchor="middle" font-size="8" font-weight="700" fill="#CFF3F5">UNO</text><circle cx="-36" cy="-24" r="3" fill="'+(R?'#2ECC71':'#55606A')+'"/>'+pin(15,p.o1)+pin(45,p.o2);
     const esp=p.k==='esp32';
     return legs+'<rect x="-60" y="-54" width="120" height="100" rx="6" fill="'+(esp?'#1D1D1F':'#14315C')+'"/><rect x="-36" y="-50" width="72" height="52" rx="3" fill="#C9CED3" stroke="#8C959D"/>'+
       '<path d="M-28 -44h8v10h8v-10h8v10h8v-10h8v10h8v-10h8" fill="none" stroke="#8C959D" stroke-width="2"/><text y="-12" text-anchor="middle" font-size="12" font-weight="800" fill="#11212D">'+(esp?'ESP32':'ESP8266')+'</text>'+
-      '<rect x="-12" y="30" width="24" height="14" rx="2" fill="#C9CED3" stroke="#8C959D"/><g fill="#D7B84A">'+[-52,-44,44,52].map(x=>'<circle cx="'+x+'" cy="10" r="2.2"/><circle cx="'+x+'" cy="20" r="2.2"/>').join('')+'</g><circle cx="-48" cy="-44" r="3" fill="'+(R?'#2ECC71':'#55606A')+'"/>'+pin(15,p.m1).replace('cy="34"','cy="24"')+pin(45,p.m2).replace('cy="34"','cy="24"');}
+      '<rect x="-12" y="30" width="24" height="14" rx="2" fill="#C9CED3" stroke="#8C959D"/><g fill="#D7B84A">'+[-52,-44,44,52].map(x=>'<circle cx="'+x+'" cy="10" r="2.2"/><circle cx="'+x+'" cy="20" r="2.2"/>').join('')+'</g><circle cx="-48" cy="-44" r="3" fill="'+(R?'#2ECC71':'#55606A')+'"/>'+pin(15,p.o1).replace('cy="34"','cy="24"')+pin(45,p.o2).replace('cy="34"','cy="24"');}
   case 'bread':{const pp=RB_PARTS.find(x=>x[0]==='Breadboard');return '<g transform="translate(-140,-140) scale(5)">'+pp[2]+'</g>';}
   case 'perf':return '<g transform="translate(-140,-140) scale(5)">'+RB_GI.perf+'</g>';
   case 'pcb':return '<g transform="translate(-140,-140) scale(5)">'+RB_GI.pcb+'</g>';
@@ -1873,121 +1893,242 @@ function rbTkMsg(R){
   const w=rbTkWorks(R);
   if(w.length){const s=w.join(', ');return [s.charAt(0).toUpperCase()+s.slice(1)+'.','ok'];}
   if(!t.parts.some(p=>RB_TK_POWER.indexOf(p.k)>=0))return ['There is no battery. Add a power source.',''];
-  if(t.parts.some(p=>p.m1==='blink'||p.m2==='blink'))return ['A board pin is set to Blink, so its output switches on and off.','ok'];
+  if(t.parts.some(p=>RB_TK_DEF[p.k].board))return ['The board is running its code.','ok'];
   const mx=Math.max(0,...t.parts.filter(p=>RB_TK_POWER.indexOf(p.k)>=0).map(p=>Math.abs((R.I||{})[p.id]||0)));
   if(mx>0.0008)return ['Current is flowing ('+(mx*1000).toFixed(1)+' mA), but nothing lights, spins or beeps yet. Add an LED, bulb, motor or buzzer, or tap a part to read it.',''];
   return ['No current is flowing. Check that the path is closed from + all the way back to −, switches are ON and LEDs face the right way.',''];
 }
+/* ── workspace view, history and board code ── */
+const RB_WW=1800, RB_WH=1080;                     /* size of the whole canvas; the view shows part of it */
+const RB_TK_PINS={uno:['13','9'],esp32:['2','4'],esp8266:['D1','D2']};
+const RB_TK_WAITS=[100,200,500,1000,2000,5000];
+Object.assign(rb.tk,{vb:{x:0,y:0,w:RB_TK_W,h:RB_TK_H},undo:[],redo:[],code:null,codeView:'blocks',serial:[],pan:null,pts:[],tick:0});
+function rbTkClean(p){const q=Object.assign({},p);['burnt','blown','down','pc','o1','o2','until','m1','m2'].forEach(k=>delete q[k]);return q;}
+function rbTkSnap(){const t=rb.tk;return JSON.stringify({id:t.id,parts:t.parts.map(rbTkClean),wires:t.wires});}
+function rbTkSave(){try{localStorage.setItem('qe_circuit',rbTkSnap());}catch(e){}}
+function rbTkPush(){const t=rb.tk;t.undo.push(rbTkSnap());if(t.undo.length>60)t.undo.shift();t.redo=[];}
+function rbTkRestore(js){const t=rb.tk,d=JSON.parse(js);t.id=d.id;t.parts=d.parts;t.wires=d.wires;t.sel=null;t.pend=null;t.pts=[];rbTkSave();rbTkPaint();}
+function rbTkUndo(){const t=rb.tk;if(t.sim||!t.undo.length)return;t.redo.push(rbTkSnap());rbTkRestore(t.undo.pop());}
+function rbTkRedo(){const t=rb.tk;if(t.sim||!t.redo.length)return;t.undo.push(rbTkSnap());rbTkRestore(t.redo.pop());}
+function rbTkProg(p){
+  if(!Array.isArray(p.prog)){
+    if(p.m1==='on'||p.m2==='on'||(p.m1==='off'&&p.m2==='off'))p.prog=[{t:'pin',n:1,v:p.m1==='on'?1:0},{t:'pin',n:2,v:p.m2==='on'?1:0},{t:'wait',ms:1000}];
+    else p.prog=[{t:'pin',n:1,v:1},{t:'wait',ms:1000},{t:'pin',n:1,v:0},{t:'wait',ms:1000}];
+  }
+  return p.prog;
+}
+function rbTkCodeText(p){
+  const pins=RB_TK_PINS[p.k],prog=rbTkProg(p),ser=prog.some(s=>s.t==='print');
+  return '// '+RB_TK_DEF[p.k].n+'\nvoid setup() {\n  pinMode('+pins[0]+', OUTPUT);\n  pinMode('+pins[1]+', OUTPUT);\n'+(ser?'  Serial.begin(9600);\n':'')+'}\n\nvoid loop() {\n'+
+    (prog.length?prog.map(s=>s.t==='pin'?'  digitalWrite('+pins[s.n-1]+', '+(s.v?'HIGH':'LOW')+');':s.t==='wait'?'  delay('+s.ms+');':'  Serial.println("'+String(s.text||'').replace(/[\\"]/g,'')+'");').join('\n'):'  // add blocks to make the board do something')+'\n}\n';
+}
+function rbTkTick(){
+  const t=rb.tk;if(!t.sim||!document.getElementById('rbTk')){clearInterval(t.tick);t.tick=0;return;}
+  const now=performance.now();let changed=false,said=false;
+  t.parts.forEach(p=>{if(!RB_TK_DEF[p.k].board)return;const prog=rbTkProg(p);if(!prog.length||(p.until&&now<p.until))return;
+    for(let n=0;n<30;n++){const s=prog[p.pc%prog.length];p.pc=(p.pc+1)%prog.length;
+      if(s.t==='pin'){const v=!!s.v;if(p['o'+s.n]!==v){p['o'+s.n]=v;changed=true;}}
+      else if(s.t==='print'){t.serial.push(String(s.text||''));if(t.serial.length>200)t.serial.shift();said=true;}
+      else if(s.t==='wait'){p.until=now+s.ms;break;}
+      if(p.pc===0&&!prog.some(x=>x.t==='wait')){p.until=now+200;break;}}});
+  if(changed)rbTkPaint(true);
+  if(said){const el=document.getElementById('rbTkSerial');if(el){el.textContent=t.serial.slice(-8).join('\n');}}
+}
+function rbTkCode(id){const t=rb.tk;t.code=t.code===id?null:id;rbTkPaint();}
+function rbTkCodeTab(v){rb.tk.codeView=v;rbTkPaint();}
+function rbTkStep(kind,a,b){
+  const t=rb.tk,p=rbTkPart(t.code);if(!p||t.sim)return;const prog=rbTkProg(p);if(prog.length>=30)return;rbTkPush();
+  prog.push(kind==='pin'?{t:'pin',n:a,v:b}:kind==='wait'?{t:'wait',ms:1000}:{t:'print',text:'Hello'});rbTkSave();rbTkPaint();
+}
+function rbTkStepEdit(i,what){
+  const t=rb.tk,p=rbTkPart(t.code);if(!p||t.sim)return;const prog=rbTkProg(p),s=prog[i];if(!s)return;
+  if(what==='text'){const v=prompt('Text to print:',s.text||'');if(v===null)return;rbTkPush();s.text=String(v).replace(/[\u0000-\u001f"\\<>]/g,'').slice(0,30);}
+  else{rbTkPush();
+    if(what==='del')prog.splice(i,1);
+    else if(what==='up'||what==='down'){const j=i+(what==='up'?-1:1);if(j<0||j>=prog.length){t.undo.pop();return;}prog[i]=prog[j];prog[j]=s;}
+    else if(what==='pin')s.n=s.n===1?2:1;
+    else if(what==='val')s.v=s.v?0:1;
+    else if(what==='less'||what==='more'){const k=RB_TK_WAITS.indexOf(s.ms),n=Math.max(0,Math.min(RB_TK_WAITS.length-1,(k<0?3:k)+(what==='more'?1:-1)));s.ms=RB_TK_WAITS[n];}}
+  rbTkSave();rbTkPaint();
+}
+function rbTkCodeHTML(){
+  const t=rb.tk,p=rbTkPart(t.code);if(!p||!RB_TK_DEF[p.k].board)return '';
+  const d=RB_TK_DEF[p.k].board,prog=rbTkProg(p),dis=t.sim?' disabled':'',e=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const tools=i=>'<span class="rbs-tools" style="display:inline-flex"><button class="rb-mini" aria-label="Move up"'+dis+' onclick="rbTkStepEdit('+i+',\'up\')">↑</button><button class="rb-mini" aria-label="Move down"'+dis+' onclick="rbTkStepEdit('+i+',\'down\')">↓</button><button class="rb-mini" aria-label="Remove"'+dis+' onclick="rbTkStepEdit('+i+',\'del\')">✕</button></span>';
+  const blocks='<div class="rbtk-codegrid"><div class="rbs-pal"><div class="rbs-cat"><i class="rbs-dot rbs-mo"></i>Output</div>'+
+      [[1,1],[1,0],[2,1],[2,0]].map(x=>'<button class="rbs-blk rbs-mo rbtk-edit"'+dis+' onclick="rbTkStep(\'pin\','+x[0]+','+x[1]+')">set '+d[x[0]]+' '+(x[1]?'HIGH':'LOW')+'</button>').join('')+
+      '<div class="rbs-cat"><i class="rbs-dot rbs-ct"></i>Control</div><button class="rbs-blk rbs-ct rbtk-edit"'+dis+' onclick="rbTkStep(\'wait\')">wait 1 second</button>'+
+      '<div class="rbs-cat"><i class="rbs-dot" style="background:#5CB1D6"></i>Serial</div><button class="rbs-blk rbtk-edit" style="background:#3F8FB3"'+dis+' onclick="rbTkStep(\'print\')">print to serial</button></div>'+
+    '<div class="rb-prog rbs-prog" style="min-height:190px"><div class="rbs-hat">forever</div>'+
+      (prog.length?prog.map((s,i)=>s.t==='pin'?'<div class="rbs-blk rbs-mo"><span>set pin <button class="rbs-num"'+dis+' onclick="rbTkStepEdit('+i+',\'pin\')">'+d[s.n]+'</button> to <button class="rbs-num"'+dis+' onclick="rbTkStepEdit('+i+',\'val\')">'+(s.v?'HIGH':'LOW')+'</button></span>'+tools(i)+'</div>':
+        s.t==='wait'?'<div class="rbs-blk rbs-ct"><span>wait <button class="rb-mini" aria-label="Shorter"'+dis+' onclick="rbTkStepEdit('+i+',\'less\')">−</button><span class="rbs-num">'+(s.ms/1000)+' s</span><button class="rb-mini" aria-label="Longer"'+dis+' onclick="rbTkStepEdit('+i+',\'more\')">+</button></span>'+tools(i)+'</div>':
+        '<div class="rbs-blk" style="background:#3F8FB3"><span>print <button class="rbs-num"'+dis+' onclick="rbTkStepEdit('+i+',\'text\')">'+e(s.text||'')+' ✎</button></span>'+tools(i)+'</div>').join(''):'<div class="muted" style="padding:10px 4px;font-size:13px">Tap a block on the left to add it.</div>')+'</div></div>';
+  return '<div class="rbtk-code"><div class="rbx-cbbar"><b>Code · '+RB_TK_DEF[p.k].n+'</b><div class="rbx-seg"><button class="'+(t.codeView==='blocks'?'on':'')+'" onclick="rbTkCodeTab(\'blocks\')">Blocks</button><button class="'+(t.codeView==='text'?'on':'')+'" onclick="rbTkCodeTab(\'text\')">Text</button></div>'+
+      '<span class="muted" style="font-size:12px">'+(t.sim?'Stop the simulation to change the code.':'The blocks repeat forever while the simulation runs.')+'</span><button class="btn ghost" style="margin-left:auto" onclick="rbTkCode('+p.id+')">Close code</button></div>'+
+    (t.codeView==='text'?'<pre class="rbtk-pre" aria-label="Arduino code">'+e(rbTkCodeText(p))+'</pre>':blocks)+
+    '<div style="margin-top:10px;font-size:13px;font-weight:700">Serial monitor</div><pre class="rbtk-pre rbtk-serial" id="rbTkSerial" aria-live="off">'+e(t.serial.slice(-8).join('\n'))+'</pre></div>';
+}
+
 function rbTkSvg(R){
-  const t=rb.tk;let h='<rect width="'+RB_TK_W+'" height="'+RB_TK_H+'" rx="14" fill="'+RB_TK_BG+'"/><g fill="#D9D1BC">';
-  for(let x=30;x<RB_TK_W;x+=30)for(let y=30;y<RB_TK_H;y+=30)h+='<circle cx="'+x+'" cy="'+y+'" r="1.3"/>';h+='</g>';
-  t.parts.slice().sort((a,b)=>((RB_TK_DEF[b.k].box&&!RB_TK_DEF[b.k].t.length)?1:0)-((RB_TK_DEF[a.k].box&&!RB_TK_DEF[a.k].t.length)?1:0)).forEach(p=>{const sel=t.sel&&t.sel.t==='p'&&t.sel.id===p.id,bx=RB_TK_DEF[p.k].box||[104,104];
+  const t=rb.tk;let h='<defs><pattern id="rbTkDots" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="1.3" fill="#D9D1BC"/></pattern></defs>'+
+    '<rect width="'+RB_WW+'" height="'+RB_WH+'" fill="'+RB_TK_BG+'"/><rect width="'+RB_WW+'" height="'+RB_WH+'" fill="url(#rbTkDots)"/>';
+  const base=k=>RB_TK_DEF[k].box&&!RB_TK_DEF[k].t.length;
+  t.parts.slice().sort((a,b)=>(base(b.k)?1:0)-(base(a.k)?1:0)).forEach(p=>{const sel=t.sel&&t.sel.t==='p'&&t.sel.id===p.id,bx=RB_TK_DEF[p.k].box||[104,104];
     h+='<g data-part="'+p.id+'" transform="translate('+p.x+','+p.y+') rotate('+(p.r*90)+')" style="cursor:'+(t.sim?'pointer':'grab')+'">'+
       '<rect x="'+(-bx[0]/2)+'" y="'+(-bx[1]/2-(bx[1]===104?4:0))+'" width="'+bx[0]+'" height="'+(bx[1]+(RB_TK_DEF[p.k].t.some(q=>q[1]>50)?20:0))+'" rx="10" fill="'+(sel?'rgba(47,111,219,.08)':'transparent')+'" stroke="'+(sel?'#2F6FDB':'none')+'" stroke-width="2" stroke-dasharray="5 4"/>'+rbTkDraw(p,R,false)+'</g>';});
   t.wires.forEach((w,i)=>{const pa=rbTkPart(w.a[0]),pb=rbTkPart(w.b[0]);if(!pa||!pb)return;const a=rbTkTerm(pa,w.a[1]),b=rbTkTerm(pb,w.b[1]);
-    const sag=Math.min(40,Math.hypot(b[0]-a[0],b[1]-a[1])*0.18),d='M'+a[0]+' '+a[1]+' C'+a[0]+' '+(a[1]+sag)+','+b[0]+' '+(b[1]+sag)+','+b[0]+' '+b[1];
+    const sag=Math.min(40,Math.hypot(b[0]-a[0],b[1]-a[1])*0.18),d=(w.pts&&w.pts.length)?'M'+a[0]+' '+a[1]+w.pts.map(q=>'L'+q[0]+' '+q[1]).join('')+'L'+b[0]+' '+b[1]:'M'+a[0]+' '+a[1]+' C'+a[0]+' '+(a[1]+sag)+','+b[0]+' '+(b[1]+sag)+','+b[0]+' '+b[1];
     const sel=t.sel&&t.sel.t==='w'&&t.sel.i===i,flow=R&&(Math.abs(R.I[pa.id]||0)>0.0008||Math.abs(R.I[pb.id]||0)>0.0008);
-    h+='<g data-wire="'+i+'" style="cursor:pointer"><path d="'+d+'" fill="none" stroke="transparent" stroke-width="16"/>'+(sel?'<path d="'+d+'" fill="none" stroke="#2F6FDB" stroke-width="10" stroke-linecap="round" opacity=".45"/>':'')+
-      '<path d="'+d+'" fill="none" stroke="'+w.c+'" stroke-width="5" stroke-linecap="round"/>'+
-      (flow?'<path d="'+d+'" fill="none" stroke="#FFE27A" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 13"><animate attributeName="stroke-dashoffset" from="16" to="0" dur="0.55s" repeatCount="indefinite"/></path>':'')+'</g>';});
-  if(t.pend&&t.mouse){const pp=rbTkPart(t.pend[0]);if(pp){const a=rbTkTerm(pp,t.pend[1]);h+='<path d="M'+a[0]+' '+a[1]+'L'+t.mouse[0]+' '+t.mouse[1]+'" stroke="'+t.color+'" stroke-width="4" stroke-dasharray="6 6" stroke-linecap="round" pointer-events="none"/>';}}
+    h+='<g data-wire="'+i+'" style="cursor:pointer" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="'+d+'" stroke="transparent" stroke-width="16"/>'+(sel?'<path d="'+d+'" stroke="#2F6FDB" stroke-width="10" opacity=".45"/>':'')+
+      '<path d="'+d+'" stroke="'+w.c+'" stroke-width="5"/>'+
+      (flow?'<path d="'+d+'" stroke="#FFE27A" stroke-width="2.5" stroke-dasharray="3 13"><animate attributeName="stroke-dashoffset" from="16" to="0" dur="0.55s" repeatCount="indefinite"/></path>':'')+'</g>';});
+  if(t.pend){const pp=rbTkPart(t.pend[0]);if(pp){const a=rbTkTerm(pp,t.pend[1]),m=t.mouse||a;
+    h+='<path d="M'+a[0]+' '+a[1]+t.pts.map(q=>'L'+q[0]+' '+q[1]).join('')+'L'+m[0]+' '+m[1]+'" fill="none" stroke="'+t.color+'" stroke-width="4" stroke-dasharray="6 6" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+      t.pts.map(q=>'<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4" fill="'+t.color+'" pointer-events="none"/>').join('');}}
   t.parts.forEach(p=>RB_TK_DEF[p.k].t.forEach((_,i)=>{const q=rbTkTerm(p,i),pend=t.pend&&t.pend[0]===p.id&&t.pend[1]===i;
     h+='<g data-term="'+p.id+':'+i+'" style="cursor:crosshair"><circle cx="'+q[0]+'" cy="'+q[1]+'" r="12" fill="transparent"/><circle cx="'+q[0]+'" cy="'+q[1]+'" r="'+(pend?8:6)+'" fill="'+(pend?'#2F6FDB':'#fff')+'" stroke="'+(pend?'#11212D':'#55606A')+'" stroke-width="2.5"/>'+(RB_TK_DEF[p.k].tl?'<text x="'+q[0]+'" y="'+(q[1]+20)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#11212D">'+RB_TK_DEF[p.k].tl[i]+'</text>':'')+'</g>';}));
-  if(!t.parts.length)h+='<text x="'+(RB_TK_W/2)+'" y="'+(RB_TK_H/2)+'" text-anchor="middle" font-size="18" fill="#8A99A3">Tap a part in the tray to place it here</text>';
+  if(!t.parts.length)h+='<text x="'+(t.vb.x+t.vb.w/2)+'" y="'+(t.vb.y+t.vb.h/2)+'" text-anchor="middle" font-size="18" fill="#8A99A3">Drag a part from the list, or tap it, to place it here</text>';
   return h;
 }
 function rbTkInspector(R){
   const t=rb.tk,s=t.sel;
   if(s&&s.t==='w'&&!t.sim)return '<b>Wire</b><button class="btn ghost" onclick="rbTkDel()">Delete wire</button><span class="muted" style="font-size:12px">Pick a colour above to recolour it.</span>';
   const p=s&&s.t==='p'?rbTkPart(s.id):null;
-  if(!p)return '<span class="muted" style="font-size:13px">'+(t.sim?'Tap a switch or hold a push button. Tap any part to read its voltage and current.':'Drag parts to move them. Tap a part to change it.')+'</span>';
+  if(!p)return '<span class="muted" style="font-size:13px">'+(t.sim?'Tap a switch or hold a push button. Tap any part to read its voltage and current.':t.pend?'Tap a terminal to finish the wire. Tap the empty canvas to add a bend. Press Esc to cancel.':'Drag parts to move them. Tap a part to change it. Drag the empty canvas to move the view.')+'</span>';
   let h='<b>'+RB_TK_DEF[p.k].n+'</b>';const ed=!t.sim;
   if(p.k==='res'&&ed)h+='<div class="rbx-seg">'+[100,220,330,470,1000,10000].map(r=>'<button class="'+(p.ohm===r?'on':'')+'" onclick="rbTkSet(\'ohm\','+r+')">'+(r>=1000?(r/1000)+' kΩ':r+' Ω')+'</button>').join('')+'</div><span class="muted" style="font-size:12px">Bands: '+rbBands(p.ohm).map(x=>RB_BAND[x][0]).join(', ')+', gold</span>';
   if(p.k==='led'&&ed)h+='<div class="rbx-seg">'+Object.keys(RB_LEDC).map(c=>'<button class="'+((p.col||'red')===c?'on':'')+'" onclick="rbTkSet(\'col\',\''+c+'\')">'+c+'</button>').join('')+'</div>';
-  if(p.k==='pot')h+='<label for="rbTkR" style="font-size:13px">Turn knob</label><input id="rbTkR" type="range" min="0" max="100" value="'+(p.pct==null?50:p.pct)+'" oninput="rbTkSlide(\'pct\',this)" style="width:150px;accent-color:#0E7C6B"><span id="rbTkRv" class="muted" style="font-size:12px">'+rbTkOhm(p)+' Ω</span>';
-  if(p.k==='ldr')h+='<label for="rbTkR" style="font-size:13px">Light</label><input id="rbTkR" type="range" min="0" max="100" value="'+(p.light==null?50:p.light)+'" oninput="rbTkSlide(\'light\',this)" style="width:150px;accent-color:#0E7C6B"><span id="rbTkRv" class="muted" style="font-size:12px">'+rbTkOhm(p)+' Ω</span>';
-  if(RB_TK_DEF[p.k].board&&ed)h+=[1,2].map(n=>'<span style="font-size:13px;font-weight:600">'+RB_TK_DEF[p.k].board[n]+'</span><div class="rbx-seg">'+[['off','Off'],['on','On'],['blink','Blink']].map(o=>'<button class="'+((p['m'+n]||'off')===o[0]?'on':'')+'" onclick="rbTkSet(\'m'+n+'\',\''+o[0]+'\')">'+o[1]+'</button>').join('')+'</div>').join('');
-  if(p.k==='therm')h+='<label for="rbTkR" style="font-size:13px">Temperature</label><input id="rbTkR" type="range" min="0" max="100" value="'+(p.temp==null?25:p.temp)+'" oninput="rbTkSlide(\'temp\',this)" style="width:150px;accent-color:#0E7C6B"><span id="rbTkRv" class="muted" style="font-size:12px">'+rbTkOhm(p)+' Ω</span>';
+  const slider=(f,l,v)=>'<label for="rbTkR" style="font-size:13px">'+l+'</label><input id="rbTkR" type="range" min="0" max="100" value="'+v+'" oninput="rbTkSlide(\''+f+'\',this)" style="width:150px;accent-color:#0E7C6B"><span id="rbTkRv" class="muted" style="font-size:12px">'+rbTkOhm(p)+' Ω</span>';
+  if(p.k==='pot')h+=slider('pct','Turn knob',p.pct==null?50:p.pct);
+  if(p.k==='ldr')h+=slider('light','Light',p.light==null?50:p.light);
+  if(p.k==='therm')h+=slider('temp','Temperature',p.temp==null?25:p.temp);
+  if(RB_TK_DEF[p.k].board)h+='<button class="btn solid" onclick="rbTkCode('+p.id+')">'+(t.code===p.id?'Hide code':'&lt;/&gt; Code')+'</button>';
   if(RB_TK_DEF[p.k].note)h+='<span class="muted" style="font-size:12px;flex-basis:100%">'+RB_TK_DEF[p.k].note+'</span>';
-  if(ed)h+='<button class="btn ghost" onclick="rbTkRot()">Rotate</button><button class="btn ghost" onclick="rbTkDel()">Delete</button>';
   if(t.sim&&R&&RB_TK_DEF[p.k].t.length)h+='<span id="rbTkVI" style="font-size:13px">'+rbTkVI(p,R)+'</span>';
   return h;
 }
 function rbTkVI(p,R){return 'Voltage <b>'+Math.abs(R.V[p.id]||0).toFixed(2)+' V</b> · Current <b>'+(Math.abs(R.I[p.id]||0)*1000).toFixed(1)+' mA</b>';}
+function rbTkView(){const sv=document.getElementById('rbTk'),v=rb.tk.vb;if(sv)sv.setAttribute('viewBox',v.x.toFixed(1)+' '+v.y.toFixed(1)+' '+v.w.toFixed(1)+' '+v.h.toFixed(1));const z=document.getElementById('rbTkZ');if(z)z.textContent=Math.round(RB_TK_W/v.w*100)+'%';}
+function rbTkClampView(){const v=rb.tk.vb;v.w=Math.max(360,Math.min(RB_WW,v.w));v.h=v.w*RB_TK_H/RB_TK_W;v.x=Math.max(0,Math.min(RB_WW-v.w,v.x));v.y=Math.max(0,Math.min(RB_WH-v.h,v.y));}
+function rbTkZoom(f,cx,cy){const v=rb.tk.vb;cx=cx==null?v.x+v.w/2:cx;cy=cy==null?v.y+v.h/2:cy;const nw=Math.max(360,Math.min(RB_WW,v.w*f)),k=nw/v.w;v.x=cx-(cx-v.x)*k;v.y=cy-(cy-v.y)*k;v.w=nw;rbTkClampView();rbTkView();}
+function rbTkFit(){
+  const t=rb.tk,v=t.vb;if(!t.parts.length){v.x=0;v.y=0;v.w=RB_TK_W;}
+  else{let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;t.parts.forEach(p=>{const b=RB_TK_DEF[p.k].box||[120,140];x1=Math.min(x1,p.x-b[0]/2);x2=Math.max(x2,p.x+b[0]/2);y1=Math.min(y1,p.y-b[1]/2);y2=Math.max(y2,p.y+b[1]/2);});
+    const w=Math.max(x2-x1+120,(y2-y1+120)*RB_TK_W/RB_TK_H,360);v.w=Math.min(RB_WW,w);v.h=v.w*RB_TK_H/RB_TK_W;v.x=(x1+x2)/2-v.w/2;v.y=(y1+y2)/2-v.h/2;}
+  rbTkClampView();rbTkView();
+}
 function rbTkPaint(svgOnly){
   const t=rb.tk,sv=document.getElementById('rbTk');if(!sv)return;
-  const R=t.sim?rbTkSolve():null;t.res=R;sv.innerHTML=rbTkSvg(R);
+  const R=t.sim?rbTkSolve():null;t.res=R;sv.innerHTML=rbTkSvg(R);rbTkView();
   const m=rbTkMsg(R||{}),me=document.getElementById('rbTkMsg');if(me){me.className='rb-msg'+(m[1]?' '+m[1]:'');me.textContent=m[0];}
   if(svgOnly){const p=t.sel&&t.sel.t==='p'?rbTkPart(t.sel.id):null,vi=document.getElementById('rbTkVI'),rv=document.getElementById('rbTkRv');if(p&&vi&&R)vi.innerHTML=rbTkVI(p,R);if(p&&rv)rv.textContent=rbTkOhm(p)+' Ω';return;}
   const ins=document.getElementById('rbTkIns');if(ins)ins.innerHTML=rbTkInspector(R);
+  const cd=document.getElementById('rbTkCodeBox');if(cd)cd.innerHTML=rbTkCodeHTML();
   const sb=document.getElementById('rbTkSim');if(sb){sb.textContent=t.sim?'■ Stop simulation':'▶ Start simulation';sb.className='btn '+(t.sim?'solid':'teal');}
+  const hasSel=!!t.sel&&!t.sim,selP=hasSel&&t.sel.t==='p';
   document.querySelectorAll('#rbTkTray button,.rbtk-edit').forEach(b=>b.disabled=t.sim);
+  const dis=(id,v)=>{const b=document.getElementById(id);if(b)b.disabled=v;};
+  dis('rbTkUndo',t.sim||!t.undo.length);dis('rbTkRedo',t.sim||!t.redo.length);dis('rbTkRotB',!selP);dis('rbTkDupB',!selP);dis('rbTkDelB',!hasSel);
   document.querySelectorAll('.rbtk-sw').forEach(b=>b.classList.toggle('on',b.dataset.c===t.color));
   const c=document.getElementById('rbTkCnt');if(c)c.textContent=t.parts.length+' parts · '+t.wires.length+' wires';
 }
-function rbTkAdd(k){
-  const t=rb.tk;if(t.sim||t.parts.length>=40)return;
-  const n=t.parts.length,p={id:t.id++,k:k,x:150+(n%6)*120+Math.floor(n/24)*30,y:110+(Math.floor(n/6)%4)*110+Math.floor(n/24)*30,r:0};
-  if(k==='res')p.ohm=330;if(k==='led')p.col='red';if(k==='sw')p.on=false;if(k==='pot')p.pct=50;if(k==='ldr')p.light=50;if(k==='therm')p.temp=25;if(RB_TK_DEF[k].board){p.m1='blink';p.m2='off';}if(RB_TK_DEF[k].box&&!RB_TK_DEF[k].t.length){p.x=450;p.y=270;}
-  t.parts.push(p);t.sel={t:'p',id:p.id};t.pend=null;rbTkSave();rbTkPaint();
+function rbTkAdd(k,pos){
+  const t=rb.tk;if(t.sim||!RB_TK_DEF[k]||t.parts.length>=60)return;rbTkPush();
+  const n=t.parts.length,v=t.vb,snap=x=>Math.round(x/10)*10;
+  const p={id:t.id++,k:k,x:snap(pos?pos[0]:v.x+v.w/2+((n%5)-2)*v.w*0.13),y:snap(pos?pos[1]:v.y+v.h/2+((Math.floor(n/5)%3)-1)*v.h*0.22),r:0};
+  p.x=Math.max(60,Math.min(RB_WW-60,p.x));p.y=Math.max(60,Math.min(RB_WH-60,p.y));
+  if(k==='res')p.ohm=330;if(k==='led')p.col='red';if(k==='sw')p.on=false;if(k==='pot')p.pct=50;if(k==='ldr')p.light=50;if(k==='therm')p.temp=25;if(RB_TK_DEF[k].board)rbTkProg(p);
+  t.parts.push(p);t.sel={t:'p',id:p.id};t.pend=null;t.pts=[];rbTkSave();rbTkPaint();
 }
-function rbTkSet(f,v){const t=rb.tk,p=t.sel&&rbTkPart(t.sel.id);if(!p||t.sim)return;p[f]=v;rbTkSave();rbTkPaint();}
+function rbTkSet(f,v){const t=rb.tk,p=t.sel&&rbTkPart(t.sel.id);if(!p||t.sim)return;rbTkPush();p[f]=v;rbTkSave();rbTkPaint();}
 function rbTkSlide(f,el){const t=rb.tk,p=t.sel&&rbTkPart(t.sel.id);if(!p)return;p[f]=Number(el.value);rbTkSave();rbTkPaint(true);}
-function rbTkRot(){const t=rb.tk,p=t.sel&&rbTkPart(t.sel.id);if(!p||t.sim)return;p.r=(p.r+1)%4;rbTkSave();rbTkPaint();}
+function rbTkRot(){const t=rb.tk,p=t.sel&&t.sel.t==='p'&&rbTkPart(t.sel.id);if(!p||t.sim)return;rbTkPush();p.r=(p.r+1)%4;rbTkSave();rbTkPaint();}
+function rbTkDup(){const t=rb.tk,p=t.sel&&t.sel.t==='p'&&rbTkPart(t.sel.id);if(!p||t.sim||t.parts.length>=60)return;rbTkPush();
+  const q=JSON.parse(JSON.stringify(rbTkClean(p)));q.id=t.id++;q.x=Math.min(RB_WW-60,p.x+40);q.y=Math.min(RB_WH-60,p.y+40);t.parts.push(q);t.sel={t:'p',id:q.id};rbTkSave();rbTkPaint();}
 function rbTkDel(){
-  const t=rb.tk,s=t.sel;if(!s||t.sim)return;
+  const t=rb.tk,s=t.sel;if(!s||t.sim)return;rbTkPush();
   if(s.t==='w')t.wires.splice(s.i,1);
-  else{t.parts=t.parts.filter(p=>p.id!==s.id);t.wires=t.wires.filter(w=>w.a[0]!==s.id&&w.b[0]!==s.id);}
-  t.sel=null;t.pend=null;rbTkSave();rbTkPaint();
+  else{t.parts=t.parts.filter(p=>p.id!==s.id);t.wires=t.wires.filter(w=>w.a[0]!==s.id&&w.b[0]!==s.id);if(t.code===s.id)t.code=null;}
+  t.sel=null;t.pend=null;t.pts=[];rbTkSave();rbTkPaint();
 }
-function rbTkColor(c){const t=rb.tk;t.color=c;if(!t.sim&&t.sel&&t.sel.t==='w'&&t.wires[t.sel.i]){t.wires[t.sel.i].c=c;rbTkSave();}rbTkPaint();}
-function rbTkBlink(){const t=rb.tk;clearInterval(t.blink);t.blink=0;t.phase=1;if(t.sim&&t.parts.some(p=>p.k==='ic555'||p.m1==='blink'||p.m2==='blink'))t.blink=setInterval(()=>{if(!t.sim||!document.getElementById('rbTk')){clearInterval(t.blink);t.blink=0;return;}t.phase=t.phase?0:1;rbTkPaint(true);},500);}
-function rbTkSim(){const t=rb.tk;t.sim=!t.sim;t.pend=null;t.drag=null;rbTkBlink();t.parts.forEach(p=>{delete p.burnt;delete p.blown;delete p.down;});rbTkPaint();}
-function rbTkClear(){const t=rb.tk;if(t.sim)return;if(t.parts.length&&!confirm('Remove every part and wire from the workspace?'))return;t.parts=[];t.wires=[];t.sel=null;t.pend=null;rbTkSave();rbTkPaint();}
-function rbTkLoad(){const t=rb.tk;if(t.sim)return;if(t.parts.length&&!confirm('Replace your circuit with the example LED circuit?'))return;const e=rbTkExample();t.parts=e.parts;t.wires=e.wires;t.id=e.id;t.sel=null;t.pend=null;rbTkSave();rbTkPaint();}
+function rbTkColor(c){const t=rb.tk;t.color=c;if(!t.sim&&t.sel&&t.sel.t==='w'&&t.wires[t.sel.i]){rbTkPush();t.wires[t.sel.i].c=c;rbTkSave();}rbTkPaint();}
+function rbTkBlink(){const t=rb.tk;clearInterval(t.blink);t.blink=0;t.phase=1;if(t.sim&&t.parts.some(p=>p.k==='ic555'))t.blink=setInterval(()=>{if(!t.sim||!document.getElementById('rbTk')){clearInterval(t.blink);t.blink=0;return;}t.phase=t.phase?0:1;rbTkPaint(true);},500);}
+function rbTkSim(){
+  const t=rb.tk;t.sim=!t.sim;t.pend=null;t.pts=[];t.drag=null;rbTkBlink();
+  t.parts.forEach(p=>{delete p.burnt;delete p.blown;delete p.down;p.pc=0;p.o1=false;p.o2=false;p.until=0;});
+  clearInterval(t.tick);t.tick=0;t.serial=[];
+  if(t.sim&&t.parts.some(p=>RB_TK_DEF[p.k].board)){rbTkTick();t.tick=setInterval(rbTkTick,50);}
+  rbTkPaint();
+}
+function rbTkClear(){const t=rb.tk;if(t.sim)return;if(t.parts.length&&!confirm('Remove every part and wire from the workspace?'))return;rbTkPush();t.parts=[];t.wires=[];t.sel=null;t.pend=null;t.code=null;rbTkSave();rbTkPaint();}
+function rbTkLoad(){const t=rb.tk;if(t.sim)return;if(t.parts.length&&!confirm('Replace your circuit with the example LED circuit?'))return;rbTkPush();const e=rbTkExample();t.parts=e.parts;t.wires=e.wires;t.id=e.id;t.sel=null;t.pend=null;t.code=null;rbTkSave();rbTkPaint();rbTkFit();}
+function rbTkFilter(el){const q=el.value.trim().toLowerCase();let grp=null,any=false;
+  document.querySelectorAll('#rbTkTray>*').forEach(n=>{if(n.classList.contains('rbtk-grp')){if(grp)grp.style.display=any?'':'none';grp=n;any=false;}
+    else if(n.tagName==='BUTTON'){const ok=!q||n.textContent.toLowerCase().indexOf(q)>=0;n.style.display=ok?'':'none';if(ok)any=true;}});
+  if(grp)grp.style.display=any?'':'none';}
 function rbTkWire(){
-  const sv=document.getElementById('rbTk');if(!sv)return;const t=rb.tk;
-  const pt=e=>{const r=sv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*RB_TK_W,(e.clientY-r.top)/r.height*RB_TK_H];};
+  const sv=document.getElementById('rbTk');if(!sv)return;const t=rb.tk,snap=x=>Math.round(x/10)*10;
+  const pt=e=>{const r=sv.getBoundingClientRect(),v=t.vb;return [v.x+(e.clientX-r.left)/r.width*v.w,v.y+(e.clientY-r.top)/r.height*v.h];};
   sv.onpointerdown=e=>{
     const tm=e.target.closest('[data-term]'),wr=e.target.closest('[data-wire]'),pr=e.target.closest('[data-part]');
     if(tm&&!t.sim){const a=tm.dataset.term.split(':').map(Number);
-      if(!t.pend){t.pend=a;t.mouse=pt(e);t.sel=null;}
-      else{if(!(t.pend[0]===a[0]&&t.pend[1]===a[1])&&!t.wires.some(w=>(w.a+''===t.pend+''&&w.b+''===a+'')||(w.b+''===t.pend+''&&w.a+''===a+''))){t.wires.push({a:t.pend,b:a,c:t.color});rbTkSave();}t.pend=null;}
+      if(!t.pend){t.pend=a;t.pts=[];t.mouse=pt(e);t.sel=null;}
+      else{if(!(t.pend[0]===a[0]&&t.pend[1]===a[1])&&!t.wires.some(w=>(w.a+''===t.pend+''&&w.b+''===a+'')||(w.b+''===t.pend+''&&w.a+''===a+''))){rbTkPush();const w={a:t.pend,b:a,c:t.color};if(t.pts.length)w.pts=t.pts.slice();t.wires.push(w);rbTkSave();}t.pend=null;t.pts=[];}
       rbTkPaint();return;}
-    if(wr&&!t.sim){t.sel={t:'w',i:Number(wr.dataset.wire)};t.pend=null;rbTkPaint();return;}
-    if(pr){const p=rbTkPart(Number(pr.dataset.part));if(!p)return;t.sel={t:'p',id:p.id};t.pend=null;
+    if(t.pend&&!t.sim){const m=pt(e);if(t.pts.length<12)t.pts.push([snap(m[0]),snap(m[1])]);t.mouse=m;rbTkPaint(true);return;}
+    if(wr&&!t.sim){t.sel={t:'w',i:Number(wr.dataset.wire)};rbTkPaint();return;}
+    if(pr){const p=rbTkPart(Number(pr.dataset.part));if(!p)return;t.sel={t:'p',id:p.id};
       if(t.sim){if(p.k==='sw')p.on=!p.on;if(p.k==='btn'){p.down=true;try{sv.setPointerCapture(e.pointerId);}catch(_){}}}
-      else{const m=pt(e);t.drag={id:p.id,dx:m[0]-p.x,dy:m[1]-p.y};try{sv.setPointerCapture(e.pointerId);}catch(_){}}
+      else{const m=pt(e);rbTkPush();t.drag={id:p.id,dx:m[0]-p.x,dy:m[1]-p.y,x0:p.x,y0:p.y};try{sv.setPointerCapture(e.pointerId);}catch(_){}}
       rbTkPaint();return;}
-    t.sel=null;t.pend=null;rbTkPaint();
+    t.pan={cx:e.clientX,cy:e.clientY,vx:t.vb.x,vy:t.vb.y,moved:false};try{sv.setPointerCapture(e.pointerId);}catch(_){}
   };
   sv.onpointermove=e=>{
-    if(t.drag){const p=rbTkPart(t.drag.id),m=pt(e);if(!p)return;p.x=Math.max(60,Math.min(RB_TK_W-60,Math.round((m[0]-t.drag.dx)/10)*10));p.y=Math.max(60,Math.min(RB_TK_H-60,Math.round((m[1]-t.drag.dy)/10)*10));rbTkPaint(true);}
+    if(t.drag){const p=rbTkPart(t.drag.id),m=pt(e);if(!p)return;p.x=Math.max(60,Math.min(RB_WW-60,snap(m[0]-t.drag.dx)));p.y=Math.max(60,Math.min(RB_WH-60,snap(m[1]-t.drag.dy)));rbTkPaint(true);}
+    else if(t.pan){const r=sv.getBoundingClientRect(),dx=e.clientX-t.pan.cx,dy=e.clientY-t.pan.cy;if(Math.abs(dx)+Math.abs(dy)>4)t.pan.moved=true;
+      if(t.pan.moved){t.vb.x=t.pan.vx-dx*t.vb.w/r.width;t.vb.y=t.pan.vy-dy*t.vb.h/r.height;rbTkClampView();rbTkView();}}
     else if(t.pend){t.mouse=pt(e);rbTkPaint(true);}
   };
   sv.onpointerup=sv.onpointercancel=()=>{
-    if(t.drag){t.drag=null;rbTkSave();rbTkPaint();}
+    if(t.drag){const p=rbTkPart(t.drag.id);if(p&&p.x===t.drag.x0&&p.y===t.drag.y0)t.undo.pop();t.drag=null;rbTkSave();rbTkPaint();}
+    if(t.pan){const moved=t.pan.moved;t.pan=null;if(!moved&&t.sel){t.sel=null;rbTkPaint();}}
     if(t.parts.some(p=>p.down)){t.parts.forEach(p=>{delete p.down;});rbTkPaint();}
   };
-  sv.onkeydown=e=>{if((e.key==='Delete'||e.key==='Backspace')&&t.sel&&!t.sim){e.preventDefault();rbTkDel();}if(e.key==='Escape'){t.pend=null;rbTkPaint();}};
+  sv.onwheel=e=>{e.preventDefault();const m=pt(e);rbTkZoom(e.deltaY>0?1.12:1/1.12,m[0],m[1]);};
+  sv.ondragover=e=>{e.preventDefault();};
+  sv.ondrop=e=>{e.preventDefault();const d=(e.dataTransfer.getData('text/plain')||'').split(':');if(d[0]==='part')rbTkAdd(d[1],pt(e));};
+  sv.onkeydown=e=>{const k=e.key.toLowerCase(),c=e.ctrlKey||e.metaKey;
+    if((e.key==='Delete'||e.key==='Backspace')&&t.sel&&!t.sim){e.preventDefault();rbTkDel();}
+    else if(e.key==='Escape'){t.pend=null;t.pts=[];rbTkPaint();}
+    else if(c&&k==='z'&&!e.shiftKey){e.preventDefault();rbTkUndo();}
+    else if(c&&(k==='y'||(k==='z'&&e.shiftKey))){e.preventDefault();rbTkRedo();}
+    else if(c&&k==='d'){e.preventDefault();rbTkDup();}
+    else if(k==='r'&&!c){rbTkRot();}
+    else if(k==='+'||k==='='){rbTkZoom(1/1.2);}else if(k==='-'){rbTkZoom(1.2);}};
   rbTkPaint();
 }
 function rbCircuitsHTML(){
   const groups=[];Object.keys(RB_TK_DEF).forEach(k=>{const g=RB_TK_DEF[k].g;let o=groups.find(x=>x[0]===g);if(!o){o=[g,[]];groups.push(o);}o[1].push(k);});
   const tray=groups.map(g=>'<div class="rbtk-grp">'+g[0]+'</div>'+g[1].map(k=>{const s={k:k,ohm:330,col:'red',pct:50,light:50,temp:25,on:false};
-    return '<button onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].board?'-84 -70 168 150':RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
+    return '<button draggable="true" ondragstart="event.dataTransfer.setData(\'text/plain\',\'part:'+k+'\')" onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].board?'-84 -70 168 150':RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
   const cols=[['#D32F2F','Red'],['#1D1D1F','Black'],['#2E9E4F','Green'],['#1E63D0','Blue'],['#F2C230','Yellow']];
+  const tb=(id,label,fn,tip)=>'<button class="rbtk-tb" id="'+id+'" title="'+tip+'" onclick="'+fn+'">'+label+'</button>';
   setTimeout(rbTkWire,0);
   return '<div class="card rbx-pad"><div class="rbx-cbbar"><b>Circuit workspace</b><span class="muted" id="rbTkCnt" style="font-size:12px"></span>'+
-        '<span style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;font-size:13px">Wire colour '+cols.map(c=>'<button class="rbtk-sw" data-c="'+c[0]+'" aria-label="'+c[1]+' wire" style="background:'+c[0]+'" onclick="rbTkColor(\''+c[0]+'\')"></button>').join('')+'</span>'+
-        '<button class="btn ghost rbtk-edit" onclick="rbTkLoad()">Example</button><button class="btn ghost rbtk-edit" onclick="rbTkClear()">Clear</button>'+
+        '<button class="btn ghost rbtk-edit" style="margin-left:auto" onclick="rbTkLoad()">Example</button><button class="btn ghost rbtk-edit" onclick="rbTkClear()">Clear</button>'+
         '<button class="btn teal" id="rbTkSim" onclick="rbTkSim()">▶ Start simulation</button></div>'+
-      '<div class="rbtk-wrap"><div class="rbtk-tray" id="rbTkTray" aria-label="Parts tray">'+tray+'</div>'+
-        '<div style="min-width:0"><svg id="rbTk" class="rbtk-svg" viewBox="0 0 '+RB_TK_W+' '+RB_TK_H+'" tabindex="0" role="application" aria-label="Circuit workspace. Tap a part in the tray to add it, then tap two terminals to wire them."></svg></div></div>'+
+      '<div class="rbtk-bar" role="toolbar" aria-label="Workspace tools">'+tb('rbTkUndo','↶ Undo','rbTkUndo()','Undo (Ctrl+Z)')+tb('rbTkRedo','↷ Redo','rbTkRedo()','Redo (Ctrl+Y)')+'<i></i>'+
+        tb('rbTkRotB','⟳ Rotate','rbTkRot()','Rotate (R)')+tb('rbTkDupB','⧉ Duplicate','rbTkDup()','Duplicate (Ctrl+D)')+tb('rbTkDelB','✕ Delete','rbTkDel()','Delete (Del)')+'<i></i>'+
+        '<span class="rbtk-lab">Wire</span>'+cols.map(c=>'<button class="rbtk-sw" data-c="'+c[0]+'" aria-label="'+c[1]+' wire" title="'+c[1]+' wire" style="background:'+c[0]+'" onclick="rbTkColor(\''+c[0]+'\')"></button>').join('')+'<i></i>'+
+        '<button class="rbtk-tb" title="Zoom out (-)" aria-label="Zoom out" onclick="rbTkZoom(1.25)">−</button><span class="rbtk-lab" id="rbTkZ">100%</span><button class="rbtk-tb" title="Zoom in (+)" aria-label="Zoom in" onclick="rbTkZoom(0.8)">+</button>'+tb('rbTkFitB','Fit','rbTkFit()','Show the whole circuit')+'</div>'+
+      '<div class="rbtk-wrap"><div><input class="rbtk-search" type="search" placeholder="Search parts" aria-label="Search parts" oninput="rbTkFilter(this)"><div class="rbtk-tray" id="rbTkTray" aria-label="Parts list">'+tray+'</div></div>'+
+        '<div style="min-width:0"><svg id="rbTk" class="rbtk-svg" viewBox="0 0 '+RB_TK_W+' '+RB_TK_H+'" tabindex="0" role="application" aria-label="Circuit workspace. Drag a part from the list or tap it to add it, then tap two terminals to wire them."></svg></div></div>'+
       '<div class="rbx-ctl" id="rbTkIns" style="min-height:40px"></div>'+
       '<div class="rb-msg" id="rbTkMsg" aria-live="polite"></div>'+
-      '<div class="rb-link"><b>How to build:</b> 1. Tap parts in the tray. 2. Drag them into place. 3. Tap one terminal (the white dots), then another, to join them with a wire. 4. Press Start simulation.<br>'+
-      '<span class="rb-chip">Physics: Ohm\'s law</span><span class="rb-chip">Physics: series and parallel circuits</span><span class="rb-chip">Physics: resistor colour code</span><span class="rb-chip">Maths: division and units</span></div></div>'+
+      '<div id="rbTkCodeBox"></div>'+
+      '<div class="rb-link"><b>How to build:</b> 1. Drag parts from the list onto the canvas. 2. Tap one terminal (the white dots), then another, to join them with a wire. Tap the empty canvas on the way to bend the wire. 3. Tap a board and press Code to program it. 4. Press Start simulation.<br>'+
+      '<b>Shortcuts:</b> R rotate · Del delete · Ctrl+Z undo · Ctrl+Y redo · Ctrl+D duplicate · mouse wheel zoom · drag the canvas to move.<br>'+
+      '<span class="rb-chip">Physics: Ohm\'s law</span><span class="rb-chip">Physics: series and parallel circuits</span><span class="rb-chip">Coding: Arduino programs</span><span class="rb-chip">Maths: division and units</span></div></div>'+
     rbGuideHTML()+rbMcuHTML();
 }
 
@@ -2059,41 +2200,30 @@ function rbGuideHTML(){
 }
 
 /* ── Microcontrollers: a short guide ── */
-const RB_MCU_LIST=[
- ['Arduino Uno (ATmega328P)','8-bit','The best-known beginner board. A favourite for first robots.'],
- ['Intel 8051','8-bit','A classic chip with memory, timers and ports all on board.'],
- ['PIC16','8-bit','Small and cheap. Common in simple controllers and toys.'],
- ['MSP430','16-bit','Very low power, so it suits battery devices and meters.'],
- ['PIC24','16-bit','More precise maths than 8-bit chips, for motor control.'],
- ['STM32','32-bit','Fast ARM chips used in drones, printers and machines.'],
- ['ESP32','32-bit','Has Wi-Fi and Bluetooth built in, for connected robots.'],
- ['ESP8266','32-bit','A low-cost chip with Wi-Fi built in, for smart-home projects.'],
- ['RP2040','32-bit','The chip on the Raspberry Pi Pico. Easy to code in Python.']
+const RB_MCU_CLASS=[
+ ['1. By bit size','#2F6FDB',[
+  ['8-bit','Simple tasks with low power and cost. Used for LED control and basic sensors.','8051, AVR, PIC'],
+  ['16-bit','Better speed and precision. Used in automotive and industrial applications.','PIC24, MSP430'],
+  ['32-bit','High performance for complex tasks. Used in IoT, robotics and drones.','ARM Cortex-M, ESP32, STM32']]],
+ ['2. By architecture','#8A4FD6',[
+  ['CISC','Complex instructions that perform several operations.','8051'],
+  ['RISC','Simple, efficient instructions for faster execution and lower power use.','ARM, AVR, RISC-V'],
+  ['Harvard architecture','Separate memory for instructions and data.',''],
+  ['Von Neumann architecture','Shared memory for instructions and data.','']]],
+ ['3. By memory','#0E7C6B',[
+  ['Embedded memory','Program and data memory are built into the microcontroller.','STM32, ESP32'],
+  ['External memory','Uses separate memory chips when the internal memory is not enough.','Intel 8031']]]
 ];
-const RB_MCU_TYPES=[
- ['By number of bits',[['8-bit','Works on 8 bits at a time. Numbers from 0 to 255.'],['16-bit','More precise and faster. Numbers from 0 to 65,535.'],['32-bit','For advanced jobs such as medical devices and engine control.']]],
- ['By memory',[['Embedded memory','Everything is on the chip: program memory, data memory, ports and timers. Example: 8051.'],['External memory','Some parts, such as program memory, are connected from outside. Example: 8031.']]],
- ['By instruction set',[['CISC','Complex instructions that do several things in one command.'],['RISC','Fewer, simpler instructions that run in fewer clock cycles.']]],
- ['By memory architecture',[['Harvard','Separate memory for program and data, so both can be read at once.'],['Von Neumann','Program and data share one memory. Simpler, but can be slower.']]]
-];
+const RB_MCU_FAM=[['8051','Basic automation and learning'],['AVR','Arduino and prototyping'],['PIC','Industrial and embedded systems'],['ARM Cortex-M','High-performance embedded applications'],
+ ['ESP8266 / ESP32','Wi-Fi, Bluetooth and IoT projects'],['RP2040','Raspberry Pi Pico and DIY projects'],['Hybrid / Edge AI','AI, computer vision and edge computing']];
 function rbMcuHTML(){
-  const ic='<svg viewBox="0 0 56 56" aria-hidden="true">'+RB_GI.ic.replace('>555<','>MCU<')+'</svg>';
-  const inside=[['Processor','Runs the instructions of your program.'],['Memory','Stores the program and its data.'],['Input / output ports','Connect buttons, sensors, motors and screens.'],['Communication ports','Talk to other devices.']];
-  const uses=['Robotics','Automatic street lights','Smart thermostats','Smoke alarms','Security systems','Laser printers','Factory automation','Digital multimeters'];
-  const issues=[['Timing','Tasks need exact timing. Small errors cause faults that are hard to find.'],['Power','An unsteady supply can make the chip stop or behave oddly.'],['Heat','Too much heat can damage the chip.'],['Noise','Electrical interference from nearby devices can cause errors.'],['Code','Bugs in the program make the system misbehave.'],['Security','A chip can be hacked if it is not protected.'],['Compatibility','It may not work with every other part.']];
   return '<div class="rbx-h" style="font-size:22px;margin-top:30px">Microcontrollers</div>'+
-    '<div class="rbx-sub">A microcontroller (MCU) is a small computer on a single chip. It is the brain of a robot: it reads the sensors and controls the motors and lights.</div>'+
-    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#00838F"></i><div><h4>Inside a microcontroller</h4><p>Four parts, all on one chip.</p></div></div>'+
-      '<div class="rbx-grid4">'+inside.map(x=>'<div class="card rbm-tile"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>'+
-      '<p class="rbm-note">Microcontrollers are small, cheap and low-power, and you can program them, usually in C, C++ or assembly language.</p></section>'+
-    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#2F6FDB"></i><div><h4>Popular microcontrollers</h4><p>Chips you will meet in school projects and real products.</p></div></div>'+
-      '<div class="rbg-grid">'+RB_MCU_LIST.map(m=>'<div class="card rbg-item"><div class="rbg-ic">'+ic+'</div><div><b>'+m[0]+'</b><span>'+m[2]+'</span><em>'+m[1]+'</em></div></div>').join('')+'</div></section>'+
-    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#8A4FD6"></i><div><h4>Types of microcontroller</h4><p>Four ways to sort them.</p></div></div>'+
-      '<div class="rbm-types">'+RB_MCU_TYPES.map(t=>'<div class="card rbm-type"><h5>'+t[0]+'</h5>'+t[1].map(r=>'<p><b>'+r[0]+'.</b> '+r[1]+'</p>').join('')+'</div>').join('')+'</div></section>'+
-    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#0E7C6B"></i><div><h4>Where they are used</h4><p>Built inside other devices, which is why they are called embedded.</p></div></div>'+
-      '<div>'+uses.map(u=>'<span class="rb-chip" style="font-size:13px;padding:5px 12px">'+u+'</span>').join('')+'</div></section>'+
-    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#C6362F"></i><div><h4>Common problems</h4><p>What can go wrong, and what to watch for.</p></div></div>'+
-      '<div class="rbg-grid">'+issues.map(x=>'<div class="card rbm-tile"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div></section>';
+    '<div class="rbx-sub">A microcontroller is a small computer on a single chip. It is the brain of a robot. Here is how microcontrollers are grouped.</div>'+
+    RB_MCU_CLASS.map(c=>'<section class="rbg-sec"><div class="rbg-head"><i style="background:'+c[1]+'"></i><div><h4>'+c[0]+'</h4></div></div>'+
+      '<div class="rbg-grid">'+c[2].map(x=>'<div class="card rbm-tile"><b>'+x[0]+'</b><span>'+x[1]+'</span>'+(x[2]?'<em class="rbm-eg">'+x[2]+'</em>':'')+'</div>').join('')+'</div></section>').join('')+
+    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#C7791A"></i><div><h4>4. Popular microcontroller families</h4></div></div>'+
+      '<div class="card" style="overflow:auto"><table class="rbm-table"><thead><tr><th>Family</th><th>Main application</th></tr></thead><tbody>'+
+      RB_MCU_FAM.map(f=>'<tr><td><b>'+f[0]+'</b></td><td>'+f[1]+'</td></tr>').join('')+'</tbody></table></div></section>';
 }
 
 /* 3D model made of CSS boxes */

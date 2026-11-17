@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Quality Education — EdTech Platform</title>
+<script src="report-config.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0E7C6B">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -457,6 +458,17 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .xr-bond{height:10px;margin-top:-5px;background:#B9BEC4;border-radius:5px;transform-origin:0 50%}
 .xr-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .xr-nocam{position:absolute;inset:0;display:grid;place-items:center;color:#8A99A3;font-size:14px}
+/* microcontroller guide */
+.rbm-tile{padding:14px}
+.rbm-tile b{display:block;font-size:14px}
+.rbm-tile span{display:block;font-size:13px;color:var(--slate);line-height:1.45;margin-top:3px}
+.rbm-note{font-size:13px;color:var(--slate);margin-top:10px}
+.rbm-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(max-width:700px){.rbm-types{grid-template-columns:1fr}}
+.rbm-type{padding:16px}
+.rbm-type h5{font-family:var(--display);font-size:15px;font-weight:700;margin-bottom:6px}
+.rbm-type p{font-size:13px;color:var(--slate);line-height:1.5;margin-top:4px}
+.rbm-type p b{color:var(--ink)}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1960,7 +1972,7 @@ function rbCircuitsHTML(){
       '<div class="rb-msg" id="rbTkMsg" aria-live="polite"></div>'+
       '<div class="rb-link"><b>How to build:</b> 1. Tap parts in the tray. 2. Drag them into place. 3. Tap one terminal (the white dots), then another, to join them with a wire. 4. Press Start simulation.<br>'+
       '<span class="rb-chip">Physics: Ohm\'s law</span><span class="rb-chip">Physics: series and parallel circuits</span><span class="rb-chip">Physics: resistor colour code</span><span class="rb-chip">Maths: division and units</span></div></div>'+
-    rbGuideHTML();
+    rbGuideHTML()+rbMcuHTML();
 }
 
 /* ── Materials guide: what each part is and what it does ── */
@@ -2025,6 +2037,43 @@ function rbGuideHTML(){
   return '<div class="rbx-h" style="font-size:22px;margin-top:28px">Materials guide</div><div class="rbx-sub">Every part of a circuit, in five groups. Every part here can be placed in the workspace above.</div>'+
     RB_GUIDE.map(g=>'<section class="rbg-sec"><div class="rbg-head"><i style="background:'+g[3]+'"></i><div><h4>'+g[0]+' <span>'+g[1]+'</span></h4><p>'+g[2]+'</p></div></div>'+
       '<div class="rbg-grid">'+g[4].map(it=>'<div class="card rbg-item"><div class="rbg-ic">'+rbGIcon(it[2])+'</div><div><b>'+it[0]+'</b><span>'+it[1]+'</span>'+(it[3]?'<em>In the workspace</em>':'')+'</div></div>').join('')+'</div></section>').join('');
+}
+
+/* ── Microcontrollers: a short guide ── */
+const RB_MCU_LIST=[
+ ['ATmega328P','8-bit','The chip on the Arduino Uno. A favourite for first robots.'],
+ ['Intel 8051','8-bit','A classic chip with memory, timers and ports all on board.'],
+ ['PIC16','8-bit','Small and cheap. Common in simple controllers and toys.'],
+ ['MSP430','16-bit','Very low power, so it suits battery devices and meters.'],
+ ['PIC24','16-bit','More precise maths than 8-bit chips, for motor control.'],
+ ['STM32','32-bit','Fast ARM chips used in drones, printers and machines.'],
+ ['ESP32','32-bit','Has Wi-Fi and Bluetooth built in, for connected robots.'],
+ ['RP2040','32-bit','The chip on the Raspberry Pi Pico. Easy to code in Python.']
+];
+const RB_MCU_TYPES=[
+ ['By number of bits',[['8-bit','Works on 8 bits at a time. Numbers from 0 to 255.'],['16-bit','More precise and faster. Numbers from 0 to 65,535.'],['32-bit','For advanced jobs such as medical devices and engine control.']]],
+ ['By memory',[['Embedded memory','Everything is on the chip: program memory, data memory, ports and timers. Example: 8051.'],['External memory','Some parts, such as program memory, are connected from outside. Example: 8031.']]],
+ ['By instruction set',[['CISC','Complex instructions that do several things in one command.'],['RISC','Fewer, simpler instructions that run in fewer clock cycles.']]],
+ ['By memory architecture',[['Harvard','Separate memory for program and data, so both can be read at once.'],['Von Neumann','Program and data share one memory. Simpler, but can be slower.']]]
+];
+function rbMcuHTML(){
+  const ic='<svg viewBox="0 0 56 56" aria-hidden="true">'+RB_GI.ic.replace('>555<','>MCU<')+'</svg>';
+  const inside=[['Processor','Runs the instructions of your program.'],['Memory','Stores the program and its data.'],['Input / output ports','Connect buttons, sensors, motors and screens.'],['Communication ports','Talk to other devices.']];
+  const uses=['Robotics','Automatic street lights','Smart thermostats','Smoke alarms','Security systems','Laser printers','Factory automation','Digital multimeters'];
+  const issues=[['Timing','Tasks need exact timing. Small errors cause faults that are hard to find.'],['Power','An unsteady supply can make the chip stop or behave oddly.'],['Heat','Too much heat can damage the chip.'],['Noise','Electrical interference from nearby devices can cause errors.'],['Code','Bugs in the program make the system misbehave.'],['Security','A chip can be hacked if it is not protected.'],['Compatibility','It may not work with every other part.']];
+  return '<div class="rbx-h" style="font-size:22px;margin-top:30px">Microcontrollers</div>'+
+    '<div class="rbx-sub">A microcontroller (MCU) is a small computer on a single chip. It is the brain of a robot: it reads the sensors and controls the motors and lights.</div>'+
+    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#00838F"></i><div><h4>Inside a microcontroller</h4><p>Four parts, all on one chip.</p></div></div>'+
+      '<div class="rbx-grid4">'+inside.map(x=>'<div class="card rbm-tile"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>'+
+      '<p class="rbm-note">Microcontrollers are small, cheap and low-power, and you can program them, usually in C, C++ or assembly language.</p></section>'+
+    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#2F6FDB"></i><div><h4>Popular microcontrollers</h4><p>Chips you will meet in school projects and real products.</p></div></div>'+
+      '<div class="rbg-grid">'+RB_MCU_LIST.map(m=>'<div class="card rbg-item"><div class="rbg-ic">'+ic+'</div><div><b>'+m[0]+'</b><span>'+m[2]+'</span><em>'+m[1]+'</em></div></div>').join('')+'</div></section>'+
+    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#8A4FD6"></i><div><h4>Types of microcontroller</h4><p>Four ways to sort them.</p></div></div>'+
+      '<div class="rbm-types">'+RB_MCU_TYPES.map(t=>'<div class="card rbm-type"><h5>'+t[0]+'</h5>'+t[1].map(r=>'<p><b>'+r[0]+'.</b> '+r[1]+'</p>').join('')+'</div>').join('')+'</div></section>'+
+    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#0E7C6B"></i><div><h4>Where they are used</h4><p>Built inside other devices, which is why they are called embedded.</p></div></div>'+
+      '<div>'+uses.map(u=>'<span class="rb-chip" style="font-size:13px;padding:5px 12px">'+u+'</span>').join('')+'</div></section>'+
+    '<section class="rbg-sec"><div class="rbg-head"><i style="background:#C6362F"></i><div><h4>Common problems</h4><p>What can go wrong, and what to watch for.</p></div></div>'+
+      '<div class="rbg-grid">'+issues.map(x=>'<div class="card rbm-tile"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div></section>';
 }
 
 /* 3D model made of CSS boxes */
@@ -2151,13 +2200,14 @@ const RB_AW=200, RB_AH=120;   /* arena size in cm */
 function rbLiveDist(){const L=rb.live,r=L.a*Math.PI/180,dx=Math.cos(r),dy=Math.sin(r);let t=1e9;
   if(dx>0)t=Math.min(t,(RB_AW-L.x)/dx);if(dx<0)t=Math.min(t,(0-L.x)/dx);if(dy>0)t=Math.min(t,(RB_AH-L.y)/dy);if(dy<0)t=Math.min(t,(0-L.y)/dy);
   return Math.max(0,t-9);}
+function rbLinked(){return !!rb.live.link||rb.tab==='circuits';}
 function rbConnText(){
   if(rb.live.link)return 'A robot kit is connected over USB.';
-  return {circuits:'Robot kit connected! This circuit runs in the simulator.',model:'No 3D printer is connected. This is an on-screen model.',
+  return {circuits:'Circuit simulator connected. Build your circuit and press Start simulation.',model:'No 3D printer is connected. This is an on-screen model.',
     code:'No robot is connected. Your program drives the on-screen robot.',live:'No robot is connected. The remote drives the preview robot only.'}[rb.tab]||'';
 }
 function rbLivePaint(){
-  const ts=document.getElementById('rbTopSt');if(ts){ts.className='rbl-status'+(rb.live.link?' on':'');ts.innerHTML='<i></i>'+(rb.live.link?'Connected':'Not connected');
+  const ts=document.getElementById('rbTopSt');if(ts){ts.className='rbl-status'+(rbLinked()?' on':'');ts.innerHTML='<i></i>'+(rbLinked()?'Connected':'Not connected');
     const tx=document.getElementById('rbTopTx');if(tx)tx.textContent=rbConnText();}
   const L=rb.live,g=id=>document.getElementById(id);if(!g('rbLv'))return;
   g('rbLv').style.left=(L.x/RB_AW*100)+'%';g('rbLv').style.top=(L.y/RB_AH*100)+'%';g('rbLvIn').style.transform='rotate('+L.a+'deg)';
@@ -2218,7 +2268,7 @@ function roboticsView(){
     '<div class="pagehead">'+eyebrow('Interactive Labs · Robotics')+'<h2 class="display">Robotics Lab</h2>'+
     '<p class="muted" style="margin-top:6px">Circuits, 3D modeling and block coding in one place.</p></div>'+
     '<div class="rbx-nav" role="tablist">'+tabs.map(t=>'<button role="tab" aria-selected="'+(rb.tab===t[0])+'" class="'+(rb.tab===t[0]?'on':'')+'" onclick="rbTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>'+
-    (rb.tab==='home'?'':'<div class="rbx-conn"><span class="rbl-status'+(rb.live.link?' on':'')+'" id="rbTopSt"><i></i>'+(rb.live.link?'Connected':'Not connected')+'</span>'+
+    (rb.tab==='home'?'':'<div class="rbx-conn"><span class="rbl-status'+(rbLinked()?' on':'')+'" id="rbTopSt"><i></i>'+(rbLinked()?'Connected':'Not connected')+'</span>'+
       '<span id="rbTopTx">'+rbConnText()+'</span></div>')+body;
 }
 
@@ -3266,10 +3316,14 @@ function qtSync(){
   qt.lastSync=Date.now();
   try{
     if(!qt.cur||!state.user)return;
-    if(!/^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname))return;
     const d=qtLoad(),day=qtDay(Date.now()),s=d.s.find(x=>x.id===qt.cur.id)||qt.cur;
-    fetch('/api/activity',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
-      body:JSON.stringify({email:qt.cur.u,name:state.user.name||'',grade:state.user.grade||'',session:{id:s.id,in:s.in,out:s.out},date:day,focus:d.f[qt.cur.u+'|'+day]||{}})}).catch(function(){});
+    const data={email:qt.cur.u,name:state.user.name||'',grade:state.user.grade||'',session:{id:s.id,in:s.in,out:s.out},date:day,focus:d.f[qt.cur.u+'|'+day]||{}};
+    /* school server on the local network */
+    if(/^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname))
+      fetch('/api/activity',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify(data)}).catch(function(){});
+    /* Google Sheet for the weekly email report (set in report-config.js) */
+    if(window.QE_REPORT_URL&&/^https:\/\/script\.google\.com\//.test(window.QE_REPORT_URL))
+      fetch(window.QE_REPORT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},keepalive:true,body:JSON.stringify(Object.assign({key:window.QE_REPORT_KEY||''},data))}).catch(function(){});
   }catch(e){}
 }
 setInterval(qtBeat,QT_TICK*1000);

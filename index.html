@@ -587,6 +587,35 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .xl-adv em{font-style:normal;font-weight:600;color:var(--ink)}
 .xl-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 20px;background:#16303F;color:#fff;font-size:12.5px;flex-shrink:0}
 .xl-bar span{background:rgba(255,255,255,.14);border-radius:999px;padding:3px 10px}
+.sx-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px}
+.sx-exp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sx-exp p{margin:4px 0 12px;font-size:14px;color:var(--slate);line-height:1.5}
+@media(max-width:820px){.sx-layout,.sx-exp{grid-template-columns:1fr}}
+.sx-svg{width:100%;max-height:300px;display:block}
+.sx-read{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.sx-read div{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.sx-read span{display:block;font-size:11.5px;color:var(--slate)}.sx-read b{font-size:14.5px}
+.sx-ctl{margin-top:14px}.sx-ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600}
+.sx-ctl label span{font-variant-numeric:tabular-nums;color:#0A5C50}
+.sx-ctl input{width:100%;accent-color:#0E7C6B;margin-top:6px}
+.sx-swing{animation:sxswing 1s ease-in-out infinite alternate}
+@keyframes sxswing{from{transform:rotate(calc(var(--a)*-1))}to{transform:rotate(var(--a))}}
+.sx-bub{animation:sxbub 2.4s linear infinite}
+@keyframes sxbub{from{transform:translateY(20px);opacity:0}30%{opacity:1}to{transform:translateY(-40px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.sx-swing,.sx-bub{animation:none}}
+.sx-steps{margin:8px 0 14px 20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.45}
+.sx-q{margin-bottom:10px}.sx-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.sx-opts button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}
+.sx-opts button.ok{background:var(--tealSoft);border-color:var(--teal);font-weight:700}.sx-opts button.no{background:var(--redSoft);border-color:var(--vermilion);font-weight:700}
+.sx-frame{width:100%;height:calc(100vh - 250px);min-height:540px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.sm-scroll{overflow-x:auto;margin-top:14px}
+.sm-grid{display:grid;grid-template-columns:86px repeat(16,minmax(30px,1fr));gap:3px;min-width:640px}
+.sm-lab{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:4px}.sm-lab span{font-weight:400;color:var(--slate);font-size:11px}
+.sm-cell{height:30px;border:1px solid var(--line);border-radius:6px;background:var(--canvas);cursor:pointer;padding:0}
+.sm-cell.bar{border-left:2px solid var(--slate)}
+.sm-cell.on{background:hsl(var(--h),70%,50%);border-color:hsl(var(--h),70%,35%)}
+.sm-cell.ph{outline:2px solid var(--ink);outline-offset:-1px}
+.sm-code{margin-top:8px;background:#11212D;color:#E6F1F5;border-radius:10px;padding:12px;font-size:12.5px;max-height:220px;overflow:auto;white-space:pre}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1732,8 +1761,8 @@ function rbWorldHTML(){
 }
 /* ─────────── Robotics Lab pages: Overview, Circuits, 3D Modeling, Scratch Coding ─────────── */
 rb.tab='home';  rb.rot={x:-22,y:-35,explode:false};
-function rbTab(t){if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.tk){rb.tk.sim=false;rb.tk.pend=null;rb.tk.drag=null;clearInterval(rb.tk.tick);rb.tk.tick=0;}rb.tab=t;render();window.scrollTo(0,0);}
-function rbClose(){if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.tk){rb.tk.sim=false;rb.tk.pend=null;rb.tk.drag=null;}rb.tab='home';state.labOpen=null;render();}
+function rbTab(t){smStop();if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.tk){rb.tk.sim=false;rb.tk.pend=null;rb.tk.drag=null;clearInterval(rb.tk.tick);rb.tk.tick=0;}rb.tab=t;render();window.scrollTo(0,0);}
+function rbClose(){smStop();if(rb.running)rb.stop=true;if(rb.live)rb.live.cmd='S';if(rb.tk){rb.tk.sim=false;rb.tk.pend=null;rb.tk.drag=null;}rb.tab='home';state.labOpen=null;render();}
 
 /* parts gallery (realistic colour drawings) */
 const RB_SV=(p)=>'<svg viewBox="0 0 56 56" aria-hidden="true">'+p+'</svg>';
@@ -2651,14 +2680,14 @@ function rbLiveHTML(){
       '<div class="rb-link"><span class="rb-chip">Physics: speed and distance</span><span class="rb-chip">Maths: angles</span><span class="rb-chip">Coding: sending commands</span></div></div></div>';
 }
 function roboticsView(){
-  const tabs=[['home','Overview'],['circuits','1. Circuits'],['model','2. 3D Modeling'],['code','3. Scratch Coding'],['live','4. My Robot']];
-  const body=rb.tab==='circuits'?rbCircuitsHTML():rb.tab==='model'?rb3dHTML():rb.tab==='code'?rbCodeHTML():rb.tab==='live'?rbLiveHTML():rbHomeHTML();
+  const tabs=[['home','Overview'],['circuits','1. Circuits'],['model','2. 3D Modeling'],['code','3. Scratch Coding'],['live','4. My Robot'],['music','5. Buzzer Music'],['exp','6. Experiment']];
+  const body=rb.tab==='music'?smHTML(true):rb.tab==='exp'?sxExpHTML('robotics'):rb.tab==='circuits'?rbCircuitsHTML():rb.tab==='model'?rb3dHTML():rb.tab==='code'?rbCodeHTML():rb.tab==='live'?rbLiveHTML():rbHomeHTML();
   return '<div class="rbx-top"><button class="rbx-back" onclick="rbClose()">← All labs</button></div>'+
     '<div class="pagehead">'+eyebrow('Interactive Labs · Robotics')+'<h2 class="display">Robotics Lab</h2>'+
     '<p class="muted" style="margin-top:6px">Circuits, 3D modeling and block coding in one place.</p></div>'+
     '<div class="rbx-nav" role="tablist">'+tabs.map(t=>'<button role="tab" aria-selected="'+(rb.tab===t[0])+'" class="'+(rb.tab===t[0]?'on':'')+'" onclick="rbTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>'+
-    (rb.tab==='home'?'':'<div class="rbx-conn"><span class="rbl-status'+(rbLinked()?' on':'')+'" id="rbTopSt"><i></i>'+(rbLinked()?'Connected':'Not connected')+'</span>'+
-      '<span id="rbTopTx">'+rbConnText()+'</span></div>')+body+(rb.tab==='home'?xlStyle('robotics'):'');
+    (rb.tab==='home'||rb.tab==='music'||rb.tab==='exp'?'':'<div class="rbx-conn"><span class="rbl-status'+(rbLinked()?' on':'')+'" id="rbTopSt"><i></i>'+(rbLinked()?'Connected':'Not connected')+'</span>'+
+      '<span id="rbTopTx">'+rbConnText()+'</span></div>')+body;
 }
 
 /* ─────────── Immersia Lab: VR and AR viewer ─────────── */
@@ -2731,38 +2760,149 @@ function immersiaView(){
       '<div class="rbx-ctl">'+(ar?'<button class="btn teal" onclick="xrCam()">'+(xr.cam?'Stop camera':'Start camera')+'</button>':'<button class="btn '+(xr.stereo?'solid':'ghost')+'" onclick="xrSet(\'stereo\','+(!xr.stereo)+')">'+(xr.stereo?'Single view':'Split view (VR box)')+'</button>')+
         '<button class="btn ghost" onclick="xrFull()">Full screen</button><button class="btn ghost" onclick="xrGyro()">Look by moving phone</button></div>'+
       '<div class="rb-link" style="margin-top:14px"><b>'+(ar?'How AR works here':'How VR works here')+'</b><br>'+(ar?'The camera shows your room and the 3D model is drawn on top. Drag to turn the model and use Zoom to size it.':'Split view draws one picture for each eye. Put the phone in a cardboard VR box, go full screen and turn your head to look around.')+'</div>'+
-      '<div class="rb-link"><span class="rb-chip">'+XR_SCENES[xr.scene][1]+'</span><span class="rb-chip">Maths: 3D space and angles</span></div></div></div>'+xlStyle('immersia');
+      '<div class="rb-link"><span class="rb-chip">'+XR_SCENES[xr.scene][1]+'</span><span class="rb-chip">Maths: 3D space and angles</span></div></div></div>';
 }
 
-/* ─────────── How each lab teaches: the same learning style as well-known platforms, built into our own labs (no outside links) ─────────── */
-const XL={
- robotics:[['Simulation style, like PhET','Circuits','Build a circuit on screen, change a part, and see the result at once. Nothing can burn or break.'],
-   ['Block coding style, like Scratch','Scratch Coding','Snap blocks together to program the robot. No typing mistakes stop a beginner.'],
-   ['Sound and rhythm style, like Chrome Music Lab','Buzzer and code','Use the buzzer and wait blocks to make beeps and rhythms, and learn counting and patterns.'],
-   ['Syllabus experiment style, like OLabs','Materials guide','Each part has a short theory note, and each circuit can be repeated as many times as you like.']],
- immersia:[['Simulation style, like PhET','3D scenes','Turn and zoom the Solar System or a water molecule to see what a textbook picture cannot show.'],
-   ['Syllabus experiment style, like OLabs','Science topics','Each scene is tied to a school topic, with a one-line fact to remember.'],
-   ['Create and explore style, like Scratch','VR and AR modes','Students choose the scene and the view, and explore at their own speed.']],
- physics:[['Simulation style, like PhET','Measure on screen','Change a value, take the reading, and see how the result changes.'],
-   ['Syllabus experiment style, like OLabs','School practicals','Experiments follow the school practical list and can be repeated at any time.'],
-   ['Safe experiments','No equipment needed','Nothing can break, so every student gets a turn.']],
- biology:[['Syllabus experiment style, like OLabs','School practicals','Observe specimens step by step, the way the school practical asks.'],
-   ['Simulation style, like PhET','See the invisible','Look at cells and structures that are too small to see in class.'],
-   ['Safe experiments','No specimens needed','No microscope, slides or chemicals are required.']],
- chemistry:[['Simulation style, like PhET','Test and observe','Change the substance or amount and watch the result at once.'],
-   ['Syllabus experiment style, like OLabs','School practicals','Experiments follow the school practical list, with theory and observation.'],
-   ['Safe experiments','No chemicals needed','Reactions run on screen, so there is no risk of spills or burns.']]
+/* ─────────── Lab features: live simulations, guided experiments with viva, and a music maker (all built in, no outside links) ─────────── */
+const SX_EL=['H Hydrogen','He Helium','Li Lithium','Be Beryllium','B Boron','C Carbon','N Nitrogen','O Oxygen','F Fluorine','Ne Neon','Na Sodium','Mg Magnesium','Al Aluminium','Si Silicon','P Phosphorus','S Sulfur','Cl Chlorine','Ar Argon'];
+const SX_PH=[[0,'Battery acid'],[1,'Stomach acid'],[2,'Lemon juice'],[3,'Vinegar'],[4,'Tomato juice'],[5,'Black coffee'],[6,'Milk'],[7,'Pure water'],[8,'Sea water'],[9,'Baking soda'],[10,'Milk of magnesia'],[11,'Ammonia solution'],[12,'Soapy water'],[13,'Bleach'],[14,'Drain cleaner']];
+function sxRead(rows){return '<div class="sx-read">'+rows.map(r=>'<div><span>'+r[0]+'</span><b>'+r[1]+'</b></div>').join('')+'</div>';}
+const SX_SIMS={
+ physics:[
+  {name:'Pendulum',c:[['L','String length',0.2,2,0.1,1,' m'],['g','Gravity',1.6,24.8,0.1,9.8,' m/s²'],['a','Swing angle',5,30,1,15,'°']],
+   draw:v=>{const T=2*Math.PI*Math.sqrt(v.L/v.g),len=40+v.L*80,place=v.g<2?'like the Moon':v.g<4?'like Mars':v.g<11&&v.g>9?'like Earth':v.g>20?'like Jupiter':'';
+    return '<svg viewBox="0 0 320 240" class="sx-svg" role="img" aria-label="Pendulum swinging with a period of '+T.toFixed(2)+' seconds"><rect x="90" y="14" width="140" height="8" rx="3" fill="#5B6B79"/>'+
+     '<g class="sx-swing" style="transform-origin:160px 22px;--a:'+v.a+'deg;animation-duration:'+(T/2).toFixed(3)+'s"><line x1="160" y1="22" x2="160" y2="'+(22+len)+'" stroke="#11212D" stroke-width="2"/><circle cx="160" cy="'+(22+len)+'" r="13" fill="#0E7C6B"/></g></svg>'+
+     sxRead([['Time for one swing (T)',T.toFixed(2)+' s'],['Swings in one minute',(60/T).toFixed(1)],['Gravity',v.g.toFixed(1)+' m/s² '+place]])+
+     '<div class="rb-msg">T = 2π√(L ÷ g). A longer string swings more slowly. The swing angle and the mass do not change the time.</div>';}},
+  {name:"Ohm's law",c:[['V','Voltage',1,12,0.5,6,' V'],['R','Resistance',10,1000,10,220,' Ω']],
+   draw:v=>{const I=v.V/v.R,b=Math.min(1,I/0.06);
+    return '<svg viewBox="0 0 320 200" class="sx-svg" role="img" aria-label="Circuit with a battery, a resistor and a bulb"><rect x="40" y="40" width="240" height="120" rx="10" fill="none" stroke="#11212D" stroke-width="3"/>'+
+     '<rect x="24" y="80" width="32" height="44" rx="5" fill="#E8A317"/><text x="40" y="106" text-anchor="middle" font-size="11" font-weight="700" fill="#11212D">'+v.V+'V</text>'+
+     '<rect x="120" y="30" width="80" height="20" rx="5" fill="#C9A26B" stroke="#11212D"/><text x="160" y="24" text-anchor="middle" font-size="11" fill="#11212D">'+v.R+' Ω</text>'+
+     '<circle cx="280" cy="100" r="'+(16+b*14)+'" fill="#FFD84D" opacity="'+(0.15+b*0.5).toFixed(2)+'"/><circle cx="280" cy="100" r="14" fill="'+(b>0.05?'#FFD84D':'#D8DEE3')+'" stroke="#11212D" stroke-width="2"/>'+
+     '<text x="160" y="182" text-anchor="middle" font-size="12" fill="#11212D">Current → '+(I*1000).toFixed(1)+' mA</text></svg>'+
+     sxRead([['Current (I = V ÷ R)',(I*1000).toFixed(1)+' mA'],['Power (P = V × I)',(v.V*I*1000).toFixed(0)+' mW'],['Bulb',b>0.8?'Very bright':b>0.3?'Bright':b>0.08?'Dim':'Almost off']])+
+     '<div class="rb-msg">More voltage gives more current. More resistance gives less current.</div>';}}],
+ chemistry:[
+  {name:'pH scale',c:[['p','pH of the liquid',0,14,0.5,7,'']],
+   draw:v=>{const hue=Math.round(v.p/14*270),col='hsl('+hue+',75%,48%)',near=SX_PH[Math.round(v.p)][1],kind=v.p<6.5?'Acid':v.p>7.5?'Base (alkali)':'Neutral';
+    return '<svg viewBox="0 0 320 220" class="sx-svg" role="img" aria-label="Beaker with a liquid of pH '+v.p+'"><path d="M110 30v150a14 14 0 0 0 14 14h72a14 14 0 0 0 14-14V30" fill="none" stroke="#11212D" stroke-width="3"/>'+
+     '<path d="M112 80v100a12 12 0 0 0 12 12h72a12 12 0 0 0 12-12V80z" fill="'+col+'"/><text x="160" y="145" text-anchor="middle" font-size="26" font-weight="800" fill="#fff">'+v.p+'</text>'+
+     Array.from({length:15},(_,i)=>'<rect x="'+(40+i*16)+'" y="204" width="16" height="10" fill="hsl('+Math.round(i/14*270)+',75%,48%)"/>').join('')+
+     '<path d="M'+(48+v.p*16)+' 200l-5-7h10z" fill="#11212D"/></svg>'+
+     sxRead([['Type',kind],['Similar to',near],['Hydrogen ions','10⁻'+String(v.p).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]).replace('.','·')+' mol/L']])+
+     '<div class="rb-msg">Universal indicator turns red in strong acid, green in neutral liquid and purple in strong base. Each step down the scale has 10 times more hydrogen ions.</div>';}},
+  {name:'Build an atom',c:[['p','Protons',1,18,1,6,''],['n','Neutrons',0,22,1,6,''],['e','Electrons',0,18,1,6,'']],
+   draw:v=>{const el=SX_EL[v.p-1].split(' '),ch=v.p-v.e,sh=[Math.min(2,v.e),Math.min(8,Math.max(0,v.e-2)),Math.max(0,v.e-10)];
+    const dots=sh.map((n,s)=>'<circle cx="160" cy="115" r="'+(40+s*24)+'" fill="none" stroke="#9AA8B3" stroke-dasharray="3 4"/>'+Array.from({length:n},(_,i)=>{const a=i/n*Math.PI*2-Math.PI/2,r=40+s*24;return '<circle cx="'+(160+Math.cos(a)*r).toFixed(1)+'" cy="'+(115+Math.sin(a)*r).toFixed(1)+'" r="5" fill="#2F6FED"/>';}).join('')).join('');
+    return '<svg viewBox="0 0 320 230" class="sx-svg" role="img" aria-label="Atom of '+el[1]+'">'+dots+'<circle cx="160" cy="115" r="24" fill="#C8102E"/><text x="160" y="112" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">'+v.p+' p</text><text x="160" y="126" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">'+v.n+' n</text></svg>'+
+     sxRead([['Element',el[1]+' ('+el[0]+')'],['Mass number',String(v.p+v.n)],['Charge',ch===0?'0 · neutral atom':(ch>0?'+'+ch+' · positive ion':ch+' · negative ion')]])+
+     '<div class="rb-msg">Protons decide the element. Neutrons change the mass. Electrons decide the charge. Shells hold 2, 8 and 8 electrons.</div>';}}],
+ biology:[
+  {name:'Photosynthesis',c:[['l','Light',0,100,5,60,' %'],['c','Carbon dioxide',0,100,5,60,' %'],['w','Water',0,100,5,60,' %']],
+   draw:v=>{const r=Math.min(v.l,v.c,v.w),lim=r>=100?'None':r===v.l?'Light':r===v.c?'Carbon dioxide':'Water',n=Math.round(r/10);
+    return '<svg viewBox="0 0 320 220" class="sx-svg" role="img" aria-label="Plant making oxygen at '+r+' percent of the highest rate"><rect width="320" height="220" fill="#EAF6FB"/><circle cx="270" cy="44" r="'+(10+v.l/5)+'" fill="#FFD84D" opacity="'+(0.3+v.l/150).toFixed(2)+'"/>'+
+     '<rect y="180" width="320" height="40" fill="#8A5A2B"/><rect y="180" width="320" height="'+(v.w/100*40).toFixed(0)+'" fill="#3D8BFF" opacity=".45"/>'+
+     '<path d="M160 180V90" stroke="#16A34A" stroke-width="6"/><ellipse cx="128" cy="120" rx="34" ry="14" fill="#16A34A" transform="rotate(-25 128 120)"/><ellipse cx="192" cy="104" rx="34" ry="14" fill="#16A34A" transform="rotate(25 192 104)"/><ellipse cx="160" cy="78" rx="16" ry="26" fill="#22C55E"/>'+
+     Array.from({length:n},(_,i)=>'<circle class="sx-bub" style="animation-delay:'+(i*0.3).toFixed(1)+'s" cx="'+(110+(i*37)%100)+'" cy="'+(70-(i*13)%40)+'" r="5" fill="#fff" stroke="#3D8BFF"/>').join('')+'</svg>'+
+     sxRead([['Rate of photosynthesis',r+' %'],['Oxygen bubbles',String(n)],['Limiting factor',lim]])+
+     '<div class="rb-msg">Carbon dioxide + water + light → glucose + oxygen. The factor in shortest supply limits the rate. Raise that one to speed it up.</div>';}},
+  {name:'Osmosis',c:[['s','Salt in the water outside',0,3,0.1,0.9,' %']],
+   draw:v=>{const k=Math.max(0.55,Math.min(1.4,1+(0.9-v.s)*0.4)),kind=v.s<0.8?'Hypotonic':v.s>1?'Hypertonic':'Isotonic',inw=v.s<0.8,out=v.s>1;
+    return '<svg viewBox="0 0 320 220" class="sx-svg" role="img" aria-label="Cell in '+kind+' solution"><rect width="320" height="220" rx="10" fill="hsl(205,70%,'+(92-v.s*8).toFixed(0)+'%)"/>'+
+     '<ellipse cx="160" cy="110" rx="'+(70*k).toFixed(0)+'" ry="'+(52*k).toFixed(0)+'" fill="#F7B2C4" stroke="#C2417A" stroke-width="4"/><circle cx="160" cy="110" r="'+(16*k).toFixed(0)+'" fill="#7C3AED"/>'+
+     (inw?'<text x="36" y="114" font-size="22">→</text><text x="262" y="114" font-size="22">←</text>':out?'<text x="36" y="114" font-size="22">←</text><text x="262" y="114" font-size="22">→</text>':'')+
+     '<text x="160" y="208" text-anchor="middle" font-size="12" fill="#11212D">Cell holds 0.9 % salt · outside '+v.s.toFixed(1)+' %</text></svg>'+
+     sxRead([['Solution',kind],['Water moves',inw?'Into the cell':out?'Out of the cell':'In and out equally'],['Cell',inw?'Swells':out?'Shrinks':'Stays the same']])+
+     '<div class="rb-msg">Water moves through the cell membrane from the weaker solution to the stronger one. This is osmosis.</div>';}}]
 };
-function xlStyle(id){
-  const x=XL[id];if(!x)return '';
-  return '<div class="rbx-h">How this lab teaches</div><div class="rbx-sub">The learning styles of well-known platforms, built into this lab.</div>'+
-    '<div class="rbg-grid">'+x.map((a,i)=>'<div class="card xl-adv"><i>'+(i+1)+'</i><div><b>'+a[0]+'</b><span><em>'+a[1]+'.</em> '+a[2]+'</span></div></div>').join('')+'</div>';
+const SX_EXP={
+ physics:{name:'Simple pendulum',aim:'To find how the length of a pendulum changes the time of one swing.',
+  theory:'A pendulum swings back and forth in equal times. The time for one full swing is the period, T = 2π√(L ÷ g). It depends on the length and on gravity only.',
+  need:['Stand and clamp','Thread','Metal bob','Metre scale','Stopwatch'],
+  steps:['Set the string length to 0.5 m.','Note the time for one swing.','Change the length to 1.0 m, then 1.5 m and 2.0 m, and note the time each time.','Change the swing angle and see that the time stays the same.','Write the result: a longer pendulum has a longer period.'],sim:0,
+  viva:[['If the string is made longer, the time for one swing…',['becomes longer','becomes shorter','stays the same'],0,'T grows with the square root of the length.'],['Which of these does not change the period?',['Length','Gravity','Mass of the bob'],2,'Mass does not appear in T = 2π√(L ÷ g).'],['On the Moon, the same pendulum swings…',['faster','slower','at the same speed'],1,'Gravity is weaker on the Moon, so the period is longer.']]},
+ chemistry:{name:'pH of common liquids',aim:'To find whether common liquids are acids, bases or neutral, using universal indicator.',
+  theory:'The pH scale runs from 0 to 14. Below 7 is an acid, 7 is neutral and above 7 is a base. Universal indicator changes colour with pH.',
+  need:['Test tubes','Universal indicator','Lemon juice','Milk','Water','Soap solution','Baking soda solution'],
+  steps:['Set the pH to 2 for lemon juice and note the colour.','Set the pH to 6 for milk, 7 for water, 9 for baking soda and 12 for soapy water.','Note the colour and the type for each one.','Arrange the liquids from the strongest acid to the strongest base.'],sim:0,
+  viva:[['A liquid with pH 3 is…',['an acid','a base','neutral'],0,'Any pH below 7 is an acid.'],['Pure water has a pH of…',['0','7','14'],1,'Pure water is neutral.'],['Universal indicator in a strong base turns…',['red','green','purple'],2,'Red is strong acid, green is neutral and purple is strong base.']]},
+ biology:{name:'Osmosis in a cell',aim:'To see how a cell changes in water with different amounts of salt.',
+  theory:'Osmosis is the movement of water through a membrane from a weak solution to a strong solution. In class this is shown with raisins or potato strips.',
+  need:['Raisins or potato strips','Three beakers','Water','Salt','Balance'],
+  steps:['Set the salt outside to 0 %. The cell swells because water enters.','Set it to 0.9 %. The cell stays the same.','Set it to 3 %. The cell shrinks because water leaves.','Write the name of each solution: hypotonic, isotonic and hypertonic.'],sim:1,
+  viva:[['A raisin kept in plain water…',['swells','shrinks','does not change'],0,'Water enters the raisin by osmosis.'],['In osmosis, the thing that moves is…',['salt','water','sugar'],1,'Only water passes through the membrane.'],['A solution with more salt than the cell is…',['hypotonic','isotonic','hypertonic'],2,'Hypertonic means a stronger solution outside.']]},
+ robotics:{name:'Light an LED safely',aim:'To light an LED with a battery and find why a resistor is needed.',
+  theory:'An LED lets current flow one way only. Too much current burns it. A resistor in series limits the current. I = V ÷ R.',
+  need:['9 V battery','LED','220 Ω resistor','Wires','Breadboard'],
+  steps:['Open 1. Circuits and place a battery, a resistor and an LED.','Join battery + to the resistor, the resistor to the long leg of the LED, and the short leg to battery −.','Start the simulation. The LED lights.','Remove the resistor and try again. Note what happens.','Write the result: the resistor protects the LED.'],sim:-1,
+  viva:[['Why is a resistor used with an LED?',['To limit the current','To make it brighter','To store charge'],0,'Without it, too much current burns the LED.'],['The long leg of an LED is the…',['negative leg','positive leg','ground'],1,'The long leg (anode) goes to the positive side.'],['If the LED is put in backwards, it…',['burns','glows brighter','does not light'],2,'An LED lets current flow in one direction only.']]}
+};
+let sx={tab:{},sim:{},v:{},viva:{}};
+function sxTab(id,t){smStop();sx.tab[id]=t;render();}
+function sxV(id){const i=sx.sim[id]||0,k=id+i,sim=SX_SIMS[id][i];if(!sx.v[k]){sx.v[k]={};sim.c.forEach(c=>sx.v[k][c[0]]=c[5]);}return sx.v[k];}
+function sxPick(id,i){sx.sim[id]=i;render();}
+function sxSet(id,key,val){const v=sxV(id),sim=SX_SIMS[id][sx.sim[id]||0];v[key]=Number(val);const c=sim.c.find(c=>c[0]===key),l=document.getElementById('sxv_'+key),o=document.getElementById('sxOut');if(l)l.textContent=v[key]+c[6];if(o)o.innerHTML=sim.draw(v);}
+function sxSimHTML(id){
+  const sims=SX_SIMS[id],i=sx.sim[id]||0,sim=sims[i],v=sxV(id);
+  return '<div class="rbx-h">Simulations</div><div class="rbx-sub">Move a slider and watch the result change at once.</div>'+
+    '<div class="rbx-seg" style="margin-bottom:12px">'+sims.map((s,n)=>'<button class="'+(n===i?'on':'')+'" onclick="sxPick(\''+id+'\','+n+')">'+s.name+'</button>').join('')+'</div>'+
+    '<div class="sx-layout"><div class="card rbx-pad"><div id="sxOut" aria-live="polite">'+sim.draw(v)+'</div></div>'+
+    '<div class="card rbx-pad"><b>Change the values</b>'+sim.c.map(c=>'<div class="sx-ctl"><label for="sx_'+c[0]+'">'+c[1]+' <span id="sxv_'+c[0]+'">'+v[c[0]]+c[6]+'</span></label><input id="sx_'+c[0]+'" type="range" min="'+c[2]+'" max="'+c[3]+'" step="'+c[4]+'" value="'+v[c[0]]+'" oninput="sxSet(\''+id+'\',\''+c[0]+'\',this.value)"></div>').join('')+'</div></div>';
 }
-function xlBar(id){const x=XL[id];return x?'<div class="xl-bar"><b>How this lab teaches:</b>'+x.map(a=>'<span title="'+a[2]+'">'+a[0]+'</span>').join('')+'</div>':'';}
+function sxViva(id,q,a){sx.viva[id+'|'+q]=a;render();}
+function sxExpHTML(id){
+  const e=SX_EXP[id],done=e.viva.filter((q,i)=>sx.viva[id+'|'+i]===q[2]).length;
+  return '<div class="rbx-h">Experiment: '+e.name+'</div><div class="rbx-sub">Theory, procedure, simulator and viva questions.</div>'+
+    '<div class="sx-exp"><div class="card rbx-pad"><b>Aim</b><p>'+e.aim+'</p><b>Theory</b><p>'+e.theory+'</p><b>Materials in a real lab</b><div style="margin-top:6px">'+e.need.map(n=>'<span class="rb-chip">'+n+'</span>').join('')+'</div></div>'+
+    '<div class="card rbx-pad"><b>Procedure</b><ol class="sx-steps">'+e.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+      '<button class="btn teal" onclick="'+(e.sim<0?'rbTab(\'circuits\')':'sx.sim[\''+id+'\']='+e.sim+';sxTab(\''+id+'\',\'sim\')')+'">Open the simulator</button></div></div>'+
+    '<div class="rbx-h">Viva questions</div><div class="rbx-sub">'+done+' of '+e.viva.length+' correct.</div>'+
+    e.viva.map((q,i)=>{const a=sx.viva[id+'|'+i];return '<div class="card rbx-pad sx-q"><b>'+(i+1)+'. '+q[0]+'</b><div class="sx-opts">'+q[1].map((o,n)=>'<button class="'+(a===n?(n===q[2]?'ok':'no'):'')+'" aria-pressed="'+(a===n)+'" onclick="sxViva(\''+id+'\','+i+','+n+')">'+o+'</button>').join('')+'</div>'+
+      (a===undefined?'':'<div class="rb-msg">'+(a===q[2]?'<b>Correct.</b> ':'<b>Not quite.</b> ')+q[3]+'</div>')+'</div>';}).join('');
+}
+/* music maker: a note grid played with the Web Audio API */
+const SM_NOTES=[['C5',523],['B',494],['A',440],['G',392],['F',349],['E',330],['D',294],['C4',262]];
+let sm={g:{},bpm:120,on:false,step:0,timer:0,ctx:null,wave:'triangle'};
+function smBeep(f,ms){try{sm.ctx=sm.ctx||new (window.AudioContext||window.webkitAudioContext)();const t=sm.ctx.currentTime,o=sm.ctx.createOscillator(),g=sm.ctx.createGain();o.type=sm.wave;o.frequency.value=f;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.18,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+ms/1000);o.connect(g);g.connect(sm.ctx.destination);o.start(t);o.stop(t+ms/1000+0.02);}catch(e){}}
+function smToggle(r,c,el){const k=r+','+c;if(sm.g[k]){delete sm.g[k];}else{sm.g[k]=1;smBeep(SM_NOTES[r][1],220);}el.classList.toggle('on',!!sm.g[k]);el.setAttribute('aria-pressed',!!sm.g[k]);smCode();}
+function smStop(){clearInterval(sm.timer);sm.timer=0;sm.on=false;document.querySelectorAll('.sm-cell.ph').forEach(e=>e.classList.remove('ph'));const b=document.getElementById('smPlay');if(b)b.textContent='▶ Play';}
+function smPlay(){
+  if(sm.on){smStop();return;}
+  sm.on=true;sm.step=0;const b=document.getElementById('smPlay');if(b)b.textContent='■ Stop';
+  const ms=60000/sm.bpm/2,tick=()=>{if(!document.getElementById('smGrid')){smStop();return;}
+    document.querySelectorAll('.sm-cell.ph').forEach(e=>e.classList.remove('ph'));document.querySelectorAll('.sm-cell[data-c="'+sm.step+'"]').forEach(e=>e.classList.add('ph'));
+    SM_NOTES.forEach((n,r)=>{if(sm.g[r+','+sm.step])smBeep(n[1],ms*0.9);});sm.step=(sm.step+1)%16;};
+  tick();sm.timer=setInterval(tick,ms);
+}
+function smClear(){smStop();sm.g={};render();}
+function smTempo(el){sm.bpm=Number(el.value);document.getElementById('smBpm').textContent=sm.bpm+' beats per minute';if(sm.on){smStop();smPlay();}smCode();}
+function smDemo(){smStop();sm.g={};[7,7,3,3,2,2,3,-1,4,4,5,5,6,6,7,-1].forEach((r,c)=>{if(r>=0)sm.g[r+','+c]=1;});render();}
+function smCodeText(){const ms=Math.round(60000/sm.bpm/2);let out=[];for(let c=0;c<16;c++){let r=SM_NOTES.findIndex((n,i)=>sm.g[i+','+c]);out.push(r<0?'delay('+ms+');':'tone(8, '+SM_NOTES[r][1]+', '+Math.round(ms*0.9)+'); delay('+ms+');');}return out.join('\n');}
+function smCode(){const e=document.getElementById('smCode');if(e)e.textContent=smCodeText();}
+function smHTML(robot){
+  sm.wave=robot?'square':'triangle';
+  let g='';SM_NOTES.forEach((n,r)=>{g+='<div class="sm-lab">'+n[0]+' <span>'+n[1]+' Hz</span></div>';for(let c=0;c<16;c++)g+='<button class="sm-cell'+(sm.g[r+','+c]?' on':'')+(c%4===0?' bar':'')+'" data-c="'+c+'" style="--h:'+(r*40)+'" aria-pressed="'+(!!sm.g[r+','+c])+'" aria-label="'+n[0]+', beat '+(c+1)+'" onclick="smToggle('+r+','+c+',this)"></button>';});
+  return '<div class="rbx-h">'+(robot?'Buzzer Music':'Sound Maker')+'</div><div class="rbx-sub">'+(robot?'Tap squares to write a tune for the robot buzzer. Each note is a frequency.':'Tap squares to make a tune. Higher notes have a higher frequency, which means more vibrations each second.')+'</div>'+
+    '<div class="card rbx-pad"><div class="rbx-ctl" style="margin-top:0"><button class="btn teal" id="smPlay" onclick="smPlay()">▶ Play</button><button class="btn" onclick="smDemo()">Example tune</button><button class="btn" onclick="smClear()">Clear</button>'+
+    '<label for="smT">Speed</label><input id="smT" type="range" min="60" max="200" step="10" value="'+sm.bpm+'" oninput="smTempo(this)" style="accent-color:#0E7C6B"><span id="smBpm">'+sm.bpm+' beats per minute</span></div>'+
+    '<div class="sm-scroll"><div class="sm-grid" id="smGrid">'+g+'</div></div></div>'+
+    (robot?'<div class="card rbx-pad" style="margin-top:12px"><b>Arduino code for this tune</b><div class="rbx-sub">Buzzer on pin 8. The code changes as you edit the tune.</div><pre class="sm-code" id="smCode">'+smCodeText()+'</pre></div>':'');
+}
+function sciView(id){
+  const lab=LABS.find(l=>l.id===id),t=sx.tab[id]||'bench';
+  const tabs=[['bench','Lab bench'],['sim','Simulations'],['exp','Experiment']].concat(id==='physics'?[['sound','Sound Maker']]:[]);
+  return '<div class="rbx-top"><button class="rbx-back" onclick="smStop();state.labOpen=null;render()">← All labs</button></div>'+
+    '<div class="pagehead">'+eyebrow('Interactive Labs · '+lab.sub.split(' · ')[0])+'<h2 class="display">'+lab.title+'</h2></div>'+
+    '<div class="rbx-nav" role="tablist">'+tabs.map(x=>'<button role="tab" aria-selected="'+(t===x[0])+'" class="'+(t===x[0]?'on':'')+'" onclick="sxTab(\''+id+'\',\''+x[0]+'\')">'+x[1]+'</button>').join('')+'</div>'+
+    (t==='sim'?sxSimHTML(id):t==='exp'?sxExpHTML(id):t==='sound'?smHTML(false):'<iframe class="sx-frame" src="'+lab.embedUrl+'" allow="camera;microphone;accelerometer" title="'+lab.title+'"></iframe>');
+}
 
 function labView(){
   if(state.labOpen==='robotics') return roboticsView();
   if(state.labOpen==='immersia') return immersiaView();
+  if(SX_SIMS[state.labOpen]) return sciView(state.labOpen);
   /* If a lab is open, show full-screen iframe */
   if(state.labOpen){
     const lab = LABS.find(l=>l.id===state.labOpen);
@@ -2778,7 +2918,6 @@ function labView(){
           '</div>'+
           '<button class="lab-modal-close" onclick="state.labOpen=null;render()">'+I.close(14)+' Close lab</button>'+
         '</div>'+
-        xlBar(lab.id)+
         '<iframe src="'+lab.embedUrl+'" allow="camera;microphone;accelerometer" title="'+lab.title+'"></iframe>'+
       '</div>';
     }
@@ -4062,4 +4201,3 @@ render();
 </script>
 </body>
 </html>
-  

@@ -576,6 +576,17 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .xl-err{color:var(--vermilion);font-size:13px;margin-top:8px}
 .lab-facts{font-size:12px;color:var(--slate);line-height:1.5;border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
 .lab-facts b{color:var(--ink);font-weight:600}
+.xl-adv{display:flex;gap:12px;align-items:flex-start;padding:14px}
+.xl-adv i{font-style:normal;flex:none;width:28px;height:28px;border-radius:50%;background:var(--tealSoft);color:#0A5C50;font-weight:800;display:grid;place-items:center;font-size:13px}
+.xl-adv b{display:block;font-size:14px}.xl-adv span{display:block;font-size:13px;color:var(--slate);line-height:1.45;margin-top:2px}
+.ai-mic{flex:none;width:44px;border:1px solid var(--line);background:var(--card);border-radius:10px;font-size:18px;cursor:pointer}
+.ai-mic.on{background:var(--vermilion);border-color:var(--vermilion);animation:aipulse 1s infinite}
+@keyframes aipulse{50%{opacity:.6}}
+@media(prefers-reduced-motion:reduce){.ai-mic.on{animation:none}}
+.ai-pts{margin:8px 0 8px 18px;display:flex;flex-direction:column;gap:6px}
+.xl-adv em{font-style:normal;font-weight:600;color:var(--ink)}
+.xl-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 20px;background:#16303F;color:#fff;font-size:12.5px;flex-shrink:0}
+.xl-bar span{background:rgba(255,255,255,.14);border-radius:999px;padding:3px 10px}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1567,54 +1578,6 @@ const LABS = [
     color:"#5B3FC4",
     bg:"linear-gradient(135deg,#5B3FC4 0%,#2F6FDB 100%)",
     icon:'<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><path d="M9 13v1.5M15 13v1.5M2 13v3M22 13v3"/>',
-  },
-  {
-    id:"phet",
-    title:"PhET Simulations",
-    sub:"Science and Maths · Classes 1–12",
-    desc:"Free interactive simulations for physics, chemistry, biology and maths, from the University of Colorado Boulder.",
-    tags:["Physics","Chemistry","Maths","Biology"],
-    url:"",
-    embedUrl:"",
-    color:"#C7791A",
-    bg:"linear-gradient(135deg,#C7791A 0%,#8A4B0A 100%)",
-    icon:'<circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/>',
-  },
-  {
-    id:"scratch",
-    title:"Scratch",
-    sub:"Coding · Classes 1–8",
-    desc:"Block coding for games, stories and animations. Show any shared Scratch project here, with credit to its author.",
-    tags:["Block coding","Games","Animation"],
-    url:"",
-    embedUrl:"",
-    color:"#E0700B",
-    bg:"linear-gradient(135deg,#E0700B 0%,#B8480A 100%)",
-    icon:'<path d="M8 4h3v3h2V4h3a2 2 0 0 1 2 2v3h-3v2h3v3a2 2 0 0 1-2 2h-3v-3h-2v3H8a2 2 0 0 1-2-2v-3h3v-2H6V6a2 2 0 0 1 2-2z"/>',
-  },
-  {
-    id:"music",
-    title:"Chrome Music Lab",
-    sub:"Music and Sound · Classes 1–5",
-    desc:"Make songs and rhythms, and see the science and maths of sound through hands-on music experiments.",
-    tags:["Music","Sound waves","Patterns"],
-    url:"",
-    embedUrl:"",
-    color:"#1E63D0",
-    bg:"linear-gradient(135deg,#1E63D0 0%,#12357A 100%)",
-    icon:'<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
-  },
-  {
-    id:"olabs",
-    title:"OLabs and DIKSHA",
-    sub:"Science · Classes 6–12",
-    desc:"Government and institutional online labs and lessons. These open on their official sites.",
-    tags:["Opens official site","Physics","Chemistry","Biology"],
-    url:"",
-    embedUrl:"",
-    color:"#2E7D32",
-    bg:"linear-gradient(135deg,#2E7D32 0%,#1B4D1F 100%)",
-    icon:'<path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>',
   },
   {
     id:"physics",
@@ -2695,7 +2658,7 @@ function roboticsView(){
     '<p class="muted" style="margin-top:6px">Circuits, 3D modeling and block coding in one place.</p></div>'+
     '<div class="rbx-nav" role="tablist">'+tabs.map(t=>'<button role="tab" aria-selected="'+(rb.tab===t[0])+'" class="'+(rb.tab===t[0]?'on':'')+'" onclick="rbTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>'+
     (rb.tab==='home'?'':'<div class="rbx-conn"><span class="rbl-status'+(rbLinked()?' on':'')+'" id="rbTopSt"><i></i>'+(rbLinked()?'Connected':'Not connected')+'</span>'+
-      '<span id="rbTopTx">'+rbConnText()+'</span></div>')+body;
+      '<span id="rbTopTx">'+rbConnText()+'</span></div>')+body+(rb.tab==='home'?xlStyle('robotics'):'');
 }
 
 /* ─────────── Immersia Lab: VR and AR viewer ─────────── */
@@ -2768,65 +2731,38 @@ function immersiaView(){
       '<div class="rbx-ctl">'+(ar?'<button class="btn teal" onclick="xrCam()">'+(xr.cam?'Stop camera':'Start camera')+'</button>':'<button class="btn '+(xr.stereo?'solid':'ghost')+'" onclick="xrSet(\'stereo\','+(!xr.stereo)+')">'+(xr.stereo?'Single view':'Split view (VR box)')+'</button>')+
         '<button class="btn ghost" onclick="xrFull()">Full screen</button><button class="btn ghost" onclick="xrGyro()">Look by moving phone</button></div>'+
       '<div class="rb-link" style="margin-top:14px"><b>'+(ar?'How AR works here':'How VR works here')+'</b><br>'+(ar?'The camera shows your room and the 3D model is drawn on top. Drag to turn the model and use Zoom to size it.':'Split view draws one picture for each eye. Put the phone in a cardboard VR box, go full screen and turn your head to look around.')+'</div>'+
-      '<div class="rb-link"><span class="rb-chip">'+XR_SCENES[xr.scene][1]+'</span><span class="rb-chip">Maths: 3D space and angles</span></div></div></div>';
+      '<div class="rb-link"><span class="rb-chip">'+XR_SCENES[xr.scene][1]+'</span><span class="rb-chip">Maths: 3D space and angles</span></div></div></div>'+xlStyle('immersia');
 }
 
-/* ─────────── Partner platforms inside the Lab: PhET, Scratch, Chrome Music Lab, OLabs / DIKSHA ─────────── */
+/* ─────────── How each lab teaches: the same learning style as well-known platforms, built into our own labs (no outside links) ─────────── */
 const XL={
- phet:{name:'PhET Interactive Simulations',grades:'Classes 1–12',license:'CC BY 4.0',how:'Embedded with the official PhET embed code.',
-  credit:'Simulations by <a href="https://phet.colorado.edu" target="_blank" rel="noopener">PhET Interactive Simulations</a>, University of Colorado Boulder, licensed under CC BY 4.0.',
-  url:s=>'https://phet.colorado.edu/sims/html/'+s+'/latest/'+s+'_en.html',
-  items:[['Maths','Make a Ten','Classes 1–2','make-a-ten'],['Maths','Arithmetic','Classes 3–5','arithmetic'],['Maths','Fractions: Intro','Classes 3–5','fractions-intro'],['Maths','Area Builder','Classes 3–6','area-builder'],['Maths','Graphing Lines','Classes 8–10','graphing-lines'],
-   ['Physics','Forces and Motion: Basics','Classes 6–8','forces-and-motion-basics'],['Physics','Balancing Act','Classes 5–8','balancing-act'],['Physics','Energy Skate Park: Basics','Classes 6–9','energy-skate-park-basics'],['Physics','Circuit Construction Kit: DC','Classes 6–10','circuit-construction-kit-dc'],["Physics","Ohm's Law",'Classes 9–10','ohms-law'],['Physics','Pendulum Lab','Classes 9–11','pendulum-lab'],['Physics','Projectile Motion','Classes 9–11','projectile-motion'],['Physics','Bending Light','Classes 10–12','bending-light'],['Physics','Gravity and Orbits','Classes 6–11','gravity-and-orbits'],
-   ['Chemistry','States of Matter: Basics','Classes 6–9','states-of-matter-basics'],['Chemistry','Build an Atom','Classes 8–10','build-an-atom'],['Chemistry','pH Scale','Classes 9–10','ph-scale'],['Chemistry','Balancing Chemical Equations','Classes 9–10','balancing-chemical-equations'],
-   ['Biology','Natural Selection','Classes 9–12','natural-selection'],['Biology','Color Vision','Classes 6–10','color-vision']]},
- music:{name:'Chrome Music Lab',grades:'Classes 1–5',license:'Apache 2.0 (open source)',how:'Embedded from the official site.',
-  credit:'<a href="https://musiclab.chromeexperiments.com" target="_blank" rel="noopener">Chrome Music Lab</a> by Google, open source under the Apache 2.0 licence.',
-  url:s=>'https://musiclab.chromeexperiments.com/'+s+'/',
-  items:[['Make music','Song Maker','Classes 1–5','Song-Maker'],['Make music','Rhythm','Classes 1–3','Rhythm'],['Make music','Melody Maker','Classes 1–5','Melody-Maker'],['Make music','Kandinsky','Classes 1–5','Kandinsky'],
-   ['Science of sound','Sound Waves','Classes 3–5','Sound-Waves'],['Science of sound','Spectrogram','Classes 3–5','Spectrogram'],['Science of sound','Harmonics','Classes 4–5','Harmonics'],['Science of sound','Strings','Classes 3–5','Strings'],
-   ['Maths in music','Chords','Classes 3–5','Chords'],['Maths in music','Arpeggios','Classes 4–5','Arpeggios'],['Maths in music','Piano Roll','Classes 1–5','Piano-Roll']]},
- scratch:{name:'Scratch',grades:'Classes 1–8',license:'CC BY-SA 2.0',how:'Shared Scratch projects are embedded with credit.',
-  credit:'Scratch is a project of the Scratch Foundation with the Lifelong Kindergarten Group at the MIT Media Lab. Projects are shared under CC BY-SA 2.0. See <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>.'},
- olabs:{name:'OLabs and DIKSHA',grades:'Classes 6–12',license:'Institutional and Government freeware',how:'Opens on the official site. It is not copied or embedded here.',
-  credit:'OLabs is by Amrita Vishwa Vidyapeetham and CDAC Mumbai, supported by the Ministry of Electronics and IT. DIKSHA is by the Ministry of Education, Government of India.',
-  links:[['OLabs','Online labs for Physics, Chemistry, Biology, Maths and English, with theory, procedure, simulator and viva.','https://www.olabs.edu.in/'],['DIKSHA','The national platform for school lessons, textbooks and practice in many Indian languages.','https://diksha.gov.in/']]}
+ robotics:[['Simulation style, like PhET','Circuits','Build a circuit on screen, change a part, and see the result at once. Nothing can burn or break.'],
+   ['Block coding style, like Scratch','Scratch Coding','Snap blocks together to program the robot. No typing mistakes stop a beginner.'],
+   ['Sound and rhythm style, like Chrome Music Lab','Buzzer and code','Use the buzzer and wait blocks to make beeps and rhythms, and learn counting and patterns.'],
+   ['Syllabus experiment style, like OLabs','Materials guide','Each part has a short theory note, and each circuit can be repeated as many times as you like.']],
+ immersia:[['Simulation style, like PhET','3D scenes','Turn and zoom the Solar System or a water molecule to see what a textbook picture cannot show.'],
+   ['Syllabus experiment style, like OLabs','Science topics','Each scene is tied to a school topic, with a one-line fact to remember.'],
+   ['Create and explore style, like Scratch','VR and AR modes','Students choose the scene and the view, and explore at their own speed.']],
+ physics:[['Simulation style, like PhET','Measure on screen','Change a value, take the reading, and see how the result changes.'],
+   ['Syllabus experiment style, like OLabs','School practicals','Experiments follow the school practical list and can be repeated at any time.'],
+   ['Safe experiments','No equipment needed','Nothing can break, so every student gets a turn.']],
+ biology:[['Syllabus experiment style, like OLabs','School practicals','Observe specimens step by step, the way the school practical asks.'],
+   ['Simulation style, like PhET','See the invisible','Look at cells and structures that are too small to see in class.'],
+   ['Safe experiments','No specimens needed','No microscope, slides or chemicals are required.']],
+ chemistry:[['Simulation style, like PhET','Test and observe','Change the substance or amount and watch the result at once.'],
+   ['Syllabus experiment style, like OLabs','School practicals','Experiments follow the school practical list, with theory and observation.'],
+   ['Safe experiments','No chemicals needed','Reactions run on screen, so there is no risk of spills or burns.']]
 };
-let xl={sel:{phet:0,music:0},sid:''};
-function xlPick(id,i){xl.sel[id]=i;render();}
-function xlScratch(ev){ev.preventDefault();const v=(document.getElementById('xlSid').value||'').trim(),m=v.match(/scratch\.mit\.edu\/projects\/(\d{3,12})/)||v.match(/^(\d{3,12})$/);
-  if(!m){const e=document.getElementById('xlErr');if(e){e.hidden=false;}return false;}xl.sid=m[1];render();return false;}
-function xlHead(id){const p=XL[id];
-  return '<div class="rbx-top"><button class="rbx-back" onclick="state.labOpen=null;render()">← All labs</button></div>'+
-    '<div class="pagehead">'+eyebrow('Interactive Labs · Partner platform')+'<h2 class="display">'+p.name+'</h2></div>'+
-    '<div class="xl-meta"><div><span>Target grades</span><b>'+p.grades+'</b></div><div><span>Licence</span><b>'+p.license+'</b></div><div><span>How it is used here</span><b>'+p.how+'</b></div></div>';}
-function xlView(id){
-  const p=XL[id];let body='';
-  if(p.items){const i=xl.sel[id]||0,it=p.items[i],src=p.url(it[3]);let last='';
-    body='<div class="xl-wrap"><div class="card xl-list" role="list">'+p.items.map((x,k)=>{const g=x[0]!==last?'<div class="rbtk-grp">'+x[0]+'</div>':'';last=x[0];
-        return g+'<button role="listitem" class="'+(k===i?'on':'')+'" onclick="xlPick(\''+id+'\','+k+')"><b>'+x[1]+'</b><span>'+x[2]+'</span></button>';}).join('')+'</div>'+
-      '<div class="card xl-stage"><div class="xl-bar"><b>'+it[1]+'</b><span class="muted" style="font-size:12px">'+it[2]+'</span><a class="rbx-ext" style="margin-left:auto" href="'+src+'" target="_blank" rel="noopener">Open in a new tab ↗</a></div>'+
-        '<iframe class="xl-frame" src="'+src+'" title="'+it[1]+'" allow="fullscreen; microphone; autoplay" allowfullscreen loading="lazy"></iframe>'+
-        '<p class="xl-note">If the activity stays blank, use “Open in a new tab”. It needs an internet connection.</p></div></div>';
-  }else if(id==='scratch'){
-    body='<div class="card rbx-pad"><form class="xl-form" onsubmit="return xlScratch(event)"><label for="xlSid"><b>Show a Scratch project</b></label>'+
-      '<input id="xlSid" placeholder="Paste a Scratch project link or its number" value="'+(xl.sid?'https://scratch.mit.edu/projects/'+xl.sid:'')+'" aria-describedby="xlErr"><button class="btn teal" type="submit">Show project</button></form>'+
-      '<p id="xlErr" class="xl-err" hidden>That does not look like a Scratch project link. It should look like scratch.mit.edu/projects/ followed by a number.</p>'+
-      (xl.sid?'<iframe class="xl-frame" style="height:520px;margin-top:12px" src="https://scratch.mit.edu/projects/'+xl.sid+'/embed" title="Scratch project '+xl.sid+'" allow="fullscreen" allowfullscreen loading="lazy"></iframe>'+
-        '<p class="xl-note">Project <a href="https://scratch.mit.edu/projects/'+xl.sid+'" target="_blank" rel="noopener">'+xl.sid+' on Scratch ↗</a>, shown with credit to its author. Only shared projects can be shown.</p>'
-        :'<p class="xl-note">Share your project on Scratch, copy its link, and paste it here. Teachers can paste any shared class project.</p>')+
-      '<div class="rbx-ctl"><a class="rbx-ext" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Create on Scratch ↗</a><a class="rbx-ext" href="https://scratch.mit.edu/explore/projects/all" target="_blank" rel="noopener">Explore projects ↗</a></div></div>';
-  }else{
-    body='<div class="rbx-grid3">'+p.links.map(l=>'<div class="card rbx-st"><h4>'+l[0]+'</h4><p>'+l[1]+'</p><a class="btn solid" style="text-decoration:none;text-align:center" href="'+l[2]+'" target="_blank" rel="noopener">Open '+l[0]+' ↗</a></div>').join('')+'</div>'+
-      '<p class="xl-note">These open on their official sites in a new tab. Their content is not copied into this app.</p>';
-  }
-  return xlHead(id)+body+'<p class="xl-credit">'+p.credit+'</p>';
+function xlStyle(id){
+  const x=XL[id];if(!x)return '';
+  return '<div class="rbx-h">How this lab teaches</div><div class="rbx-sub">The learning styles of well-known platforms, built into this lab.</div>'+
+    '<div class="rbg-grid">'+x.map((a,i)=>'<div class="card xl-adv"><i>'+(i+1)+'</i><div><b>'+a[0]+'</b><span><em>'+a[1]+'.</em> '+a[2]+'</span></div></div>').join('')+'</div>';
 }
+function xlBar(id){const x=XL[id];return x?'<div class="xl-bar"><b>How this lab teaches:</b>'+x.map(a=>'<span title="'+a[2]+'">'+a[0]+'</span>').join('')+'</div>':'';}
 
 function labView(){
   if(state.labOpen==='robotics') return roboticsView();
   if(state.labOpen==='immersia') return immersiaView();
-  if(XL[state.labOpen]) return xlView(state.labOpen);
   /* If a lab is open, show full-screen iframe */
   if(state.labOpen){
     const lab = LABS.find(l=>l.id===state.labOpen);
@@ -2842,13 +2778,13 @@ function labView(){
           '</div>'+
           '<button class="lab-modal-close" onclick="state.labOpen=null;render()">'+I.close(14)+' Close lab</button>'+
         '</div>'+
+        xlBar(lab.id)+
         '<iframe src="'+lab.embedUrl+'" allow="camera;microphone;accelerometer" title="'+lab.title+'"></iframe>'+
       '</div>';
     }
   }
 
-  const labKind={physics:['Online simulation','#0E7C6B'],chemistry:['Online simulation','#0E7C6B'],biology:['Online simulation','#0E7C6B'],robotics:['Interactive platform','#5B3FC4'],immersia:['Virtual reality (VR) kit','#C2417A'],
-    phet:['Online simulation','#0E7C6B'],scratch:['Interactive platform','#5B3FC4'],music:['Interactive platform','#5B3FC4'],olabs:['Online simulation','#0E7C6B']};
+  const labKind={physics:['Online simulation','#0E7C6B'],chemistry:['Online simulation','#0E7C6B'],biology:['Online simulation','#0E7C6B'],robotics:['Interactive platform','#5B3FC4'],immersia:['Virtual reality (VR) kit','#C2417A']};
   const card = lab=>{
     const btnStyle='background:'+lab.color;
     return '<div class="lab-card">'+
@@ -2869,7 +2805,6 @@ function labView(){
         '</div>'+
         '<p>'+lab.desc+'</p>'+
         '<div class="lab-tags">'+lab.tags.map(t=>'<span class="lab-tag">'+t+'</span>').join('')+'</div>'+
-        (XL[lab.id]?'<div class="lab-facts"><b>Grades:</b> '+XL[lab.id].grades+' · <b>Licence:</b> '+XL[lab.id].license+'<br>'+XL[lab.id].how+'</div>':'')+
       '</div>'+
       '<button class="lab-open-btn" style="'+btnStyle+'" onclick="openLab(\''+lab.id+'\')">'+
         I.flask(16)+' Open Lab'+
@@ -3624,8 +3559,8 @@ function aiGrade(){const m=String((state.user&&state.user.grade)||'8').match(/\d
 function aiName(){return ((state.user&&state.user.name)||'there').split(' ')[0];}
 function aiSay(html,chips){ai.msgs.push({who:'bot',html:html,chips:chips||[]});}
 function aiMe(text){ai.msgs.push({who:'me',html:aiEsc(text)});}
-function aiMenu(){return [['Quiz','quiz'],['Progress Report','progress'],['Achievements','awards']];}
-function aiHello(){if(ai.msgs.length)return;aiSay('Hi '+aiEsc(aiName())+'! I am your learning assistant. I can run a quiz, show your progress report, or list your achievements. What would you like?',aiMenu());}
+function aiMenu(){return [['Teach me','teach'],['Quiz','quiz'],['Progress Report','progress'],['Achievements','awards']];}
+function aiHello(){if(ai.msgs.length)return;aiSay('Hi '+aiEsc(aiName())+'! I am your learning assistant. I can teach you a topic from your grade, run a quiz, show your progress report, or list your achievements. What would you like?',aiMenu());}
 function aiPaint(){
   aiStore();
   const box=document.getElementById('aiMsgs');if(!box){render();return;}
@@ -3636,7 +3571,7 @@ function aiMsgsHTML(){
     return '<div class="ai-row '+m.who+'"><div class="ai-bub">'+m.html+'</div>'+
       (m.chips&&m.chips.length&&last?'<div class="ai-chips">'+m.chips.map(c=>'<button class="ai-chip" onclick="aiDo(\''+c[1]+'\',this.textContent)">'+aiEsc(c[0])+'</button>').join('')+'</div>':'')+'</div>';}).join('');
 }
-function aiReply(fn){ai.busy=true;aiPaint();setTimeout(()=>{ai.busy=false;fn();aiPaint();},350);}
+function aiReply(fn){ai.busy=true;aiPaint();const n0=ai.msgs.length;setTimeout(()=>{ai.busy=false;fn();aiPaint();aiSpeak(ai.msgs.slice(n0).filter(m=>m.who==='bot').map(aiPlain).join(' '));},350);}
 
 /* quiz */
 function aiSubjects(){return Object.keys((window.QUIZZES||{})[aiGrade()]||{});}
@@ -3666,6 +3601,7 @@ function aiQuizAnswer(letter){
   aiSay((ok?'<b class="ai-ok">Correct.</b> ':'<b class="ai-no">Not quite.</b> The answer is <b>'+aiEsc(q.ans)+'. '+aiEsc(right)+'</b>. ')+aiEsc(q.exp||''));
   z.n++;
   if(z.n<z.list.length){aiQuizNext();return;}
+  if(z.teach){ai.quiz=null;aiSay(ok?'Well done. Shall we go on?':'Read the explanation once more, then try again or move on.',[['Another question','teachq'],['Next topic','teachnext'],['Progress Report','progress']]);return;}
   const pct=Math.round(z.right/z.list.length*100);ai.quiz=null;
   aiSay('Quiz finished. You scored <b>'+z.right+' out of '+z.list.length+'</b> ('+pct+'%) in '+aiEsc(z.sub)+'. '+(pct>=80?'Excellent work.':pct>=50?'Good effort. One more round will make it stronger.':'Keep practising. Read the explanations above, then try again.'),
     [['Another quiz','quiz'],['Progress Report','progress'],['Achievements','awards']]);
@@ -3716,11 +3652,70 @@ function aiAwards(){
     [['Open achievements page','open:awards'],['Take a quiz','quiz'],['Progress Report','progress']]);
 }
 
+/* teaching: lessons by grade, chosen from the progress report */
+function aiWeakSubject(){const s=aiStats(),subs=aiSubjects().filter(k=>s.by[k]&&s.by[k].n>=3).sort((a,b)=>s.by[a].r/s.by[a].n-s.by[b].r/s.by[b].n);return subs.length&&s.by[subs[0]].r/s.by[subs[0]].n<0.8?subs[0]:null;}
+function aiTeachAsk(){
+  const subs=aiSubjects();if(!subs.length){aiSay('The lessons are not loaded yet. Check the internet connection and try again.',aiMenu());return;}
+  const weak=aiWeakSubject(),order=weak?[weak].concat(subs.filter(s=>s!==weak)):subs;
+  aiSay((weak?'Your progress report shows that <b>'+aiEsc(weak)+'</b> needs the most practice, so I suggest we start there. ':'I will teach from your Grade '+aiEsc(aiGrade())+' topics. ')+'Which subject shall we learn?',
+    order.map(s=>[s===weak?s+' (suggested)':s,'teach:'+subs.indexOf(s)]));
+}
+function aiTeachStart(sub,skip){
+  const g=aiGrade(),qs=((((window.QUIZZES||{})[g]||{})[sub]||{}).questions)||[];
+  if(!qs.length){aiSay('There are no lessons for that subject yet.',aiMenu());return;}
+  const topics={};qs.forEach((q,i)=>{const t=q.topic||'General';(topics[t]=topics[t]||{idx:[],wrong:0,done:0}).idx.push(i);const a=state.qz.answers[g+'|'+sub+'|'+i];if(a===false)topics[t].wrong++;if(a!==undefined)topics[t].done++;});
+  const seen=(ai.teach&&ai.teach.sub===sub&&skip)?ai.teach.seen:[];
+  let names=Object.keys(topics).filter(t=>seen.indexOf(t)<0);if(!names.length){names=Object.keys(topics);seen.length=0;}
+  names.sort((a,b)=>(topics[b].wrong-topics[a].wrong)||(topics[a].done/topics[a].idx.length-topics[b].done/topics[b].idx.length));
+  const topic=names[0],T=topics[topic];seen.push(topic);ai.quiz=null;ai.teach={g:g,sub:sub,topic:topic,idx:T.idx,seen:seen};
+  const pts=T.idx.slice(0,3).map(i=>{const q=qs[i],ans=q[String(q.ans||'').toLowerCase()];return '<li><b>'+aiEsc(ans)+'</b>'+(q.exp?' — '+aiEsc(q.exp):'')+'</li>';}).join('');
+  aiSay('<span class="ai-tag">Grade '+aiEsc(g)+' · '+aiEsc(sub)+'</span>Let us learn <b>'+aiEsc(topic)+'</b>.'+(T.wrong?' You missed a question here before, so read these carefully.':'')+
+    '<ul class="ai-pts">'+pts+'</ul>Read the points, then try a question.',[['Practice question','teachq'],['Next topic','teachnext'],['Change subject','teach']]);
+}
+function aiTeachQuestion(){
+  const t=ai.teach;if(!t){aiTeachAsk();return;}
+  const fresh=t.idx.filter(i=>state.qz.answers[t.g+'|'+t.sub+'|'+i]!==true),pool=fresh.length?fresh:t.idx,i=pool[Math.floor(Math.random()*pool.length)];
+  ai.quiz={g:t.g,sub:t.sub,list:[i],n:0,right:0,teach:true};aiQuizNext();
+}
+
+/* voice: the student can speak, and the assistant can read its replies aloud */
+ai.voice=(function(){try{return localStorage.getItem('qe_ai_voice')==='1';}catch(e){return false;}})();
+function aiPlain(m){const d=document.createElement('div');d.innerHTML=m.html.replace(/<\/(li|p|div|span)>/g,'. ').replace(/<br\s*\/?>/g,'. ');let t=d.textContent||'';
+  if(m.chips&&m.chips.some(c=>c[1].indexOf('ans:')===0))t+='. Options: '+m.chips.map(c=>c[0]).join('. ');return t.replace(/\s+/g,' ').replace(/★/g,'star ').replace(/☆/g,'').trim();}
+function aiSpeak(text){
+  if(!ai.voice||!('speechSynthesis' in window)||!text)return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text.slice(0,900));u.lang='en-IN';u.rate=0.95;
+    const v=speechSynthesis.getVoices().find(x=>/en[-_]IN/i.test(x.lang))||speechSynthesis.getVoices().find(x=>/^en/i.test(x.lang));if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}
+}
+function aiVoiceToggle(){ai.voice=!ai.voice;try{localStorage.setItem('qe_ai_voice',ai.voice?'1':'0');}catch(e){}
+  if(!ai.voice&&'speechSynthesis' in window)speechSynthesis.cancel();
+  if(ai.voice&&!('speechSynthesis' in window)){ai.voice=false;aiSay('This browser cannot read aloud. Try Chrome or Edge.');}
+  render();if(ai.voice)aiSpeak('Voice is on. I will read my answers aloud.');}
+let aiRec=null;
+function aiListen(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition,btn=document.getElementById('aiMic');
+  if(aiRec){try{aiRec.stop();}catch(e){}return;}
+  if(!SR){aiSay('Voice typing is not supported in this browser. Use Chrome or Edge, on a secure (https) address.');aiPaint();return;}
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  const r=new SR();aiRec=r;r.lang='en-IN';r.interimResults=false;r.maxAlternatives=1;
+  const done=()=>{aiRec=null;const b=document.getElementById('aiMic');if(b){b.classList.remove('on');b.setAttribute('aria-pressed','false');}const i=document.getElementById('aiIn');if(i)i.placeholder='Type or speak: teach me, quiz, progress…';};
+  r.onstart=()=>{if(btn){btn.classList.add('on');btn.setAttribute('aria-pressed','true');}const i=document.getElementById('aiIn');if(i)i.placeholder='Listening… speak now';};
+  r.onresult=e=>{const text=(e.results[0]&&e.results[0][0]&&e.results[0][0].transcript||'').trim();if(text)aiSendText(text);};
+  r.onerror=e=>{const m={'not-allowed':'The microphone is blocked. Allow microphone access for this site and try again.','service-not-allowed':'The microphone is blocked. Allow microphone access for this site and try again.',
+    'no-speech':'I did not hear anything. Tap the microphone and speak again.','network':'Voice typing needs an internet connection.','audio-capture':'No microphone was found on this device.'}[e.error];if(m){aiSay(m);aiPaint();}};
+  r.onend=done;
+  try{r.start();}catch(e){done();}
+}
+
 function aiDo(cmd,label){
   if(ai.busy)return;
   if(label)aiMe(label);
   aiReply(()=>{
     if(cmd==='quiz'){ai.quiz=null;aiQuizAsk();}
+    else if(cmd==='teach'){ai.quiz=null;aiTeachAsk();}
+    else if(cmd==='teachq'){aiTeachQuestion();}
+    else if(cmd==='teachnext'){if(ai.teach)aiTeachStart(ai.teach.sub,true);else aiTeachAsk();}
+    else if(cmd.indexOf('teach:')===0){const s=aiSubjects()[Number(cmd.slice(6))];if(s)aiTeachStart(s);else aiTeachAsk();}
     else if(cmd==='progress'){ai.quiz=null;aiProgress();}
     else if(cmd==='awards'){ai.quiz=null;aiAwards();}
     else if(cmd.indexOf('sub:')===0){const s=aiSubjects()[Number(cmd.slice(4))];if(s)aiQuizStart(s);else aiQuizAsk();}
@@ -3729,21 +3724,23 @@ function aiDo(cmd,label){
     else aiSay('I can help with these.',aiMenu());
   });
 }
-function aiSend(ev){
-  ev.preventDefault();const el=document.getElementById('aiIn'),text=(el.value||'').trim();if(!text||ai.busy)return false;el.value='';
-  const t=text.toLowerCase();aiMe(text);
+function aiSend(ev){ev.preventDefault();const el=document.getElementById('aiIn'),text=(el.value||'').trim();if(!text)return false;el.value='';aiSendText(text);return false;}
+function aiSendText(text){
+  if(ai.busy)return;
+  const t=text.toLowerCase().replace(/[.!?]+$/,'');aiMe(text);
   aiReply(()=>{
-    if(ai.quiz){const m=t.match(/^\s*(?:option\s*)?([abcd])\b/);if(m){aiQuizAnswer(m[1].toUpperCase());return;}}
+    if(ai.quiz){const m=t.match(/^\s*(?:option\s*|answer\s*)?(a|b|c|d|ay|bee|be|see|sea|dee)\b/);if(m){aiQuizAnswer({a:'A',ay:'A',b:'B',bee:'B',be:'B',c:'C',see:'C',sea:'C',d:'D',dee:'D'}[m[1]]);return;}}
     const subs=aiSubjects(),hit=subs.slice().sort((a,b)=>b.length-a.length).find(s=>t.indexOf(s.toLowerCase())>=0);
-    if(/quiz|test|question|practi[cs]e/.test(t)||hit){ai.quiz=null;if(hit)aiQuizStart(hit);else aiQuizAsk();}
+    if(/teach|learn|explain|lesson|study|revise/.test(t)){ai.quiz=null;if(hit)aiTeachStart(hit);else aiTeachAsk();}
+    else if(/next topic/.test(t)&&ai.teach){aiTeachStart(ai.teach.sub,true);}
+    else if(/quiz|test|question|practi[cs]e/.test(t)||hit){ai.quiz=null;if(hit)aiQuizStart(hit);else aiQuizAsk();}
     else if(/progress|report|time|trend|score|how am i|doing/.test(t)){ai.quiz=null;aiProgress();}
     else if(/achiev|badge|award|star|medal|trophy/.test(t)){ai.quiz=null;aiAwards();}
     else if(/^(hi|hello|hey|vanakkam|namaste)\b/.test(t))aiSay('Hello '+aiEsc(aiName())+'! Pick one and we will start.',aiMenu());
     else if(/thank/.test(t))aiSay('You are welcome. Anything else?',aiMenu());
     else if(ai.quiz)aiSay('Please answer with A, B, C or D, or tap one of the options.',['a','b','c','d'].map(k=>[k.toUpperCase(),'ans:'+k.toUpperCase()]));
-    else aiSay('I can run a quiz, show your progress report or list your achievements. Type one of those, or tap a button.',aiMenu());
+    else aiSay('I can teach a topic, run a quiz, show your progress report or list your achievements. Say or type one of those, or tap a button.',aiMenu());
   });
-  return false;
 }
 function aiBack(){return '<div class="rbx-top"><button class="rbx-back" onclick="go(\'ai\')">← AI Assistant</button></div>';}
 /* saved chats (kept on this device, one list per student) */
@@ -3764,20 +3761,20 @@ function aiListHTML(){
     '<button class="ai-chat-del" aria-label="Delete this chat" title="Delete this chat" onclick="aiDelete(\''+c.id+'\')">✕</button></div>').join('');
 }
 function aiToggleList(){ai.list=!ai.list;render();}
-function aiOpen(id){const c=aiChats().find(x=>x.id===id&&x.u===aiUser());if(!c)return;ai={msgs:c.msgs,quiz:null,busy:false,id:c.id,list:false};render();}
+function aiOpen(id){const c=aiChats().find(x=>x.id===id&&x.u===aiUser());if(!c)return;ai={msgs:c.msgs,quiz:null,busy:false,id:c.id,list:false,voice:ai.voice};render();}
 function aiDelete(id){if(!confirm('Delete this chat?'))return;try{localStorage.setItem('qe_ai_chats',JSON.stringify(aiChats().filter(c=>!(c.id===id&&c.u===aiUser()))));}catch(e){}
-  if(ai.id===id){ai={msgs:[],quiz:null,busy:false,id:null,list:true};aiHello();}render();}
-function aiReset(){ai={msgs:[],quiz:null,busy:false,id:null,list:false};aiHello();render();}
+  if(ai.id===id){ai={msgs:[],quiz:null,busy:false,id:null,list:true,voice:ai.voice};aiHello();}render();}
+function aiReset(){if('speechSynthesis' in window)speechSynthesis.cancel();ai={msgs:[],quiz:null,busy:false,id:null,list:false,voice:ai.voice};aiHello();render();}
 function aiView(){
   aiHello();
   setTimeout(()=>{const b=document.getElementById('aiMsgs');if(b)b.scrollTop=b.scrollHeight;},0);
-  return '<div class="pagehead">'+eyebrow('Quiz · Progress Report · Achievements')+'<h2 class="display">AI Assistant</h2>'+
-    '<p class="muted" style="margin-top:6px">One place for your quizzes, your progress report and your achievements.</p></div>'+
+  return '<div class="pagehead">'+eyebrow('Teach · Quiz · Progress Report · Achievements')+'<h2 class="display">AI Assistant</h2>'+
+    '<p class="muted" style="margin-top:6px">Lessons for your grade, quizzes, your progress report and your achievements. You can type or speak.</p></div>'+
     '<div class="card ai-card"><div class="ai-top"><span class="ai-dot"></span><b>Learning assistant</b><span class="muted" style="font-size:12px">Grade '+aiEsc(aiGrade())+'</span>'+
-      '<span class="ai-quick">'+aiMenu().map(c=>'<button onclick="aiDo(\''+c[1]+'\',\''+c[0]+'\')">'+c[0]+'</button>').join('')+'<button onclick="aiReset()" aria-label="Start a new chat">New chat</button><button class="'+(ai.list?'on':'')+'" onclick="aiToggleList()" aria-expanded="'+ai.list+'">My chats</button></span></div>'+
+      '<span class="ai-quick">'+aiMenu().map(c=>'<button onclick="aiDo(\''+c[1]+'\',\''+c[0]+'\')">'+c[0]+'</button>').join('')+'<button class="'+(ai.voice?'on':'')+'" onclick="aiVoiceToggle()" aria-pressed="'+ai.voice+'" title="Read the answers aloud">'+(ai.voice?'🔊 Voice on':'🔈 Voice off')+'</button><button onclick="aiReset()" aria-label="Start a new chat">New chat</button><button class="'+(ai.list?'on':'')+'" onclick="aiToggleList()" aria-expanded="'+ai.list+'">My chats</button></span></div>'+
       (ai.list?'<div class="ai-listbox"><div class="ai-listhead"><b>My chats</b><span class="muted" style="font-size:12px">Saved on this device</span></div>'+aiListHTML()+'</div>':'')+
       '<div class="ai-msgs" id="aiMsgs" aria-live="polite">'+aiMsgsHTML()+'</div>'+
-      '<form class="ai-form" onsubmit="return aiSend(event)"><input id="aiIn" autocomplete="off" placeholder="Type quiz, progress or achievements…" aria-label="Message to the assistant"><button class="btn teal" type="submit">Send</button></form></div>';
+      '<form class="ai-form" onsubmit="return aiSend(event)"><button type="button" class="ai-mic" id="aiMic" onclick="aiListen()" aria-pressed="false" aria-label="Speak your message" title="Speak">🎤</button><input id="aiIn" autocomplete="off" placeholder="Type or speak: teach me, quiz, progress…" aria-label="Message to the assistant"><button class="btn teal" type="submit">Send</button></form></div>';
 }
 
 /* ─────────── shell ─────────── */
@@ -4065,3 +4062,4 @@ render();
 </script>
 </body>
 </html>
+  

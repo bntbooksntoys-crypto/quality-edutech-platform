@@ -1165,9 +1165,13 @@ async function sha256(str){
 /* Tell the school server who signed in. Only runs on the local server (private network address). */
 function qeLog(event,u){
   try{
-    if(!/^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname)) return;
-    fetch('/api/log',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
-      body:JSON.stringify({event:event,name:(u&&u.name)||'',email:(u&&u.email)||'',grade:(u&&u.grade)||''})}).catch(function(){});
+    const d={event:event,name:(u&&u.name)||'',email:(u&&u.email)||'',grade:(u&&u.grade)||'',age:(u&&u.age)||''};
+    /* school server on the local network */
+    if(/^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname))
+      fetch('/api/log',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify(d)}).catch(function(){});
+    /* instant Google Chat message for each login and sign-up (set in report-config.js) */
+    if((event==='signin'||event==='signup')&&d.email&&window.QE_REPORT_URL&&/^https:\/\/script\.google\.com\//.test(window.QE_REPORT_URL))
+      fetch(window.QE_REPORT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},keepalive:true,body:JSON.stringify(Object.assign({key:window.QE_REPORT_KEY||''},d))}).catch(function(){});
   }catch(e){}
 }
 function getUsers(){ try{return JSON.parse(localStorage.getItem('qe_users')||'[]');}catch(e){return [];} }

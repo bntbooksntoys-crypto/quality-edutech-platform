@@ -546,6 +546,8 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .ai-chat-open:hover{border-color:var(--teal)}
 .ai-chat-del{border:1px solid var(--line);background:var(--card);color:var(--slate);border-radius:10px;width:36px;cursor:pointer;font-size:13px}
 .ai-chat-del:hover{color:var(--vermilion);border-color:var(--vermilion)}
+.lab-sec{margin-top:22px}
+.lab-sec:first-of-type{margin-top:4px}
 </style>
 <!-- Google Translate -->
 <style>
@@ -2716,7 +2718,8 @@ function labView(){
     }
   }
 
-  const cards = LABS.map(lab=>{
+  const labCat={physics:'sim',chemistry:'sim',biology:'sim',robotics:'play',immersia:'vr'};
+  const card = lab=>{
     const btnStyle='background:'+lab.color;
     return '<div class="lab-card">'+
       '<div class="lab-banner" style="'+lab.bg+'">'+
@@ -2740,11 +2743,17 @@ function labView(){
         I.flask(16)+' Open Lab'+
       '</button>'+
     '</div>';
-  }).join('');
+  };
+  const groups=[
+    ['sim','Online simulations','Run science experiments on screen, with virtual instruments in place of real ones.','#0E7C6B'],
+    ['play','Interactive platforms','Build, wire and code your own projects, and see them work.','#5B3FC4'],
+    ['vr','Virtual reality (VR) kits','Step inside 3D models on a screen, or with a phone and a VR viewer box.','#C2417A']];
+  const sections=groups.map(g=>{const list=LABS.filter(l=>(labCat[l.id]||'sim')===g[0]);if(!list.length)return '';
+    return '<section class="lab-sec"><div class="rbg-head"><i style="background:'+g[3]+'"></i><div><h4>'+g[1]+' <span>'+list.length+(list.length===1?' lab':' labs')+'</span></h4><p>'+g[2]+'</p></div></div><div class="lab-grid">'+list.map(card).join('')+'</div></section>';}).join('');
 
   return '<div class="pagehead">'+eyebrow('Interactive Labs')+'<h2 class="display">Virtual Lab Bench</h2>'+
-    '<p class="muted" style="margin-top:6px">Hands-on simulations for AR and VR, Robotics, Physics, Chemistry, and Biology. No setup needed — open and start experimenting.</p></div>'+
-    '<div class="lab-grid">'+cards+'</div>';
+    '<p class="muted" style="margin-top:6px">Online simulations, interactive platforms and virtual reality kits that let you run science, maths and coding experiments safely on a screen or headset.</p></div>'+
+    sections;
 }
 
 function openLab(id){

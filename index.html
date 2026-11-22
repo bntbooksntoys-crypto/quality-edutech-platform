@@ -616,6 +616,7 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .sm-cell.on{background:hsl(var(--h),70%,50%);border-color:hsl(var(--h),70%,35%)}
 .sm-cell.ph{outline:2px solid var(--ink);outline-offset:-1px}
 .sm-code{margin-top:8px;background:#11212D;color:#E6F1F5;border-radius:10px;padding:12px;font-size:12.5px;max-height:220px;overflow:auto;white-space:pre}
+.rbtk-tb.on{background:#FF8A1F;border-color:#C8102E;color:#11212D}
 </style>
 <!-- Google Translate -->
 <style>
@@ -2214,7 +2215,7 @@ function rbTkCodeHTML(){
 }
 
 function rbTkSvg(R){
-  const t=rb.tk;let h='<defs><pattern id="rbTkDots" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="1.3" fill="#D9D1BC"/></pattern></defs>'+
+  const t=rb.tk;let h='<defs><pattern id="rbTkDots" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="1.3" fill="#D9D1BC"/></pattern><radialGradient id="rbSold" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#C9CED3"/><stop offset="1" stop-color="#6F7880"/></radialGradient></defs>'+
     '<rect width="'+RB_WW+'" height="'+RB_WH+'" fill="'+RB_TK_BG+'"/><rect width="'+RB_WW+'" height="'+RB_WH+'" fill="url(#rbTkDots)"/>';
   const base=k=>RB_TK_DEF[k].box&&!RB_TK_DEF[k].t.length;
   t.parts.slice().sort((a,b)=>(base(b.k)?1:0)-(base(a.k)?1:0)).forEach(p=>{const sel=t.sel&&t.sel.t==='p'&&t.sel.id===p.id,bx=RB_TK_DEF[p.k].box||[104,104];
@@ -2230,7 +2231,8 @@ function rbTkSvg(R){
     h+='<path d="M'+a[0]+' '+a[1]+t.pts.map(q=>'L'+q[0]+' '+q[1]).join('')+'L'+m[0]+' '+m[1]+'" fill="none" stroke="'+t.color+'" stroke-width="4" stroke-dasharray="6 6" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
       t.pts.map(q=>'<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4" fill="'+t.color+'" pointer-events="none"/>').join('');}}
   t.parts.forEach(p=>RB_TK_DEF[p.k].t.forEach((_,i)=>{const q=rbTkTerm(p,i),pend=t.pend&&t.pend[0]===p.id&&t.pend[1]===i;
-    h+='<g data-term="'+p.id+':'+i+'" style="cursor:crosshair"><circle cx="'+q[0]+'" cy="'+q[1]+'" r="12" fill="transparent"/><circle cx="'+q[0]+'" cy="'+q[1]+'" r="'+(pend?8:6)+'" fill="'+(pend?'#2F6FDB':'#fff')+'" stroke="'+(pend?'#11212D':'#55606A')+'" stroke-width="2.5"/>'+(RB_TK_DEF[p.k].tl?'<text x="'+q[0]+'" y="'+(q[1]+20)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#11212D">'+RB_TK_DEF[p.k].tl[i]+'</text>':'')+'</g>';}));
+    h+='<g data-term="'+p.id+':'+i+'" style="cursor:crosshair"><circle cx="'+q[0]+'" cy="'+q[1]+'" r="12" fill="transparent"/><circle cx="'+q[0]+'" cy="'+q[1]+'" r="'+(pend?8:6)+'" fill="'+(pend?'#2F6FDB':'#fff')+'" stroke="'+(pend?'#11212D':'#55606A')+'" stroke-width="2.5"/>'+(rbTkSoldAt(p.id,i)?'<circle cx="'+q[0]+'" cy="'+q[1]+'" r="10" fill="url(#rbSold)" stroke="#55606A" stroke-width="1"/>':'')+(RB_TK_DEF[p.k].tl?'<text x="'+q[0]+'" y="'+(q[1]+20)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#11212D">'+RB_TK_DEF[p.k].tl[i]+'</text>':'')+'</g>';}));
+  if(t.solder&&!t.sim&&t.mouse){const m=t.mouse;h+='<g pointer-events="none" transform="translate('+m[0].toFixed(1)+','+m[1].toFixed(1)+') rotate(-40)"><circle r="7" fill="#FF8A1F" opacity=".35"/><path d="M0 0l4-22h-8z" fill="#B9BEC4" stroke="#55606A"/><rect x="-5" y="-40" width="10" height="18" fill="#8C959D"/><rect x="-8" y="-112" width="16" height="72" rx="7" fill="#1E63D0"/><rect x="-8" y="-52" width="16" height="12" fill="#F2C230"/><path d="M0 -112c0-22 26-20 30-40" fill="none" stroke="#1D1D1F" stroke-width="4" stroke-linecap="round"/></g>';}
   if(!t.parts.length)h+='<text x="'+(t.vb.x+t.vb.w/2)+'" y="'+(t.vb.y+t.vb.h/2)+'" text-anchor="middle" font-size="18" fill="#8A99A3">Drag a part from the list, or tap it, to place it here</text>';
   return h;
 }
@@ -2274,7 +2276,8 @@ function rbTkPaint(svgOnly){
   const dis=(id,v)=>{const b=document.getElementById(id);if(b)b.disabled=v;};
   dis('rbTkUndo',t.sim||!t.undo.length);dis('rbTkRedo',t.sim||!t.redo.length);dis('rbTkRotB',!selP);dis('rbTkDupB',!selP);dis('rbTkDelB',!hasSel);
   document.querySelectorAll('.rbtk-sw').forEach(b=>b.classList.toggle('on',b.dataset.c===t.color));
-  const c=document.getElementById('rbTkCnt');if(c)c.textContent=t.parts.length+' parts · '+t.wires.length+' wires';
+  const sd=document.getElementById('rbTkSolB');if(sd){sd.disabled=t.sim;sd.classList.toggle('on',!!t.solder&&!t.sim);sd.setAttribute('aria-pressed',!!t.solder&&!t.sim);}sv.style.cursor=t.solder&&!t.sim?'none':'';
+  const sc=rbTkSoldCount(),c=document.getElementById('rbTkCnt');if(c)c.textContent=t.parts.length+' parts · '+t.wires.length+' wires'+(sc[0]?' · '+sc[0]+' of '+sc[1]+' joints soldered':'');
 }
 function rbTkAdd(k,pos){
   const t=rb.tk;if(t.sim||!RB_TK_DEF[k]||t.parts.length>=60)return;rbTkPush();
@@ -2289,9 +2292,18 @@ function rbTkSlide(f,el){const t=rb.tk,p=t.sel&&rbTkPart(t.sel.id);if(!p)return;
 function rbTkRot(){const t=rb.tk,p=t.sel&&t.sel.t==='p'&&rbTkPart(t.sel.id);if(!p||t.sim)return;rbTkPush();p.r=(p.r+1)%4;rbTkSave();rbTkPaint();}
 function rbTkDup(){const t=rb.tk,p=t.sel&&t.sel.t==='p'&&rbTkPart(t.sel.id);if(!p||t.sim||t.parts.length>=60)return;rbTkPush();
   const q=JSON.parse(JSON.stringify(rbTkClean(p)));q.id=t.id++;q.x=Math.min(RB_WW-60,p.x+40);q.y=Math.min(RB_WH-60,p.y+40);t.parts.push(q);t.sel={t:'p',id:q.id};rbTkSave();rbTkPaint();}
+function rbTkSoldAt(id,i){return rb.tk.wires.some(w=>(w.sa&&w.a[0]===id&&w.a[1]===i)||(w.sb&&w.b[0]===id&&w.b[1]===i));}
+function rbTkSay(text,kind){const me=document.getElementById('rbTkMsg');if(me){me.className='rb-msg'+(kind?' '+kind:'');me.textContent=text;}}
+function rbTkSolder(){const t=rb.tk;if(t.sim)return;t.solder=!t.solder;t.pend=null;t.pts=[];t.sel=null;if(!t.solder)t.mouse=null;rbTkPaint();
+  if(t.solder)rbTkSay('Soldering iron is on. Tap a wire joint (a white dot with a wire) to solder it. Tap a soldered joint again to remove the solder.');}
+function rbTkSolderAt(id,i){const t=rb.tk,ends=[];t.wires.forEach(w=>{if(w.a[0]===id&&w.a[1]===i)ends.push([w,'sa']);if(w.b[0]===id&&w.b[1]===i)ends.push([w,'sb']);});
+  if(!ends.length){rbTkPaint(true);rbTkSay('There is no wire on this terminal. Join a wire first, then solder it.','bad');return;}
+  const was=ends.every(e=>e[0][e[1]]);rbTkPush();ends.forEach(e=>{if(was)delete e[0][e[1]];else e[0][e[1]]=1;});rbTkSave();rbTkPaint();
+  const n=rbTkSoldCount();rbTkSay(was?'Solder removed. The wire is loose again.':'Joint soldered. '+n[0]+' of '+n[1]+' wire joints are soldered.'+(n[0]===n[1]?' Every joint is fixed, so the circuit is permanent.':''),was?'':'ok');}
+function rbTkSoldCount(){const t=rb.tk,all={},done={};t.wires.forEach(w=>{all[w.a]=1;all[w.b]=1;if(w.sa)done[w.a]=1;if(w.sb)done[w.b]=1;});return [Object.keys(done).length,Object.keys(all).length];}
 function rbTkDel(){
   const t=rb.tk,s=t.sel;if(!s||t.sim)return;rbTkPush();
-  if(s.t==='w')t.wires.splice(s.i,1);
+  if(s.t==='w'){const w=t.wires[s.i];if(w&&(w.sa||w.sb)){t.undo.pop();rbTkSay('This wire is soldered. Turn on the soldering iron and tap its joints to remove the solder first.','bad');return;}t.wires.splice(s.i,1);}
   else{t.parts=t.parts.filter(p=>p.id!==s.id);t.wires=t.wires.filter(w=>w.a[0]!==s.id&&w.b[0]!==s.id);if(t.code===s.id)t.code=null;}
   t.sel=null;t.pend=null;t.pts=[];rbTkSave();rbTkPaint();
 }
@@ -2315,6 +2327,7 @@ function rbTkWire(){
   const pt=e=>{const r=sv.getBoundingClientRect(),v=t.vb;return [v.x+(e.clientX-r.left)/r.width*v.w,v.y+(e.clientY-r.top)/r.height*v.h];};
   sv.onpointerdown=e=>{
     const tm=e.target.closest('[data-term]'),wr=e.target.closest('[data-wire]'),pr=e.target.closest('[data-part]');
+    if(t.solder&&!t.sim){t.mouse=pt(e);if(tm){const a=tm.dataset.term.split(':').map(Number);rbTkSolderAt(a[0],a[1]);return;}if(wr||pr){rbTkPaint(true);rbTkSay('Tap a wire joint (a white dot with a wire) to solder it.');return;}}
     if(tm&&!t.sim){const a=tm.dataset.term.split(':').map(Number);
       if(!t.pend){t.pend=a;t.pts=[];t.mouse=pt(e);t.sel=null;}
       else{if(!(t.pend[0]===a[0]&&t.pend[1]===a[1])&&!t.wires.some(w=>(w.a+''===t.pend+''&&w.b+''===a+'')||(w.b+''===t.pend+''&&w.a+''===a+''))){rbTkPush();const w={a:t.pend,b:a,c:t.color};if(t.pts.length)w.pts=t.pts.slice();t.wires.push(w);rbTkSave();}t.pend=null;t.pts=[];}
@@ -2332,6 +2345,7 @@ function rbTkWire(){
     else if(t.pan){const r=sv.getBoundingClientRect(),dx=e.clientX-t.pan.cx,dy=e.clientY-t.pan.cy;if(Math.abs(dx)+Math.abs(dy)>4)t.pan.moved=true;
       if(t.pan.moved){t.vb.x=t.pan.vx-dx*t.vb.w/r.width;t.vb.y=t.pan.vy-dy*t.vb.h/r.height;rbTkClampView();rbTkView();}}
     else if(t.pend){t.mouse=pt(e);rbTkPaint(true);}
+    else if(t.solder&&!t.sim){t.mouse=pt(e);const g=sv.lastElementChild;if(g&&g.getAttribute('pointer-events')==='none'&&g.tagName==='g')g.setAttribute('transform','translate('+t.mouse[0].toFixed(1)+','+t.mouse[1].toFixed(1)+') rotate(-40)');else rbTkPaint(true);}
   };
   sv.onpointerup=sv.onpointercancel=()=>{
     if(t.drag){const p=rbTkPart(t.drag.id);if(p&&p.x===t.drag.x0&&p.y===t.drag.y0)t.undo.pop();t.drag=null;rbTkSave();rbTkPaint();}
@@ -2348,6 +2362,7 @@ function rbTkWire(){
     else if(c&&(k==='y'||(k==='z'&&e.shiftKey))){e.preventDefault();rbTkRedo();}
     else if(c&&k==='d'){e.preventDefault();rbTkDup();}
     else if(k==='r'&&!c){rbTkRot();}
+    else if(k==='s'&&!c){rbTkSolder();}
     else if(k==='+'||k==='='){rbTkZoom(1/1.2);}else if(k==='-'){rbTkZoom(1.2);}};
   rbTkPaint();
 }
@@ -2360,7 +2375,7 @@ function rbCircuitsHTML(){
         '<button class="btn ghost rbtk-edit" style="margin-left:auto" onclick="rbTkLoad()">Example</button><button class="btn ghost" id="rbTkCodeB" onclick="rbTkCodeOpen()">&lt;/&gt; Code</button><button class="btn ghost rbtk-edit" onclick="rbTkClear()">Clear</button>'+
         '<button class="btn teal" id="rbTkSim" onclick="rbTkSim()">▶ Start simulation</button></div>'+
       '<div class="rbtk-bar" role="toolbar" aria-label="Workspace tools">'+tb('rbTkUndo','↶ Undo','rbTkUndo()','Undo (Ctrl+Z)')+tb('rbTkRedo','↷ Redo','rbTkRedo()','Redo (Ctrl+Y)')+'<i></i>'+
-        tb('rbTkRotB','⟳ Rotate','rbTkRot()','Rotate (R)')+tb('rbTkDupB','⧉ Duplicate','rbTkDup()','Duplicate (Ctrl+D)')+tb('rbTkDelB','✕ Delete','rbTkDel()','Delete (Del)')+'<i></i>'+
+        tb('rbTkRotB','⟳ Rotate','rbTkRot()','Rotate (R)')+tb('rbTkDupB','⧉ Duplicate','rbTkDup()','Duplicate (Ctrl+D)')+tb('rbTkDelB','✕ Delete','rbTkDel()','Delete (Del)')+'<i></i>'+tb('rbTkSolB','🔥 Solder','rbTkSolder()','Soldering iron: fix wire joints (S)')+'<i></i>'+
         '<span class="rbtk-lab">Wire</span>'+cols.map(c=>'<button class="rbtk-sw" data-c="'+c[0]+'" aria-label="'+c[1]+' wire" title="'+c[1]+' wire" style="background:'+c[0]+'" onclick="rbTkColor(\''+c[0]+'\')"></button>').join('')+'<i></i>'+
         '<button class="rbtk-tb" title="Zoom out (-)" aria-label="Zoom out" onclick="rbTkZoom(1.25)">−</button><span class="rbtk-lab" id="rbTkZ">100%</span><button class="rbtk-tb" title="Zoom in (+)" aria-label="Zoom in" onclick="rbTkZoom(0.8)">+</button>'+tb('rbTkFitB','Fit','rbTkFit()','Show the whole circuit')+'</div>'+
       '<div class="rbtk-wrap"><div><select class="rbtk-search" aria-label="What to show in the list" onchange="rbTkMode(this.value)">'+[['basic','Components · Basic'],['all','Components · All'],['starters','Starters'],['kits','Kits']].map(o=>'<option value="'+o[0]+'"'+(md===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
@@ -2369,8 +2384,8 @@ function rbCircuitsHTML(){
       '<div class="rbx-ctl" id="rbTkIns" style="min-height:40px"></div>'+
       '<div class="rb-msg" id="rbTkMsg" aria-live="polite"></div>'+
       '<div id="rbTkCodeBox"></div>'+
-      '<div class="rb-link"><b>How to build:</b> 1. Drag parts from the list onto the canvas. 2. Tap one terminal (the white dots), then another, to join them with a wire. Tap the empty canvas on the way to bend the wire. 3. Tap a board and press Code to program it. 4. Press Start simulation.<br>'+
-      '<b>Shortcuts:</b> R rotate · Del delete · Ctrl+Z undo · Ctrl+Y redo · Ctrl+D duplicate · mouse wheel zoom · drag the canvas to move.<br>'+
+      '<div class="rb-link"><b>How to build:</b> 1. Drag parts from the list onto the canvas. 2. Tap one terminal (the white dots), then another, to join them with a wire. Tap the empty canvas on the way to bend the wire. 3. Press Solder and tap each wire joint to fix the wire in place. 4. Tap a board and press Code to program it. 5. Press Start simulation.<br>'+
+      '<b>Shortcuts:</b> R rotate · S soldering iron · Del delete · Ctrl+Z undo · Ctrl+Y redo · Ctrl+D duplicate · mouse wheel zoom · drag the canvas to move.<br>'+
       '<span class="rb-chip">Physics: Ohm\'s law</span><span class="rb-chip">Physics: series and parallel circuits</span><span class="rb-chip">Coding: Arduino programs</span><span class="rb-chip">Maths: division and units</span></div></div>'+
     rbGuideHTML()+rbMcuHTML()+rbArdHTML();
 }

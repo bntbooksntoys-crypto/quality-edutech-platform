@@ -688,6 +688,12 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .hb-cell button{width:30px;height:30px;border-radius:8px;border:1px solid rgba(17,33,45,.3);background:rgba(255,255,255,.6);font-size:15px;cursor:pointer;padding:0;filter:grayscale(1);opacity:.75}
 .hb-cell button.on{filter:none;opacity:1;background:#fff;box-shadow:0 0 0 2px #E8A317}
 .hb-grid.trip{filter:brightness(.55)}
+.md-beat{animation:mdbeat 1s ease-in-out infinite;transform-box:view-box}@keyframes mdbeat{15%{transform:scale(1.12)}30%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.md-beat{animation:none}}
+.gm-clock{display:grid;gap:8px}.gm-clock>div:first-child{display:flex;justify-content:space-between;align-items:baseline}.gm-clock span{font-size:13px;color:var(--slate);font-weight:600}
+.gm-clock b{font-family:var(--display);font-size:28px;font-variant-numeric:tabular-nums}.gm-clock em{font-style:normal;font-size:12.5px;color:var(--slate)}
+.gm-track{height:10px;border-radius:5px;background:var(--canvas);overflow:hidden}.gm-track i{display:block;height:100%;background:var(--teal);transition:width 1s linear}
+.gm-q{font-size:19px;font-weight:600;line-height:1.5;margin:16px 0 4px}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1671,7 +1677,7 @@ const LABS = [
   {
     id:"robotics",
     title:"Robotics Lab",
-    sub:"Robotics · Grades 1–12",
+    sub:"Robotics · Grades 6–12",
     desc:"Learn how robots are made: build circuits with real parts, explore a 3D robot model, code with Scratch-style blocks, then drive a robot. No kit needed.",
     tags:["Circuits","3D Modeling","Scratch Coding","My Robot"],
     url:"",
@@ -1683,7 +1689,7 @@ const LABS = [
   {
     id:"machines",
     title:"MachineWorks Lab — Appliances and Vehicles",
-    sub:"How things work · Grades 3–12",
+    sub:"How things work · Grades 1–8",
     desc:"See inside a fan, TV, fridge, car, train, helicopter and more. Each machine has a 2D model, a 3D model and a circuit you can switch on.",
     tags:["Home appliances","Vehicles","2D models","3D models","Circuits"],
     url:"",
@@ -1707,7 +1713,7 @@ const LABS = [
   {
     id:"house",
     title:"HomeBuild Lab — Build a House",
-    sub:"Design and electricity · Grades 3–12",
+    sub:"Design and electricity · Grades 1–8",
     desc:"Draw your own house room by room, add lights, fans and appliances, see it in 3D, and test the electricity bill.",
     tags:["House plan","3D view","Electricity","Solar","Bill"],
     url:"",
@@ -1742,9 +1748,21 @@ const LABS = [
     icon:'<path d="M5 5l14 14M19 5L5 19M4 12h16"/>',
   },
   {
+    id:"medical",
+    title:"MediCare Lab — Health and Medicine",
+    sub:"Health · Grades 1–12",
+    desc:"See how the heart, lungs and body work, read a thermometer, learn first aid and meet the tools doctors use.",
+    tags:["Human body","Heart rate","First aid","Medical tools","Healthy habits"],
+    url:"",
+    embedUrl:"",
+    color:"#BE123C",
+    bg:"linear-gradient(135deg,#E11D48 0%,#1E3A8A 100%)",
+    icon:'<path d="M12 20C5 15 4 9 7.5 7.5 9.5 6.6 11.3 7.8 12 9.5c.7-1.7 2.5-2.9 4.5-2 3.5 1.5 2.500 7.500-4.500 12.500z"/><path d="M3 12h4l1.500-3 2 6 1.500-3h3"/>',
+  },
+  {
     id:"quantum",
     title:"Qubit Lab — Quantum Computing",
-    sub:"Quantum Computing · Grades 8–12",
+    sub:"Quantum Computing · Grades 9–12",
     desc:"Meet the qubit. Put it in superposition, link qubits with entanglement, and build and measure quantum circuits on a real simulator.",
     tags:["Qubits","Superposition","Entanglement","Quantum gates","Circuit builder"],
     url:"",
@@ -3788,6 +3806,100 @@ function pcmbView(){
   return '<div class="rbx-top"><button class="rbx-back" onclick="state.labOpen=null;render()">← All labs</button></div><div class="pagehead">'+eyebrow('Interactive Labs · Core science and maths')+'<h2 class="display">PCMB Lab</h2><p class="muted" style="margin-top:6px">Physics, Chemistry, Maths and Biology in one place. Each subject has simulations and a guided experiment with viva questions.</p></div>'+
     '<div class="mw-grid">'+subs.map(s=>{const l=LABS.find(x=>x.id===s[0]);return '<button class="card mw-card" onclick="openLab(\''+s[0]+'\')"><div class="pc-l" style="background:'+l.bg+'">'+s[1]+'</div><b>'+s[2]+'</b><span>'+s[3]+'</span><em>'+((SX_SIMS[s[0]]||[]).length)+' simulations · 1 experiment'+(l.embedUrl?' · Lab bench':'')+'</em></button>';}).join('')+'</div>';
 }
+/* ─────────── MediCare Lab: health and medicine ─────────── */
+SX_SIMS.medical=[
+ {name:'Heart rate',c:[['age','Age',5,60,1,12,' years'],['act','Activity',0,4,1,0,'']],
+  draw:v=>{const rest=v.age<10?90:v.age<15?80:72,max=220-v.age,bpm=Math.round(rest+(max-rest)*[0,0.2,0.45,0.7,0.9][v.act]),nm=['Resting','Walking','Cycling','Running','Sprinting'][v.act];
+   return '<svg viewBox="0 0 320 190" class="sx-svg" role="img" aria-label="Heart beating at '+bpm+' beats per minute"><g class="md-beat" style="transform-origin:90px 90px;animation-duration:'+(60/bpm).toFixed(2)+'s"><path d="M90 150C30 105 30 50 62 44c16-3 26 8 28 18 2-10 12-21 28-18 32 6 32 61-28 106z" fill="#C8102E"/></g>'+
+    '<path d="M160 100h30l8-30 12 60 10-44 8 14h70" fill="none" stroke="#0E7C6B" stroke-width="3" stroke-linejoin="round"/><text x="230" y="150" text-anchor="middle" font-size="26" font-weight="800" fill="#11212D">'+bpm+'</text><text x="230" y="168" text-anchor="middle" font-size="11" fill="#55606A">beats per minute</text></svg>'+
+    sxRead([['Activity',nm],['Heart rate',bpm+' bpm'],['Highest safe rate (220 − age)',max+' bpm']])+
+    '<div class="rb-msg">Muscles need more oxygen when you move, so the heart beats faster to send more blood. A fit heart returns to its resting rate quickly.</div>';}},
+ {name:'Thermometer',c:[['t','Body temperature',35,41,0.1,36.8,' °C']],
+  draw:v=>{const k=v.t<35.5?['Low temperature','bad','Keep warm and tell an adult.']:v.t<=37.2?['Normal','ok','A healthy body stays near 37 °C.']:v.t<38?['Mild fever','','Rest and drink water. Tell an adult.']:v.t<39.5?['Fever','bad','Tell an adult. A doctor may be needed.']:['High fever','bad','Tell an adult at once and see a doctor.'],h=(v.t-35)/6*120;
+   return '<svg viewBox="0 0 320 190" class="sx-svg" role="img" aria-label="Thermometer showing '+v.t+' degrees Celsius"><rect x="146" y="14" width="28" height="140" rx="14" fill="#F4F7FA" stroke="#8A99A3" stroke-width="2"/><circle cx="160" cy="160" r="20" fill="#C8102E"/><rect x="153" y="'+(146-h).toFixed(1)+'" width="14" height="'+(h+10).toFixed(1)+'" fill="#C8102E"/>'+
+    [35,36,37,38,39,40,41].map(x=>'<path d="M176 '+(146-(x-35)/6*120)+'h8" stroke="#55606A"/><text x="190" y="'+(150-(x-35)/6*120)+'" font-size="10" fill="#55606A">'+x+'</text>').join('')+'</svg>'+
+    sxRead([['Reading',v.t.toFixed(1)+' °C'],['In Fahrenheit',(v.t*9/5+32).toFixed(1)+' °F'],['Meaning',k[0]]])+'<div class="rb-msg '+k[1]+'">'+k[2]+' Fever is the body\'s way of fighting germs.</div>';}},
+ {name:'Hand washing',c:[['s','Seconds of washing',0,40,1,5,' s'],['soap','Soap (0 = no, 1 = yes)',0,1,1,1,'']],
+  draw:v=>{const left=100*Math.exp(-v.s/(v.soap?6:25)),n=Math.round(left*0.4);let dots='';for(let i=0;i<n;i++)dots+='<circle cx="'+(110+(i*37)%100)+'" cy="'+(50+(i*53)%100)+'" r="4" fill="#5B8C2A"/>';
+   return '<svg viewBox="0 0 320 190" class="sx-svg" role="img" aria-label="About '+left.toFixed(0)+' percent of germs are left"><path d="M100 170V70c0-8 12-8 12 0V40c0-8 12-8 12 0V34c0-8 12-8 12 0v8c0-8 12-8 12 0v40l14-16c6-6 16 2 10 10l-24 40v44z" fill="#F2C9A5" stroke="#B5835A" stroke-width="2" transform="translate(10,0)"/>'+dots+'</svg>'+
+    sxRead([['Washing time',v.s+' s'],['Soap',v.soap?'Yes':'No'],['Germs left (simple model)',left.toFixed(0)+' %']])+'<div class="rb-msg'+(v.soap&&v.s>=20?' ok':'')+'">'+(v.soap&&v.s>=20?'Well done. 20 seconds with soap removes almost all germs.':'Wash with soap for at least 20 seconds: palms, backs, between fingers, thumbs and nails.')+'</div>';}}
+];
+SX_EXP.medical={name:'Measure your pulse',aim:'To count your pulse at rest and after exercise.',theory:'Each heartbeat pushes blood through the arteries. You can feel this push as a pulse at the wrist. The number of beats in one minute is the heart rate.',
+  need:['Stopwatch or clock','Notebook','A place to jog'],steps:['Sit still for two minutes.','Place two fingers on the inside of your wrist, below the thumb.','Count the beats for 30 seconds and multiply by 2.','Jog on the spot for one minute and count again.','Rest for three minutes and count once more.','Compare with the Heart rate simulation.'],sim:0,
+  viva:[['Why does the heart beat faster during exercise?',['Muscles need more oxygen','The heart gets tired','Blood becomes thicker'],0,'The heart pumps faster to carry more oxygen to the muscles.'],['Normal body temperature is about…',['27 °C','37 °C','47 °C'],1,'A healthy body stays close to 37 °C.'],['For how long should you wash your hands with soap?',['2 seconds','5 seconds','At least 20 seconds'],2,'Twenty seconds with soap removes most germs.']]};
+const MD_SYS=[['Heart and blood','The heart pumps blood. Blood carries oxygen and food to every part of the body.'],['Lungs','Take oxygen from the air into the blood and remove carbon dioxide.'],['Brain and nerves','The brain controls the body. Nerves carry messages to and from it.'],['Stomach and intestines','Break food into small parts that the blood can carry.'],['Bones and muscles','Bones give shape and protect organs. Muscles pull on bones to move you.'],['Kidneys','Clean the blood and remove waste as urine.'],['Skin','Covers and protects the body, and helps control temperature.'],['Immune system','White blood cells find and fight germs. Vaccines train them in advance.']];
+const MD_AID=[['Small cut or scrape',['Wash your hands.','Rinse the cut under clean running water.','Press gently with a clean cloth until the bleeding stops.','Cover with a clean bandage.']],['Minor burn',['Cool the burn under cool running water for 10 to 20 minutes.','Do not use ice, butter or toothpaste.','Cover loosely with a clean cloth.','Show it to an adult.']],['Nosebleed',['Sit down and lean slightly forward.','Pinch the soft part of the nose for 10 minutes.','Breathe through the mouth.','Get help if it does not stop.']],['Sprain',['Rest the injured part.','Put a cloth-wrapped cold pack on it for 15 minutes.','Wrap it gently with a bandage.','Keep it raised.']],['Insect sting',['Move away from the insects.','Wash the area with soap and water.','Hold a cold cloth on it.','Get help quickly if there is swelling of the face or trouble breathing.']],['Feeling faint',['Lie down or sit with the head low.','Loosen tight clothes.','Get fresh air.','Sip water when feeling better.']]];
+const MD_TOOLS=[['Thermometer','Measures body temperature.'],['Stethoscope','Lets a doctor listen to the heart and lungs.'],['Blood pressure monitor','Measures how hard blood pushes on the artery walls.'],['Pulse oximeter','Clips on a finger and reads the oxygen in the blood and the pulse.'],['Syringe','Gives medicine or a vaccine, or takes a blood sample.'],['Microscope','Shows cells and germs that are too small to see.'],['X-ray machine','Takes pictures of bones inside the body.'],['ECG machine','Records the electrical signals of the heart.'],['Otoscope','A small light for looking inside the ear.'],['Weighing scale and height chart','Track how a child grows.']];
+function medicalView(){
+  const t=sx.tab.medical||'home',tabs=[['home','Overview'],['sim','1. Body Simulations'],['aid','2. First Aid'],['tools','3. Medical Tools'],['exp','4. Experiment']];let body='';
+  const grid=(list)=>'<div class="rbg-grid">'+list.map((a,i)=>'<div class="card xl-adv"><i>'+(i+1)+'</i><div><b>'+a[0]+'</b><span>'+a[1]+'</span></div></div>').join('')+'</div>';
+  if(t==='home')body='<div class="rbx-hero" style="background:linear-gradient(120deg,#C8102E,#1E63D0)"><h3>Know your body. Stay healthy.</h3><p>Learn how the body works, how doctors measure health, and what to do in a small emergency.</p></div>'+
+    '<div class="rbx-h">Body systems</div><div class="rbx-sub">Eight systems that keep you alive.</div>'+grid(MD_SYS)+
+    '<div class="rbx-h">Healthy habits</div><div class="rbx-sub">Small things to do every day.</div>'+grid([['Wash hands','Before eating and after the toilet, for 20 seconds with soap.'],['Eat a balanced plate','Half vegetables and fruit, with grains and protein.'],['Sleep well','Children need 9 to 11 hours. Teenagers need 8 to 10 hours.'],['Move every day','At least one hour of active play or sport.'],['Drink water','Water is the best drink for the body.'],['Take vaccines on time','Vaccines protect you and the people around you.']])+
+    '<div class="rbx-h">People in medicine</div><div>'+['Doctor','Nurse','Pharmacist','Lab technician','Physiotherapist','Dentist','Surgeon','Paramedic','Medical researcher'].map(x=>'<span class="rb-chip" style="font-size:13px;padding:5px 12px">'+x+'</span>').join('')+'</div>';
+  else if(t==='aid')body='<div class="rbx-h">First aid</div><div class="rbx-sub">Simple steps for small injuries. Always tell an adult.</div><div class="rbap-safe" style="margin-top:0"><b>In an emergency in India, call 112.</b> For an ambulance, call 108 in most states. If someone is choking, cannot breathe, is bleeding heavily or does not wake up, get an adult and call at once.</div>'+
+    '<div class="sx-exp">'+MD_AID.map(a=>'<div class="card rbx-pad"><b>'+a[0]+'</b><ol class="sx-steps" style="margin-bottom:0">'+a[1].map(s=>'<li>'+s+'</li>').join('')+'</ol></div>').join('')+'</div><p class="xl-credit">This page teaches basic first aid for school. It does not replace a doctor. Never take medicine without an adult.</p>';
+  else if(t==='tools')body='<div class="rbx-h">Medical tools</div><div class="rbx-sub">What doctors and nurses use, and what each tool tells them.</div>'+grid(MD_TOOLS);
+  else body=t==='sim'?sxSimHTML('medical'):sxExpHTML('medical');
+  return '<div class="rbx-top"><button class="rbx-back" onclick="state.labOpen=null;render()">← All labs</button></div><div class="pagehead">'+eyebrow('Interactive Labs · Health and medicine')+'<h2 class="display">MediCare Lab</h2><p class="muted" style="margin-top:6px">How the body works, how health is measured, and basic first aid.</p></div>'+
+    '<div class="rbx-nav" role="tablist">'+tabs.map(x=>'<button role="tab" aria-selected="'+(t===x[0])+'" class="'+(t===x[0]?'on':'')+'" onclick="sxTab(\'medical\',\''+x[0]+'\')">'+x[1]+'</button>').join('')+'</div>'+body;
+}
+/* labs by age group */
+const LAB_AGE={immersia:[1,12],robotics:[6,12],machines:[1,8],house:[1,8],finance:[1,12],medical:[1,12],quantum:[9,12],pcmb:[6,12]};
+const LAB_BANDS=[['a','Classes 1 to 5','Ages 6 to 10',1,5],['b','Classes 6 to 8','Ages 11 to 13',6,8],['c','Classes 9 to 12','Ages 14 to 17',9,12]];
+function labBandOf(){const g=parseInt(aiGrade(),10)||8;return g<=5?'a':g<=8?'b':'c';}
+function labAge(b){state.labAge=b;render();}
+/* ─────────── Games: short learning games, limited to 5 minutes a day ─────────── */
+const GM_LIMIT=300;
+const GM_WORDS=[[['plant','A living thing that makes its own food'],['water','We drink it every day'],['earth','The planet we live on'],['light','It lets us see'],['heart','It pumps blood'],['seven','The number after six'],['river','A long flow of water'],['seed','A plant grows from it']],
+  [['energy','The ability to do work'],['planet','It moves around a star'],['oxygen','The gas we breathe in'],['magnet','It attracts iron'],['fraction','A part of a whole'],['circuit','A closed path for current'],['habitat','The home of an animal or plant'],['gravity','The force that pulls things down']],
+  [['velocity','Speed in a given direction'],['molecule','Two or more atoms joined together'],['equation','A statement that two things are equal'],['nucleus','The centre of an atom or a cell'],['friction','The force that opposes motion'],['democracy','Government by the people'],['osmosis','Movement of water through a membrane'],['variable','A letter that stands for a number']],
+  [['catalyst','It speeds up a reaction without being used up'],['derivative','The rate of change of a function'],['inflation','A general rise in prices'],['mitochondria','The powerhouse of the cell'],['hypothesis','An idea that can be tested'],['algorithm','A step-by-step method to solve a problem'],['equilibrium','A state of balance'],['wavelength','The distance between two wave crests']]];
+function gmToday(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function gmData(){let d={};try{d=JSON.parse(localStorage.getItem('qe_games')||'{}')||{};}catch(e){}if(d.d!==gmToday())d={d:gmToday(),used:0,right:0,asked:0,best:d.best||{}};d.best=d.best||{};return d;}
+function gmPut(d){try{localStorage.setItem('qe_games',JSON.stringify(d));}catch(e){}}
+let gm={g:null,q:null,ans:null,score:0,n:0,miss:[],lvl:null};
+function gmLevel(){if(gm.lvl!=null)return gm.lvl;const g=parseInt(aiGrade(),10)||8;return g<=3?0:g<=6?1:g<=9?2:3;}
+function gmLeft(){return Math.max(0,GM_LIMIT-gmData().used);}
+function gmFmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function gmRnd(n){return Math.floor(Math.random()*n);}
+function gmShuffle(a){for(let i=a.length-1;i>0;i--){const j=gmRnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function gmOpts(ans,make){const s=new Set([String(ans)]);let guard=0;while(s.size<4&&guard++<60)s.add(String(make()));return gmShuffle([...s]);}
+function gmMake(){
+  const L=gmLevel(),g=gm.g;
+  if(g==='num'){let q,a,why;
+    if(L===0){const x=1+gmRnd(10),y=1+gmRnd(10),add=gmRnd(2);if(add){q=x+' + '+y;a=x+y;}else{q=(x+y)+' − '+y;a=x;}why='Count on or count back to check.';}
+    else if(L===1){const k=gmRnd(3),x=2+gmRnd(9),y=2+gmRnd(9);if(k===0){q=x+' × '+y;a=x*y;}else if(k===1){q=(x*y)+' ÷ '+x;a=y;}else{const p=10+gmRnd(80),r=10+gmRnd(80);q=p+' + '+r;a=p+r;}why='Use the multiplication table to check.';}
+    else if(L===2){const k=gmRnd(3);if(k===0){const p=[10,20,25,50,75][gmRnd(5)],n=[40,80,120,200,360][gmRnd(5)];q=p+'% of '+n;a=p*n/100;why=p+'% means '+p+' out of every 100.';}else if(k===1){const x=4+gmRnd(12);q=x+'²';a=x*x;why='A square is the number times itself.';}else{const x=2+gmRnd(8),b=1+gmRnd(9),c=2+gmRnd(5);q='Solve: '+c+'x + '+b+' = '+(c*x+b);a=x;why='Subtract '+b+', then divide by '+c+'.';}}
+    else{const k=gmRnd(3);if(k===0){const x=2+gmRnd(9),y=2+gmRnd(9);q='Solve: x² = '+(x*x)+' , x > 0. Then x + '+y;a=x+y;why='Take the square root first.';}else if(k===1){const p=[1000,2000,5000][gmRnd(3)],r=[5,10,20][gmRnd(3)];q='Simple interest on ₹'+p+' at '+r+'% for 2 years (₹)';a=p*r*2/100;why='SI = P × R × T ÷ 100.';}else{const a1=2+gmRnd(8),d=2+gmRnd(5),n=5+gmRnd(6);q='Term '+n+' of the sequence '+a1+', '+(a1+d)+', '+(a1+2*d)+', …';a=a1+(n-1)*d;why='Use a + (n − 1)d.';}}
+    return {q:q+' = ?',a:String(a),o:gmOpts(a,()=>{const st=a>=100?Math.max(1,Math.round(a/10)):1;return Math.max(0,a+(gmRnd(9)-4)*st);}),why:why};}
+  if(g==='word'){const list=GM_WORDS[L],w=list[gmRnd(list.length)];let sc=w[0];for(let i=0;i<6&&sc===w[0];i++)sc=gmShuffle(w[0].split('')).join('');
+    return {q:'Meaning: '+w[1]+'.<br>Jumbled letters: <b style="letter-spacing:.2em">'+sc.toUpperCase()+'</b><br>Which word is it?',a:w[0],o:gmOpts(w[0],()=>list[gmRnd(list.length)][0]),why:'"'+w[0]+'" means: '+w[1].toLowerCase()+'.'};}
+  const Q=(window.QUIZZES||{})[aiGrade()]||{},subs=Object.keys(Q).filter(s=>Q[s].questions&&Q[s].questions.length);
+  if(subs.length){const s=subs[gmRnd(subs.length)],x=Q[s].questions[gmRnd(Q[s].questions.length)],k=String(x.ans||'a').toLowerCase();return {q:'<span class="ai-tag">'+aiEsc(s)+'</span>'+aiEsc(x.q),a:x[k],o:gmShuffle(['a','b','c','d'].map(z=>x[z]).filter(Boolean)),why:x.exp||''};}
+  const F=[['Which gas do plants take in?','Carbon dioxide',['Oxygen','Nitrogen','Hydrogen']],['How many sides does a hexagon have?','6',['5','7','8']],['The boiling point of water is…','100 °C',['0 °C','50 °C','212 °C']],['Which planet is nearest the Sun?','Mercury',['Venus','Earth','Mars']]],f=F[gmRnd(F.length)];
+  return {q:f[0],a:f[1],o:gmShuffle([f[1]].concat(f[2])),why:''};
+}
+function gmStart(g){if(gmLeft()<=0)return;gm.g=g;gm.score=0;gm.n=0;gm.miss=[];gm.ans=null;gm.q=gmMake();render();}
+function gmAns(i){if(gm.ans!=null||!gm.q)return;gm.ans=i;gm.n++;const ok=gm.q.o[i]===gm.q.a;if(ok)gm.score++;else gm.miss.push([gm.q.q.replace(/<[^>]+>/g,' '),gm.q.a]);const d=gmData();d.asked++;if(ok)d.right++;if((d.best[gm.g]||0)<gm.score)d.best[gm.g]=gm.score;gmPut(d);render();}
+function gmNext(){if(gmLeft()<=0){gm.q=null;render();return;}gm.ans=null;gm.q=gmMake();render();}
+function gmStop(){gm.q=null;render();}
+function gmLvl(v){gm.lvl=Number(v);render();}
+setInterval(function(){if(state.view!=='games'||!gm.q||document.hidden)return;const d=gmData();d.used=Math.min(GM_LIMIT,d.used+1);gmPut(d);const left=GM_LIMIT-d.used,c=document.getElementById('gmClock'),b=document.getElementById('gmBar');if(c)c.textContent=gmFmt(left);if(b)b.style.width=(left/GM_LIMIT*100)+'%';if(left<=0){gm.q=null;render();}},1000);
+function gamesView(){
+  const d=gmData(),left=GM_LIMIT-d.used,games=[['num','Number Sprint','Quick sums that train mental maths.'],['word','Word Fix','Unjumble a school word from its meaning.'],['quiz','Quick Quiz','Questions from your own class subjects.']];
+  const clock='<div class="card rbx-pad gm-clock"><div><span>Learning time left today</span><b id="gmClock">'+gmFmt(left)+'</b></div><div class="gm-track"><i id="gmBar" style="width:'+(left/GM_LIMIT*100)+'%"></i></div><em>5 minutes each day. Today: '+d.right+' correct out of '+d.asked+'.</em></div>';
+  const head='<div class="pagehead">'+eyebrow('Learn in 5 minutes a day')+'<h2 class="display">Games</h2><p class="muted" style="margin-top:6px">Short practice games for learning, not for passing time. You get 5 minutes each day, for every age from child to adult.</p></div>';
+  if(gm.q){const q=gm.q,name=games.find(x=>x[0]===gm.g)[1];
+    return head+clock+'<div class="card rbx-pad" style="margin-top:12px"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center"><b>'+name+'</b><span class="muted" style="font-size:13px">Correct: '+gm.score+' of '+gm.n+'</span></div>'+
+      '<div class="gm-q">'+q.q+'</div><div class="sx-opts">'+q.o.map((o,i)=>'<button class="'+(gm.ans==null?'':o===q.a?'ok':i===gm.ans?'no':'')+'" '+(gm.ans==null?'':'disabled ')+'onclick="gmAns('+i+')">'+aiEsc(o)+'</button>').join('')+'</div>'+
+      (gm.ans==null?'':'<div class="rb-msg'+(q.o[gm.ans]===q.a?' ok':'')+'">'+(q.o[gm.ans]===q.a?'<b>Correct.</b> ':'<b>Not quite.</b> The answer is '+aiEsc(q.a)+'. ')+aiEsc(q.why||'')+'</div>')+
+      '<div class="rbx-ctl">'+(gm.ans==null?'':'<button class="btn teal" onclick="gmNext()">Next question</button>')+'<button class="btn ghost" onclick="gmStop()">Stop</button></div></div>';}
+  const review=gm.n?'<div class="card rbx-pad" style="margin-top:12px"><b>Last round: '+gm.score+' correct out of '+gm.n+'</b>'+(gm.miss.length?'<div class="rbx-sub" style="margin-top:6px">Learn these before the next round:</div><ul class="tu-list" style="font-size:14px">'+gm.miss.slice(-6).map(m=>'<li>'+aiEsc(m[0])+' → <b>'+aiEsc(m[1])+'</b></li>').join('')+'</ul>':'<div class="rbx-sub" style="margin-top:6px">No mistakes. Try a harder level.</div>')+'</div>':'';
+  if(left<=0)return head+clock+'<div class="card rbx-pad" style="margin-top:12px"><b>You have used your 5 minutes for today.</b><p class="muted" style="margin-top:6px;font-size:14px;line-height:1.5">Well done for practising. The games open again tomorrow. Until then, try a lab, a lesson, or ask the AI Assistant to teach you a topic.</p><div class="rbx-ctl"><button class="btn teal" onclick="go(\'ai\')">Open AI Assistant</button><button class="btn ghost" onclick="go(\'lab\')">Open Lab</button></div></div>'+review;
+  return head+clock+'<div class="rbx-ctl" style="margin:14px 0 4px"><b>Level</b><div class="rbx-seg">'+['Beginner','Junior','Senior','Advanced'].map((n,i)=>'<button class="'+(gmLevel()===i?'on':'')+'" onclick="gmLvl('+i+')">'+n+'</button>').join('')+'</div><span class="muted" style="font-size:13px">Set from your class. Adults can choose Advanced.</span></div>'+
+    '<div class="rbg-grid" style="margin-top:10px">'+games.map(g=>'<div class="card rbx-pad"><b style="font-size:16px">'+g[1]+'</b><p class="muted" style="font-size:14px;margin:6px 0 4px">'+g[2]+'</p><div class="rbx-sub">Best score: '+(d.best[g[0]]||0)+'</div><button class="btn solid" style="margin-top:10px" onclick="gmStart(\''+g[0]+'\')">Start</button></div>').join('')+'</div>'+review;
+}
 function sciView(id){
   const lab=LABS.find(l=>l.id===id),t=sx.tab[id]||(lab.embedUrl?'bench':'sim');
   const tabs=(lab.embedUrl?[['bench','Lab bench']]:[]).concat([['sim','Simulations'],['exp','Experiment']]).concat(id==='physics'?[['sound','Sound Maker']]:[]);
@@ -3803,6 +3915,7 @@ function labView(){
   if(state.labOpen==='quantum') return quantumView();
   if(state.labOpen==='machines') return machinesView();
   if(state.labOpen==='finance') return financeView();
+  if(state.labOpen==='medical') return medicalView();
   if(state.labOpen==='house') return houseView();
   if(state.labOpen==='pcmb') return pcmbView();
   if(SX_SIMS[state.labOpen]) return sciView(state.labOpen);
@@ -3826,7 +3939,7 @@ function labView(){
     }
   }
 
-  const labKind={physics:['Online simulation','#0E7C6B'],chemistry:['Online simulation','#0E7C6B'],biology:['Online simulation','#0E7C6B'],robotics:['Interactive platform','#5B3FC4'],quantum:['Online simulation','#0E7C6B'],pcmb:['Core subjects · the biggest lab','#0E7C6B'],house:['Interactive platform','#5B3FC4'],finance:['Life skills','#B45309'],machines:['Online simulation','#0E7C6B'],immersia:['Virtual reality (VR) kit','#C2417A']};
+  const labKind={physics:['Online simulation','#0E7C6B'],chemistry:['Online simulation','#0E7C6B'],biology:['Online simulation','#0E7C6B'],robotics:['Interactive platform','#5B3FC4'],quantum:['Online simulation','#0E7C6B'],pcmb:['Core subjects · the biggest lab','#0E7C6B'],house:['Interactive platform','#5B3FC4'],medical:['Life skills','#B45309'],finance:['Life skills','#B45309'],machines:['Online simulation','#0E7C6B'],immersia:['Virtual reality (VR) kit','#C2417A']};
   const card = lab=>{
     const btnStyle='background:'+lab.color;
     return '<div class="lab-card">'+
@@ -3853,14 +3966,15 @@ function labView(){
       '</button>'+
     '</div>';
   };
-  const top=LABS.filter(l=>!l.grp),cards=top.filter(l=>l.id!=='pcmb').map(card).join(''),pc=LABS.find(l=>l.id==='pcmb');
-
+  const mine=labBandOf(),sel=state.labAge||mine,fit=(l,b)=>{const r=LAB_AGE[l.id]||[1,12];return r[0]<=b[4]&&r[1]>=b[3];};
+  const top=LABS.filter(l=>!l.grp),pc=LABS.find(l=>l.id==='pcmb');
+  const big='<button class="pc-big" style="background:'+pc.bg+'" onclick="openLab(\'pcmb\')"><div><span>PCMB Lab · the biggest lab</span><b>Physics · Chemistry · Maths · Biology</b><p>'+pc.desc+'</p></div><div class="pc-ls"><i>P</i><i>C</i><i>M</i><i>B</i></div></button>';
+  const group=b=>{const labs=top.filter(l=>fit(l,b));return '<div class="rbx-h">'+b[1]+' <span class="muted" style="font-weight:500;font-size:14px">· '+b[2]+(b[0]===mine?' · Your age group':'')+'</span></div><div class="rbx-sub">'+labs.length+' labs for this age group.</div>'+
+    (labs.some(l=>l.id==='pcmb')?'<div class="rbx-sub" style="font-weight:700;color:var(--ink)">Core subjects</div>'+big+'<div class="rbx-sub" style="font-weight:700;color:var(--ink);margin-top:14px">Extracurricular labs</div>':'')+'<div class="lab-grid">'+labs.filter(l=>l.id!=='pcmb').map(card).join('')+'</div>';};
   return '<div class="pagehead">'+eyebrow('Interactive Labs')+'<h2 class="display">Virtual Lab Bench</h2>'+
-    '<p class="muted" style="margin-top:6px">Online simulations, interactive platforms and virtual reality kits that let you run science, maths and coding experiments safely on a screen or headset.</p></div>'+
-    '<div class="rbx-h" style="margin-top:0">Core subjects</div><div class="rbx-sub">Physics, Chemistry, Maths and Biology, in one big lab.</div>'+
-    '<button class="pc-big" style="background:'+pc.bg+'" onclick="openLab(\'pcmb\')"><div><span>PCMB Lab</span><b>Physics · Chemistry · Maths · Biology</b><p>'+pc.desc+'</p></div><div class="pc-ls"><i>P</i><i>C</i><i>M</i><i>B</i></div></button>'+
-    '<div class="rbx-h">Extracurricular labs</div><div class="rbx-sub">Robotics, machines, houses, money, quantum computing and virtual reality.</div>'+
-    '<div class="lab-grid">'+cards+'</div>';
+    '<p class="muted" style="margin-top:6px">Labs are arranged by age group. Choose a group to see the labs made for it.</p></div>'+
+    '<div class="rbx-nav" role="tablist">'+LAB_BANDS.map(b=>'<button role="tab" aria-selected="'+(sel===b[0])+'" class="'+(sel===b[0]?'on':'')+'" onclick="labAge(\''+b[0]+'\')">'+b[1]+' · '+b[2]+(b[0]===mine?' ★':'')+'</button>').join('')+'<button role="tab" aria-selected="'+(sel==='all')+'" class="'+(sel==='all'?'on':'')+'" onclick="labAge(\'all\')">All age groups</button></div>'+
+    (sel==='all'?LAB_BANDS.map(group).join('<div style="height:18px"></div>'):group(LAB_BANDS.find(b=>b[0]===sel)));
 }
 
 function openLab(id){
@@ -4826,17 +4940,17 @@ function aiView(){
 function navHTML(){
   const t=T();
   const items=[["home",t.home,"grid"],["learn",t.learn,"book"],["live",t.live,"radio"],
-    ["assess",t.assess,"clip"],["ai","AI Assistant","spark"],["lab",t.lab,"flask"]];
+    ["assess",t.assess,"clip"],["ai","AI Assistant","spark"],["lab",t.lab,"flask"],["games","Games","trophy"]];
   return '<div class="nav">'+items.map(n=>'<button class="'+(state.view===n[0]?'on':'')+'" onclick="go(\''+n[0]+'\')">'+
     I[n[2]](18)+'<span>'+n[1]+'</span></button>').join('')+'</div>';
 }
 function title(){
-  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab,ai:"AI Assistant"};
+  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab,ai:"AI Assistant",games:"Games"};
   return state.view==="home" ? t.greet+", "+ME().who.split(" ")[0] : map[state.view];
 }
 function bodyHTML(){
   if(state.view==="home") return {student:studentHome,parent:parentHome,teacher:teacherHome,admin:adminHome}[state.role]();
-  return {learn:learnView,live:liveView,assess:assessView,quiz:()=>aiBack()+quizView(),progress:()=>aiBack()+progressView(),awards:()=>aiBack()+awardsView(),lab:labView,ai:aiView}[state.view]();
+  return {learn:learnView,live:liveView,assess:assessView,quiz:()=>aiBack()+quizView(),progress:()=>aiBack()+progressView(),awards:()=>aiBack()+awardsView(),lab:labView,ai:aiView,games:gamesView}[state.view]();
 }
 /* ─────────── auth screens ─────────── */
 function authScreen(){
@@ -4988,7 +5102,7 @@ function qtDay(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getM
 function qtUser(){return state.user&&state.auth.screen==='app'?String(state.user.email||'').toLowerCase():'';}
 function qtSection(){
   if(state.view==='lab'&&state.labOpen){const l=(typeof LABS!=='undefined')&&LABS.find(x=>x.id===state.labOpen);return l?l.title:'Lab';}
-  return QT_NAMES[state.view]||'Other';
+  return state.view==='games'?'Games':(QT_NAMES[state.view]||'Other');
 }
 function qtBeat(){
   const u=qtUser();if(!u){qt.cur=null;return;}

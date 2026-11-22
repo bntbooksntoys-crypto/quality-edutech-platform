@@ -548,6 +548,34 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .ai-chat-del:hover{color:var(--vermilion);border-color:var(--vermilion)}
 .lab-sec{margin-top:22px}
 .lab-sec:first-of-type{margin-top:4px}
+.lab-kind{display:inline-block;color:#fff;font-size:11px;font-weight:700;border-radius:99px;padding:3px 10px;margin-bottom:8px;letter-spacing:.02em}
+/* partner platforms */
+.xl-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+@media(max-width:700px){.xl-meta{grid-template-columns:1fr}}
+.xl-meta div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.xl-meta span{display:block;font-size:11px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.05em}
+.xl-meta b{display:block;font-size:14px;margin-top:3px}
+.xl-wrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:860px){.xl-wrap{grid-template-columns:1fr}}
+.xl-list{padding:8px;max-height:640px;overflow:auto;display:flex;flex-direction:column;gap:4px}
+@media(max-width:860px){.xl-list{max-height:220px}}
+.xl-list button{text-align:left;border:1px solid transparent;background:transparent;color:var(--ink);border-radius:10px;padding:8px 10px;font:inherit;cursor:pointer}
+.xl-list button:hover{background:var(--canvas)}
+.xl-list button.on{background:var(--tealSoft);border-color:var(--teal)}
+.xl-list b{display:block;font-size:13.5px}.xl-list span{font-size:11.5px;color:var(--slate)}
+.xl-stage{padding:12px;min-width:0}
+.xl-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.xl-frame{display:block;width:100%;height:600px;border:1px solid var(--line);border-radius:12px;background:#fff}
+@media(max-width:700px){.xl-frame{height:460px}}
+.xl-note{font-size:12.5px;color:var(--slate);margin-top:8px}
+.xl-credit{font-size:12.5px;color:var(--slate);margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.xl-credit a,.xl-note a{color:#0A5C50}
+.xl-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.xl-form label{flex-basis:100%}
+.xl-form input{flex:1;min-width:220px;border:1px solid var(--line);background:var(--canvas);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px}
+.xl-err{color:var(--vermilion);font-size:13px;margin-top:8px}
+.lab-facts{font-size:12px;color:var(--slate);line-height:1.5;border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+.lab-facts b{color:var(--ink);font-weight:600}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1539,6 +1567,54 @@ const LABS = [
     color:"#5B3FC4",
     bg:"linear-gradient(135deg,#5B3FC4 0%,#2F6FDB 100%)",
     icon:'<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><path d="M9 13v1.5M15 13v1.5M2 13v3M22 13v3"/>',
+  },
+  {
+    id:"phet",
+    title:"PhET Simulations",
+    sub:"Science and Maths · Classes 1–12",
+    desc:"Free interactive simulations for physics, chemistry, biology and maths, from the University of Colorado Boulder.",
+    tags:["Physics","Chemistry","Maths","Biology"],
+    url:"",
+    embedUrl:"",
+    color:"#C7791A",
+    bg:"linear-gradient(135deg,#C7791A 0%,#8A4B0A 100%)",
+    icon:'<circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/>',
+  },
+  {
+    id:"scratch",
+    title:"Scratch",
+    sub:"Coding · Classes 1–8",
+    desc:"Block coding for games, stories and animations. Show any shared Scratch project here, with credit to its author.",
+    tags:["Block coding","Games","Animation"],
+    url:"",
+    embedUrl:"",
+    color:"#E0700B",
+    bg:"linear-gradient(135deg,#E0700B 0%,#B8480A 100%)",
+    icon:'<path d="M8 4h3v3h2V4h3a2 2 0 0 1 2 2v3h-3v2h3v3a2 2 0 0 1-2 2h-3v-3h-2v3H8a2 2 0 0 1-2-2v-3h3v-2H6V6a2 2 0 0 1 2-2z"/>',
+  },
+  {
+    id:"music",
+    title:"Chrome Music Lab",
+    sub:"Music and Sound · Classes 1–5",
+    desc:"Make songs and rhythms, and see the science and maths of sound through hands-on music experiments.",
+    tags:["Music","Sound waves","Patterns"],
+    url:"",
+    embedUrl:"",
+    color:"#1E63D0",
+    bg:"linear-gradient(135deg,#1E63D0 0%,#12357A 100%)",
+    icon:'<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+  },
+  {
+    id:"olabs",
+    title:"OLabs and DIKSHA",
+    sub:"Science · Classes 6–12",
+    desc:"Government and institutional online labs and lessons. These open on their official sites.",
+    tags:["Opens official site","Physics","Chemistry","Biology"],
+    url:"",
+    embedUrl:"",
+    color:"#2E7D32",
+    bg:"linear-gradient(135deg,#2E7D32 0%,#1B4D1F 100%)",
+    icon:'<path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>',
   },
   {
     id:"physics",
@@ -2695,9 +2771,62 @@ function immersiaView(){
       '<div class="rb-link"><span class="rb-chip">'+XR_SCENES[xr.scene][1]+'</span><span class="rb-chip">Maths: 3D space and angles</span></div></div></div>';
 }
 
+/* ─────────── Partner platforms inside the Lab: PhET, Scratch, Chrome Music Lab, OLabs / DIKSHA ─────────── */
+const XL={
+ phet:{name:'PhET Interactive Simulations',grades:'Classes 1–12',license:'CC BY 4.0',how:'Embedded with the official PhET embed code.',
+  credit:'Simulations by <a href="https://phet.colorado.edu" target="_blank" rel="noopener">PhET Interactive Simulations</a>, University of Colorado Boulder, licensed under CC BY 4.0.',
+  url:s=>'https://phet.colorado.edu/sims/html/'+s+'/latest/'+s+'_en.html',
+  items:[['Maths','Make a Ten','Classes 1–2','make-a-ten'],['Maths','Arithmetic','Classes 3–5','arithmetic'],['Maths','Fractions: Intro','Classes 3–5','fractions-intro'],['Maths','Area Builder','Classes 3–6','area-builder'],['Maths','Graphing Lines','Classes 8–10','graphing-lines'],
+   ['Physics','Forces and Motion: Basics','Classes 6–8','forces-and-motion-basics'],['Physics','Balancing Act','Classes 5–8','balancing-act'],['Physics','Energy Skate Park: Basics','Classes 6–9','energy-skate-park-basics'],['Physics','Circuit Construction Kit: DC','Classes 6–10','circuit-construction-kit-dc'],["Physics","Ohm's Law",'Classes 9–10','ohms-law'],['Physics','Pendulum Lab','Classes 9–11','pendulum-lab'],['Physics','Projectile Motion','Classes 9–11','projectile-motion'],['Physics','Bending Light','Classes 10–12','bending-light'],['Physics','Gravity and Orbits','Classes 6–11','gravity-and-orbits'],
+   ['Chemistry','States of Matter: Basics','Classes 6–9','states-of-matter-basics'],['Chemistry','Build an Atom','Classes 8–10','build-an-atom'],['Chemistry','pH Scale','Classes 9–10','ph-scale'],['Chemistry','Balancing Chemical Equations','Classes 9–10','balancing-chemical-equations'],
+   ['Biology','Natural Selection','Classes 9–12','natural-selection'],['Biology','Color Vision','Classes 6–10','color-vision']]},
+ music:{name:'Chrome Music Lab',grades:'Classes 1–5',license:'Apache 2.0 (open source)',how:'Embedded from the official site.',
+  credit:'<a href="https://musiclab.chromeexperiments.com" target="_blank" rel="noopener">Chrome Music Lab</a> by Google, open source under the Apache 2.0 licence.',
+  url:s=>'https://musiclab.chromeexperiments.com/'+s+'/',
+  items:[['Make music','Song Maker','Classes 1–5','Song-Maker'],['Make music','Rhythm','Classes 1–3','Rhythm'],['Make music','Melody Maker','Classes 1–5','Melody-Maker'],['Make music','Kandinsky','Classes 1–5','Kandinsky'],
+   ['Science of sound','Sound Waves','Classes 3–5','Sound-Waves'],['Science of sound','Spectrogram','Classes 3–5','Spectrogram'],['Science of sound','Harmonics','Classes 4–5','Harmonics'],['Science of sound','Strings','Classes 3–5','Strings'],
+   ['Maths in music','Chords','Classes 3–5','Chords'],['Maths in music','Arpeggios','Classes 4–5','Arpeggios'],['Maths in music','Piano Roll','Classes 1–5','Piano-Roll']]},
+ scratch:{name:'Scratch',grades:'Classes 1–8',license:'CC BY-SA 2.0',how:'Shared Scratch projects are embedded with credit.',
+  credit:'Scratch is a project of the Scratch Foundation with the Lifelong Kindergarten Group at the MIT Media Lab. Projects are shared under CC BY-SA 2.0. See <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>.'},
+ olabs:{name:'OLabs and DIKSHA',grades:'Classes 6–12',license:'Institutional and Government freeware',how:'Opens on the official site. It is not copied or embedded here.',
+  credit:'OLabs is by Amrita Vishwa Vidyapeetham and CDAC Mumbai, supported by the Ministry of Electronics and IT. DIKSHA is by the Ministry of Education, Government of India.',
+  links:[['OLabs','Online labs for Physics, Chemistry, Biology, Maths and English, with theory, procedure, simulator and viva.','https://www.olabs.edu.in/'],['DIKSHA','The national platform for school lessons, textbooks and practice in many Indian languages.','https://diksha.gov.in/']]}
+};
+let xl={sel:{phet:0,music:0},sid:''};
+function xlPick(id,i){xl.sel[id]=i;render();}
+function xlScratch(ev){ev.preventDefault();const v=(document.getElementById('xlSid').value||'').trim(),m=v.match(/scratch\.mit\.edu\/projects\/(\d{3,12})/)||v.match(/^(\d{3,12})$/);
+  if(!m){const e=document.getElementById('xlErr');if(e){e.hidden=false;}return false;}xl.sid=m[1];render();return false;}
+function xlHead(id){const p=XL[id];
+  return '<div class="rbx-top"><button class="rbx-back" onclick="state.labOpen=null;render()">← All labs</button></div>'+
+    '<div class="pagehead">'+eyebrow('Interactive Labs · Partner platform')+'<h2 class="display">'+p.name+'</h2></div>'+
+    '<div class="xl-meta"><div><span>Target grades</span><b>'+p.grades+'</b></div><div><span>Licence</span><b>'+p.license+'</b></div><div><span>How it is used here</span><b>'+p.how+'</b></div></div>';}
+function xlView(id){
+  const p=XL[id];let body='';
+  if(p.items){const i=xl.sel[id]||0,it=p.items[i],src=p.url(it[3]);let last='';
+    body='<div class="xl-wrap"><div class="card xl-list" role="list">'+p.items.map((x,k)=>{const g=x[0]!==last?'<div class="rbtk-grp">'+x[0]+'</div>':'';last=x[0];
+        return g+'<button role="listitem" class="'+(k===i?'on':'')+'" onclick="xlPick(\''+id+'\','+k+')"><b>'+x[1]+'</b><span>'+x[2]+'</span></button>';}).join('')+'</div>'+
+      '<div class="card xl-stage"><div class="xl-bar"><b>'+it[1]+'</b><span class="muted" style="font-size:12px">'+it[2]+'</span><a class="rbx-ext" style="margin-left:auto" href="'+src+'" target="_blank" rel="noopener">Open in a new tab ↗</a></div>'+
+        '<iframe class="xl-frame" src="'+src+'" title="'+it[1]+'" allow="fullscreen; microphone; autoplay" allowfullscreen loading="lazy"></iframe>'+
+        '<p class="xl-note">If the activity stays blank, use “Open in a new tab”. It needs an internet connection.</p></div></div>';
+  }else if(id==='scratch'){
+    body='<div class="card rbx-pad"><form class="xl-form" onsubmit="return xlScratch(event)"><label for="xlSid"><b>Show a Scratch project</b></label>'+
+      '<input id="xlSid" placeholder="Paste a Scratch project link or its number" value="'+(xl.sid?'https://scratch.mit.edu/projects/'+xl.sid:'')+'" aria-describedby="xlErr"><button class="btn teal" type="submit">Show project</button></form>'+
+      '<p id="xlErr" class="xl-err" hidden>That does not look like a Scratch project link. It should look like scratch.mit.edu/projects/ followed by a number.</p>'+
+      (xl.sid?'<iframe class="xl-frame" style="height:520px;margin-top:12px" src="https://scratch.mit.edu/projects/'+xl.sid+'/embed" title="Scratch project '+xl.sid+'" allow="fullscreen" allowfullscreen loading="lazy"></iframe>'+
+        '<p class="xl-note">Project <a href="https://scratch.mit.edu/projects/'+xl.sid+'" target="_blank" rel="noopener">'+xl.sid+' on Scratch ↗</a>, shown with credit to its author. Only shared projects can be shown.</p>'
+        :'<p class="xl-note">Share your project on Scratch, copy its link, and paste it here. Teachers can paste any shared class project.</p>')+
+      '<div class="rbx-ctl"><a class="rbx-ext" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Create on Scratch ↗</a><a class="rbx-ext" href="https://scratch.mit.edu/explore/projects/all" target="_blank" rel="noopener">Explore projects ↗</a></div></div>';
+  }else{
+    body='<div class="rbx-grid3">'+p.links.map(l=>'<div class="card rbx-st"><h4>'+l[0]+'</h4><p>'+l[1]+'</p><a class="btn solid" style="text-decoration:none;text-align:center" href="'+l[2]+'" target="_blank" rel="noopener">Open '+l[0]+' ↗</a></div>').join('')+'</div>'+
+      '<p class="xl-note">These open on their official sites in a new tab. Their content is not copied into this app.</p>';
+  }
+  return xlHead(id)+body+'<p class="xl-credit">'+p.credit+'</p>';
+}
+
 function labView(){
   if(state.labOpen==='robotics') return roboticsView();
   if(state.labOpen==='immersia') return immersiaView();
+  if(XL[state.labOpen]) return xlView(state.labOpen);
   /* If a lab is open, show full-screen iframe */
   if(state.labOpen){
     const lab = LABS.find(l=>l.id===state.labOpen);
@@ -2718,11 +2847,12 @@ function labView(){
     }
   }
 
-  const labCat={physics:'sim',chemistry:'sim',biology:'sim',robotics:'play',immersia:'vr'};
+  const labKind={physics:['Online simulation','#0E7C6B'],chemistry:['Online simulation','#0E7C6B'],biology:['Online simulation','#0E7C6B'],robotics:['Interactive platform','#5B3FC4'],immersia:['Virtual reality (VR) kit','#C2417A'],
+    phet:['Online simulation','#0E7C6B'],scratch:['Interactive platform','#5B3FC4'],music:['Interactive platform','#5B3FC4'],olabs:['Online simulation','#0E7C6B']};
   const card = lab=>{
     const btnStyle='background:'+lab.color;
     return '<div class="lab-card">'+
-      '<div class="lab-banner" style="'+lab.bg+'">'+
+      '<div class="lab-banner" style="background:'+lab.bg+'">'+
         '<svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
           '<circle cx="160" cy="20" r="60" fill="white" opacity="0.08"/><circle cx="30" cy="120" r="50" fill="white" opacity="0.06"/>'+
           '<rect x="80" y="50" width="40" height="40" rx="8" fill="white" opacity="0.05"/>'+
@@ -2733,27 +2863,24 @@ function labView(){
       '</div>'+
       '<div class="lab-body">'+
         '<div>'+
+          (labKind[lab.id]?'<span class="lab-kind" style="background:'+labKind[lab.id][1]+'">'+labKind[lab.id][0]+'</span>':'')+
           '<div class="eyebrow">'+lab.sub+'</div>'+
           '<h3>'+lab.title+'</h3>'+
         '</div>'+
         '<p>'+lab.desc+'</p>'+
         '<div class="lab-tags">'+lab.tags.map(t=>'<span class="lab-tag">'+t+'</span>').join('')+'</div>'+
+        (XL[lab.id]?'<div class="lab-facts"><b>Grades:</b> '+XL[lab.id].grades+' · <b>Licence:</b> '+XL[lab.id].license+'<br>'+XL[lab.id].how+'</div>':'')+
       '</div>'+
       '<button class="lab-open-btn" style="'+btnStyle+'" onclick="openLab(\''+lab.id+'\')">'+
         I.flask(16)+' Open Lab'+
       '</button>'+
     '</div>';
   };
-  const groups=[
-    ['sim','Online simulations','Run science experiments on screen, with virtual instruments in place of real ones.','#0E7C6B'],
-    ['play','Interactive platforms','Build, wire and code your own projects, and see them work.','#5B3FC4'],
-    ['vr','Virtual reality (VR) kits','Step inside 3D models on a screen, or with a phone and a VR viewer box.','#C2417A']];
-  const sections=groups.map(g=>{const list=LABS.filter(l=>(labCat[l.id]||'sim')===g[0]);if(!list.length)return '';
-    return '<section class="lab-sec"><div class="rbg-head"><i style="background:'+g[3]+'"></i><div><h4>'+g[1]+' <span>'+list.length+(list.length===1?' lab':' labs')+'</span></h4><p>'+g[2]+'</p></div></div><div class="lab-grid">'+list.map(card).join('')+'</div></section>';}).join('');
+  const cards=LABS.map(card).join('');
 
   return '<div class="pagehead">'+eyebrow('Interactive Labs')+'<h2 class="display">Virtual Lab Bench</h2>'+
     '<p class="muted" style="margin-top:6px">Online simulations, interactive platforms and virtual reality kits that let you run science, maths and coding experiments safely on a screen or headset.</p></div>'+
-    sections;
+    '<div class="lab-grid">'+cards+'</div>';
 }
 
 function openLab(id){

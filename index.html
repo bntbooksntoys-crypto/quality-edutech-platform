@@ -2225,6 +2225,52 @@ const RB_APPL=[
   model:'The bulb stands for the heating element and the LED is the indicator lamp. The fuse protects the circuit.',
   p:[['bat9',-300,90,{}],['sw',-150,-110,{}],['fuse',20,-110,{}],['bulb',200,-80,{}],['res',20,10,{ohm:330}],['led',200,60,{col:'green'}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K],[2,1,4,0,RB_B],[4,1,5,0,RB_B],[5,1,0,1,RB_K]]}
 ];
+/* vehicles: the same panel as appliances, with their own list */
+const RB_VSAFE='Real vehicles have hot engines, moving parts and high-voltage batteries. Never touch them while they run. This model uses a safe 9 V battery.';
+[
+ {n:'Car',w:'60 to 150 kW',ic:'<path d="M6 36v-8l6-3 6-10h18l8 10 6 3v8z" fill="#D32F2F"/><path d="M20 17h7v8H15zM30 17h5l6 8H30z" fill="#CDE3F5"/><circle cx="17" cy="38" r="6" fill="#1D1D1F"/><circle cx="41" cy="38" r="6" fill="#1D1D1F"/><circle cx="17" cy="38" r="2.5" fill="#C9CED3"/><circle cx="41" cy="38" r="2.5" fill="#C9CED3"/>',
+  what:'A car turns the energy in fuel or in a battery into motion at the wheels. The driver controls speed with the accelerator and direction with the steering wheel.',
+  steps:['In a petrol car, fuel burns inside the engine cylinders and pushes the pistons. In an electric car, a battery drives an electric motor.','The pistons or the motor turn a shaft.','The gearbox and the drive shafts carry the turning force to the wheels.','The wheels grip the road and push the car forward. Brakes use friction to slow it down.'],
+  parts:['Engine or motor','Battery','Gearbox','Wheels','Brakes','Steering'],sci:'Physics: energy change, friction and force',
+  model:'This is an electric car. The potentiometer is the accelerator and the motor drives the wheels. The LED is the headlight, and the push button sounds the horn.',
+  p:[['bat9',-320,110,{}],['sw',-170,-150,{}],['pot',0,-150,{pct:0}],['motor',180,-150,{}],['res',0,-40,{ohm:330}],['led',180,-10,{col:'yellow'}],['btn',-170,70,{}],['buzz',20,70,{}]],
+  c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K],[1,1,4,0,RB_B],[4,1,5,0,RB_B],[5,1,0,1,RB_K],[0,0,6,0,RB_B],[6,1,7,0,RB_B],[7,1,0,1,RB_K]]},
+ {n:'Motorbike',w:'6 to 30 kW',ic:'<circle cx="13" cy="38" r="9" fill="none" stroke="#1D1D1F" stroke-width="4"/><circle cx="43" cy="38" r="9" fill="none" stroke="#1D1D1F" stroke-width="4"/><path d="M13 38l10-14h12l8 14M23 24l6 14h14" fill="none" stroke="#D32F2F" stroke-width="4" stroke-linejoin="round"/><path d="M33 18h8" stroke="#1D1D1F" stroke-width="3" stroke-linecap="round"/>',
+  what:'A motorbike has a small engine between two wheels. A chain carries the turning force from the engine to the back wheel.',
+  steps:['Petrol and air burn in the engine cylinder and push the piston down.','The piston turns the crankshaft.','The gearbox and the chain turn the back wheel.','The rider balances by steering, and the spinning wheels help keep the bike upright.'],
+  parts:['Engine','Fuel tank','Gearbox','Chain','Wheels','Brakes','Headlight'],sci:'Physics: engines, balance and friction',
+  model:'The motor stands for the engine turning the back wheel. The bulb is the headlight, and the push button sounds the horn.',
+  p:[['bat9',-320,110,{}],['sw',-170,-150,{}],['motor',20,-150,{}],['bulb',200,-120,{}],['btn',-170,40,{}],['buzz',20,40,{}]],
+  c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,0,1,RB_K],[1,1,3,0,RB_B],[3,1,0,1,RB_K],[0,0,4,0,RB_B],[4,1,5,0,RB_B],[5,1,0,1,RB_K]]},
+ {n:'Electric train',w:'3000 to 6000 kW',ic:'<path d="M10 14h36a4 4 0 0 1 4 4v20H6V18a4 4 0 0 1 4-4z" fill="#1E63D0"/><rect x="10" y="19" width="10" height="9" fill="#CDE3F5"/><rect x="23" y="19" width="10" height="9" fill="#CDE3F5"/><rect x="36" y="19" width="10" height="9" fill="#CDE3F5"/><circle cx="16" cy="42" r="4" fill="#1D1D1F"/><circle cx="40" cy="42" r="4" fill="#1D1D1F"/><path d="M2 48h52M22 14l6-8 6 8M18 5h20" stroke="#55606A" stroke-width="2.5" fill="none"/>',
+  what:'An electric train takes electricity from a wire above the track. Large motors turn the steel wheels, which roll on steel rails.',
+  steps:['The pantograph on the roof touches the overhead wire and collects high-voltage electricity.','A transformer and control unit lower the voltage and control the current.','Traction motors turn the wheels.','Steel wheels on steel rails have very little friction, so a train can pull a heavy load with less energy.'],
+  parts:['Pantograph','Transformer','Traction motors','Steel wheels','Rails','Air brakes'],sci:'Physics: electric motor and friction',
+  model:'The switch is the pantograph touching the wire. The potentiometer is the driver\'s speed controller, and the motor is the traction motor. The push button sounds the horn.',
+  p:[['bat9',-320,110,{}],['sw',-170,-150,{}],['pot',0,-150,{pct:0}],['motor',180,-150,{}],['btn',-170,40,{}],['buzz',20,40,{}]],
+  c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K],[0,0,4,0,RB_B],[4,1,5,0,RB_B],[5,1,0,1,RB_K]]},
+ {n:'Helicopter',w:'300 to 1500 kW',ic:'<path d="M4 12h44" stroke="#55606A" stroke-width="3" stroke-linecap="round"/><path d="M26 12v6" stroke="#55606A" stroke-width="3"/><path d="M12 30c0-8 6-12 14-12s14 5 14 12l12-4v6l-12 4H22c-6 0-10-3-10-6z" fill="#0E7C6B"/><path d="M16 26c1-4 5-6 9-6v8z" fill="#CDE3F5"/><path d="M14 44h24M20 38v6M32 38v6" stroke="#55606A" stroke-width="2.5" stroke-linecap="round"/>',
+  what:'A helicopter flies with spinning blades called a rotor. The rotor pushes air down, and the air pushes the helicopter up.',
+  steps:['The engine spins the main rotor on top.','Each blade is shaped like a wing, so the spinning rotor makes lift.','The small tail rotor stops the body from spinning the opposite way.','The pilot tilts the main rotor to fly forward, backward or sideways.'],
+  parts:['Engine','Main rotor','Tail rotor','Gearbox','Cockpit controls','Landing skids'],sci:'Physics: lift and Newton\'s third law',
+  model:'One motor is the main rotor and the other is the tail rotor. Both run from the same engine power. The potentiometer is the throttle.',
+  p:[['bat9',-320,110,{}],['sw',-170,-150,{}],['pot',0,-150,{pct:0}],['motor',180,-150,{}],['motor',180,0,{}]],
+  c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K],[2,1,4,0,RB_B],[4,1,0,1,RB_K]]},
+ {n:'Aeroplane',w:'20,000 kW and more',ic:'<path d="M4 30l40-8c5-1 8 1 8 3s-3 4-8 4l-12 2-10 14h-5l5-13-10 2-4 5H5l2-7z" fill="#C9CED3" stroke="#55606A" stroke-width="1.5"/><path d="M26 23l-6-12h5l11 10z" fill="#8A99A3"/><circle cx="44" cy="25" r="1.6" fill="#1E63D0"/><circle cx="39" cy="26" r="1.6" fill="#1E63D0"/>',
+  what:'An aeroplane flies because its wings make lift when air moves fast over them. The engines push the plane forward to keep the air moving.',
+  steps:['The jet engines suck in air, burn fuel and blow hot gas backward. This pushes the plane forward (thrust).','Air flows faster over the curved top of the wing, so the pressure is lower above than below. This makes lift.','When lift is greater than weight, the plane climbs.','The pilot moves flaps on the wings and tail to turn, climb and come down.'],
+  parts:['Jet engines','Wings','Flaps','Tail','Landing gear','Cockpit'],sci:'Physics: lift, thrust, drag and weight',
+  model:'The two motors are the two engines. The red and green LEDs are the navigation lights on the left and right wing tips.',
+  p:[['bat9',-320,120,{}],['sw',-170,-170,{}],['motor',20,-170,{}],['motor',20,-60,{}],['res',-60,50,{ohm:330}],['led',100,60,{col:'red'}],['res',180,-60,{ohm:330}],['led',330,-40,{col:'green'}]],
+  c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,0,1,RB_K],[1,1,3,0,RB_R],[3,1,0,1,RB_K],[1,1,4,0,RB_B],[4,1,5,0,RB_B],[5,1,0,1,RB_K],[1,1,6,0,RB_B],[6,1,7,0,RB_B],[7,1,0,1,RB_K]]},
+ {n:'Ship',w:'10,000 to 80,000 kW',ic:'<path d="M4 34h48l-7 12H11z" fill="#1E63D0"/><rect x="16" y="22" width="24" height="12" fill="#F4F7FA" stroke="#8A99A3"/><rect x="24" y="10" width="7" height="12" fill="#D32F2F"/><path d="M20 27h4M28 27h4M36 27h1" stroke="#1E63D0" stroke-width="2.5"/><path d="M2 50q6-4 12 0t12 0 12 0 12 0" stroke="#3D8BFF" stroke-width="2" fill="none"/>',
+  what:'A ship floats because it pushes aside water that weighs as much as the ship. A propeller at the back pushes the water backward and the ship forward.',
+  steps:['The hollow steel hull pushes water aside. The water pushes back up with a force called buoyancy.','A large diesel engine or electric motor turns a long shaft.','The shaft spins the propeller, which pushes water backward.','The rudder behind the propeller turns the ship left or right.'],
+  parts:['Hull','Engine','Propeller','Rudder','Bridge','Anchor'],sci:'Physics: buoyancy and Archimedes\' principle',
+  model:'The motor turns the propeller. The green LED is a navigation light, and the push button sounds the ship\'s horn.',
+  p:[['bat9',-320,110,{}],['sw',-170,-150,{}],['motor',20,-150,{}],['res',20,-40,{ohm:330}],['led',180,-20,{col:'green'}],['btn',-170,70,{}],['buzz',20,70,{}]],
+  c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,0,1,RB_K],[1,1,3,0,RB_B],[3,1,4,0,RB_B],[4,1,0,1,RB_K],[0,0,5,0,RB_B],[5,1,6,0,RB_B],[6,1,0,1,RB_K]]}
+].forEach(v=>{v.veh=true;RB_APPL.push(v);});
 function rbApplIcon(a){return '<svg viewBox="0 0 56 56" aria-hidden="true">'+a.ic+'</svg>';}
 function rbApplOpen(i){rb.tk.appl=i;rbApplPaint();const e=document.getElementById('rbTkAppl');if(e&&e.scrollIntoView)e.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function rbApplClose(){rb.tk.appl=null;rbApplPaint();}
@@ -2237,26 +2283,26 @@ function rbApplBuild(i){
 }
 function rbApplPaint(){
   const e=document.getElementById('rbTkAppl');if(!e)return;const i=rb.tk.appl,a=RB_APPL[i];if(!a){e.innerHTML='';return;}
-  e.innerHTML='<div class="rbap"><div class="rbap-head">'+rbApplIcon(a)+'<div><div class="eyebrow">How it works · Home appliance</div><h3>'+a.n+'</h3><span>Typical power: <b>'+a.w+'</b></span></div>'+
+  e.innerHTML='<div class="rbap"><div class="rbap-head">'+rbApplIcon(a)+'<div><div class="eyebrow">How it works · '+(a.veh?'Vehicle':'Home appliance')+'</div><h3>'+a.n+'</h3><span>Typical power: <b>'+a.w+'</b></span></div>'+
       '<button class="btn ghost" onclick="rbApplClose()" aria-label="Close">Close</button></div>'+
     '<p>'+a.what+'</p>'+
     '<div class="rbap-two"><div><b>Step by step</b><ol>'+a.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></div>'+
       '<div><b>Main parts inside</b><div style="margin:6px 0 12px">'+a.parts.map(p=>'<span class="rb-chip">'+p+'</span>').join('')+'</div>'+
         '<b>Model circuit</b><p style="margin:4px 0 10px">'+a.model+'</p><button class="btn teal" onclick="rbApplBuild('+i+')">Build the model circuit</button></div></div>'+
-    '<div class="rbap-safe"><b>Safety:</b> Real appliances use 230 V mains electricity, which can kill. Never open one. This model uses a safe 9 V battery.</div>'+
+    '<div class="rbap-safe"><b>Safety:</b> '+(a.veh?RB_VSAFE:'Real appliances use 230 V mains electricity, which can kill. Never open one. This model uses a safe 9 V battery.')+'</div>'+
     '<div><span class="rb-chip">'+a.sci+'</span></div></div>';
 }
 function rbTkTrayHTML(){
   const t=rb.tk,m=t.mode,dis=t.sim?' disabled':'';
   if(m==='starters')return '<div class="rbtk-grp">Starters · ready circuits with code</div>'+RB_TK_STARTERS.map((s,i)=>'<button class="rbtk-card"'+dis+' onclick="rbTkStarter('+i+')" title="Add this circuit"><svg viewBox="-84 -70 168 150" aria-hidden="true">'+rbTkDraw({k:s.k},null,true)+'</svg><span><b>'+s.n+'</b><em>'+s.d+'</em></span></button>').join('');
-  if(m==='appl')return '<div class="rbtk-grp">Appliances · how they work</div>'+RB_APPL.map((a,i)=>'<button class="rbtk-card" onclick="rbApplOpen('+i+')" title="See how it works">'+rbApplIcon(a)+'<span><b>'+a.n+'</b><em>'+a.w+'</em></span></button>').join('');
+  if(m==='appl'||m==='veh')return '<div class="rbtk-grp">'+(m==='veh'?'Vehicles':'Appliances')+' · how they work</div>'+RB_APPL.map((a,i)=>(!!a.veh===(m==='veh'))?'<button class="rbtk-card" onclick="rbApplOpen('+i+')" title="See how it works">'+rbApplIcon(a)+'<span><b>'+a.n+'</b><em>'+a.w+'</em></span></button>':'').join('');
   if(m==='kits')return '<div class="rbtk-grp">Kits · a set of parts to build with</div>'+RB_TK_KITS.map((k,i)=>'<button class="rbtk-card"'+dis+' onclick="rbTkKit('+i+')" title="Add all parts of this kit"><span><b>'+k.n+'</b><em>'+k.d+'</em><em><u>'+k.parts.length+' parts</u></em></span></button>').join('');
   const groups=[];Object.keys(RB_TK_DEF).forEach(k=>{if(m==='basic'&&RB_TK_BASIC.indexOf(k)<0)return;const g=m==='basic'?'Basic parts':RB_TK_DEF[k].g;let o=groups.find(x=>x[0]===g);if(!o){o=[g,[]];groups.push(o);}o[1].push(k);});
   if(m==='basic')groups[0][1].sort((a,b)=>RB_TK_BASIC.indexOf(a)-RB_TK_BASIC.indexOf(b));
   return groups.map(g=>'<div class="rbtk-grp">'+g[0]+'</div>'+g[1].map(k=>{const s={k:k,ohm:330,col:'red',pct:50,light:50,temp:25,on:false};
     return '<button draggable="true"'+dis+' ondragstart="event.dataTransfer.setData(\'text/plain\',\'part:'+k+'\')" onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].board?'-84 -70 168 150':RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
 }
-function rbTkMode(m){rb.tk.mode=m;const tr=document.getElementById('rbTkTray');if(tr){tr.innerHTML=rbTkTrayHTML();tr.scrollTop=0;}const q=document.querySelector('.rbtk-search');if(q){q.value='';q.placeholder=m==='appl'?'Search appliances':m==='starters'?'Search starters':m==='kits'?'Search kits':'Search parts';}}
+function rbTkMode(m){rb.tk.mode=m;const tr=document.getElementById('rbTkTray');if(tr){tr.innerHTML=rbTkTrayHTML();tr.scrollTop=0;}const q=document.querySelector('input.rbtk-search');if(q){q.value='';q.placeholder=m==='veh'?'Search vehicles':m==='appl'?'Search appliances':m==='starters'?'Search starters':m==='kits'?'Search kits':'Search parts';}}
 function rbTkCodeOpen(){
   const t=rb.tk,sel=t.sel&&t.sel.t==='p'&&rbTkPart(t.sel.id),b=(sel&&RB_TK_DEF[sel.k].board)?sel:t.parts.find(p=>RB_TK_DEF[p.k].board);
   t.code=t.code?null:(b?b.id:'none');rbTkPaint();
@@ -2496,7 +2542,7 @@ function rbCircuitsHTML(){
         tb('rbTkRotB','⟳ Rotate','rbTkRot()','Rotate (R)')+tb('rbTkDupB','⧉ Duplicate','rbTkDup()','Duplicate (Ctrl+D)')+tb('rbTkDelB','✕ Delete','rbTkDel()','Delete (Del)')+'<i></i>'+tb('rbTkSolB','🔥 Solder','rbTkSolder()','Soldering iron: fix wire joints (S)')+'<i></i>'+
         '<span class="rbtk-lab">Wire</span>'+cols.map(c=>'<button class="rbtk-sw" data-c="'+c[0]+'" aria-label="'+c[1]+' wire" title="'+c[1]+' wire" style="background:'+c[0]+'" onclick="rbTkColor(\''+c[0]+'\')"></button>').join('')+'<i></i>'+
         '<button class="rbtk-tb" title="Zoom out (-)" aria-label="Zoom out" onclick="rbTkZoom(1.25)">−</button><span class="rbtk-lab" id="rbTkZ">100%</span><button class="rbtk-tb" title="Zoom in (+)" aria-label="Zoom in" onclick="rbTkZoom(0.8)">+</button>'+tb('rbTkFitB','Fit','rbTkFit()','Show the whole circuit')+'</div>'+
-      '<div class="rbtk-wrap"><div><select class="rbtk-search" aria-label="What to show in the list" onchange="rbTkMode(this.value)">'+[['basic','Components · Basic'],['all','Components · All'],['starters','Starters'],['kits','Kits'],['appl','Appliances']].map(o=>'<option value="'+o[0]+'"'+(md===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+      '<div class="rbtk-wrap"><div><select class="rbtk-search" aria-label="What to show in the list" onchange="rbTkMode(this.value)">'+[['basic','Components · Basic'],['all','Components · All'],['starters','Starters'],['kits','Kits'],['appl','Appliances'],['veh','Vehicles']].map(o=>'<option value="'+o[0]+'"'+(md===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
         '<input class="rbtk-search" type="search" placeholder="Search parts" aria-label="Search the list" oninput="rbTkFilter(this)"><div class="rbtk-tray" id="rbTkTray" aria-label="Parts list">'+tray+'</div></div>'+
         '<div style="min-width:0"><svg id="rbTk" class="rbtk-svg" viewBox="0 0 '+RB_TK_W+' '+RB_TK_H+'" tabindex="0" role="application" aria-label="Circuit workspace. Drag a part from the list or tap it to add it, then tap two terminals to wire them."></svg></div></div>'+
       '<div class="rbx-ctl" id="rbTkIns" style="min-height:40px"></div>'+

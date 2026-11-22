@@ -3824,7 +3824,7 @@ function qtSync(){
   try{
     if(!qt.cur||!state.user)return;
     const d=qtLoad(),day=qtDay(Date.now()),s=d.s.find(x=>x.id===qt.cur.id)||qt.cur;
-    const data={email:qt.cur.u,name:state.user.name||'',grade:state.user.grade||'',session:{id:s.id,in:s.in,out:s.out},date:day,focus:d.f[qt.cur.u+'|'+day]||{}};
+    const data={email:qt.cur.u,name:state.user.name||'',grade:state.user.grade||'',age:state.user.age||'',session:{id:s.id,in:s.in,out:s.out},date:day,focus:d.f[qt.cur.u+'|'+day]||{}};
     /* school server on the local network */
     if(/^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname))
       fetch('/api/activity',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify(data)}).catch(function(){});

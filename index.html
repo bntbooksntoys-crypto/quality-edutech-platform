@@ -617,6 +617,37 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .sm-cell.ph{outline:2px solid var(--ink);outline-offset:-1px}
 .sm-code{margin-top:8px;background:#11212D;color:#E6F1F5;border-radius:10px;padding:12px;font-size:12.5px;max-height:220px;overflow:auto;white-space:pre}
 .rbtk-tb.on{background:#FF8A1F;border-color:#C8102E;color:#11212D}
+.rbsv{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.rbsv select{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 10px;font:inherit;font-size:14px;max-width:240px}
+.rbsv span{font-size:13.5px;font-weight:600}
+.qc-grid{display:grid;grid-template-columns:70px repeat(8,minmax(46px,1fr));row-gap:10px;min-width:520px;margin-top:6px}
+.qc-q{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}.qc-q span{font-weight:400;color:var(--slate);font-size:12.5px}
+.qc-cell{height:48px;border:0;background:linear-gradient(var(--ink),var(--ink)) center/100% 2px no-repeat;cursor:pointer;display:grid;place-items:center;padding:0;position:relative}
+.qc-cell:hover{background-color:var(--canvas)}
+.qc-cell.vl::before{content:"";position:absolute;left:50%;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:var(--ink)}
+.qc-cell.vl.top::before{top:50%}.qc-cell.vl.bot::before{bottom:50%}
+.qc-cell i{font-style:normal;position:relative;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;background:#4338CA}
+.qc-cell i.gX,.qc-cell i.gY,.qc-cell i.gZ{background:#0E7C6B}.qc-cell i.gS,.qc-cell i.gT{background:#9A5B00}
+.qc-cell i.ctl{width:16px;height:16px;border-radius:50%;background:var(--ink)}
+.qc-tool{min-width:40px;height:40px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+.qc-tool.wide{padding:0 12px;font-weight:600;font-size:14px}.qc-tool.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.qc-bars{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.qc-bar{display:grid;grid-template-columns:54px 1fr 52px;gap:8px;align-items:center;font-size:13.5px}
+.qc-bars.shots .qc-bar{grid-template-columns:54px 1fr 52px 60px}
+.qc-bar span{font-family:ui-monospace,Menlo,monospace;font-weight:700}.qc-bar div{height:16px;background:var(--canvas);border-radius:4px;overflow:hidden}
+.qc-bar div i{display:block;height:100%;background:#4338CA;border-radius:0 4px 4px 0}
+.qc-bar b,.qc-bar em{text-align:right;font-variant-numeric:tabular-nums;font-style:normal}.qc-bar em{color:var(--slate)}
+.qc-bar.head{font-size:11.5px;color:var(--slate)}.qc-bar.head div{background:none}.qc-bar.head b{font-weight:600}
+.qc-n{width:32px;height:32px;border-radius:9px;background:#4338CA;color:#fff;font-weight:800;display:grid;place-items:center;margin-bottom:10px}
+.rbap{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card)}
+.rbap-head{display:flex;gap:14px;align-items:center}.rbap-head svg{width:56px;height:56px;flex:none}
+.rbap-head h3{font-family:var(--display);font-size:20px;font-weight:800}.rbap-head span{font-size:13px;color:var(--slate)}
+.rbap-head .btn{margin-left:auto}
+.rbap p{font-size:14px;line-height:1.5;color:var(--slate);margin-top:10px}
+.rbap-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:12px}
+@media(max-width:820px){.rbap-two{grid-template-columns:1fr}}
+.rbap ol{margin:6px 0 0 20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.45}
+.rbap-safe{margin:14px 0 10px;background:var(--redSoft);color:var(--vermilion);border-radius:10px;padding:10px 12px;font-size:13.5px}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1610,6 +1641,18 @@ const LABS = [
     icon:'<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><path d="M9 13v1.5M15 13v1.5M2 13v3M22 13v3"/>',
   },
   {
+    id:"quantum",
+    title:"Qubit Lab — Quantum Computing",
+    sub:"Quantum Computing · Grades 8–12",
+    desc:"Meet the qubit. Put it in superposition, link qubits with entanglement, and build and measure quantum circuits on a real simulator.",
+    tags:["Qubits","Superposition","Entanglement","Quantum gates","Circuit builder"],
+    url:"",
+    embedUrl:"",
+    color:"#4338CA",
+    bg:"linear-gradient(135deg,#4338CA 0%,#1E1B4B 100%)",
+    icon:'<circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/>',
+  },
+  {
     id:"physics",
     title:"Physics Measurement Lab",
     sub:"Physics · Grades 8–12",
@@ -2116,7 +2159,7 @@ const RB_TK_KITS=[
 function rbTkPlace(defs,wires){
   const t=rb.tk,v=t.vb,cx=Math.round((v.x+v.w/2)/10)*10,cy=Math.round((v.y+v.h/2)/10)*10,ids=[];
   defs.forEach(d=>{const p=Object.assign({id:t.id++,k:d[0],x:Math.max(60,Math.min(RB_WW-60,cx+d[1])),y:Math.max(60,Math.min(RB_WH-60,cy+d[2])),r:0},JSON.parse(JSON.stringify(d[3]||{})));
-    if(p.k==='res'&&!p.ohm)p.ohm=330;if(p.k==='led'&&!p.col)p.col='red';if(p.k==='sw')p.on=false;if(p.k==='pot')p.pct=50;if(p.k==='ldr')p.light=50;if(p.k==='therm')p.temp=25;if(RB_TK_DEF[p.k].board)rbTkProg(p);
+    if(p.k==='res'&&!p.ohm)p.ohm=330;if(p.k==='led'&&!p.col)p.col='red';if(p.k==='sw')p.on=false;if(p.k==='pot'&&p.pct==null)p.pct=50;if(p.k==='ldr')p.light=50;if(p.k==='therm')p.temp=25;if(RB_TK_DEF[p.k].board)rbTkProg(p);
     t.parts.push(p);ids.push(p.id);});
   (wires||[]).forEach(w=>t.wires.push({a:[ids[w[0]],w[1]],b:[ids[w[2]],w[3]],c:w[4]}));
   return ids;
@@ -2130,16 +2173,90 @@ function rbTkKit(i){
   rbTkPush();let n=0;const defs=k.parts.map(key=>{const base=RB_TK_DEF[key].box&&!RB_TK_DEF[key].t.length;if(base)return [key,0,0,{}];const d=[key,-300+(n%5)*150,-170+Math.floor(n/5)*150,{}];n++;return d;});
   rbTkPlace(defs,[]);t.sel=null;t.pend=null;rbTkSave();rbTkPaint();rbTkFit();
 }
+/* ─────────── Appliances: how common home appliances work, each with a safe model circuit ─────────── */
+const RB_R='#D32F2F',RB_K='#1D1D1F',RB_B='#1E63D0';
+const RB_APPL=[
+ {n:'Ceiling fan',w:'50 to 75 W',ic:'<circle cx="28" cy="28" r="5" fill="#55606A"/><g fill="#8A99A3"><ellipse cx="28" cy="12" rx="5" ry="11"/><ellipse cx="14" cy="36" rx="5" ry="11" transform="rotate(-120 14 36)"/><ellipse cx="42" cy="36" rx="5" ry="11" transform="rotate(120 42 36)"/></g>',
+  what:'An electric motor turns the blades. The blades push air down, and moving air cools your skin.',
+  steps:['The switch lets current flow to the motor.','Current in the motor coils makes a magnetic field.','The magnetic field turns the rotor and the blades.','The regulator changes the current, so the fan turns faster or slower.'],
+  parts:['Motor','Capacitor','Blades','Regulator','Switch'],sci:'Physics: electric motor and magnetism',
+  model:'The battery is the mains supply, the potentiometer is the regulator and the DC motor is the fan motor. Tap the potentiometer and move its slider to slow the fan.',
+  p:[['bat9',-300,90,{}],['sw',-130,-110,{}],['pot',60,-110,{pct:0}],['motor',250,-110,{}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K]]},
+ {n:'Tube light',w:'18 to 40 W',ic:'<rect x="6" y="22" width="44" height="12" rx="6" fill="#F4F7FA" stroke="#8A99A3" stroke-width="2"/><rect x="2" y="24" width="6" height="8" fill="#55606A"/><rect x="48" y="24" width="6" height="8" fill="#55606A"/><path d="M14 40l-3 6M28 40v7M42 40l3 6" stroke="#F2C230" stroke-width="2.5" stroke-linecap="round"/>',
+  what:'Electricity passes through a gas inside the tube. The gas gives off invisible ultraviolet light, and the white coating turns it into visible light.',
+  steps:['The switch sends current to the choke and the starter.','The starter and choke give a high-voltage kick to start the tube.','Current flows through the mercury vapour and makes ultraviolet light.','The white phosphor coating glows and gives visible light.'],
+  parts:['Glass tube','Choke (ballast)','Starter','Phosphor coating','Switch'],sci:'Physics: light and electric discharge',
+  model:'The resistor stands for the choke, which limits the current, and the bulb stands for the glowing tube.',
+  p:[['bat9',-300,90,{}],['sw',-130,-110,{}],['res',60,-110,{ohm:47}],['bulb',250,-80,{}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K]]},
+ {n:'Television (LED TV)',w:'50 to 150 W',ic:'<rect x="5" y="10" width="46" height="30" rx="3" fill="#1D1D1F"/><rect x="9" y="14" width="38" height="22" fill="#2F6FDB"/><path d="M20 48h16M28 40v8" stroke="#55606A" stroke-width="3" stroke-linecap="round"/>',
+  what:'A TV turns a signal into pictures and sound. The screen has millions of tiny red, green and blue dots called pixels.',
+  steps:['The power supply changes mains electricity into low-voltage DC.','The tuner or the internet box receives the picture and sound signal.','The processor tells each pixel how bright to be, many times a second.','LEDs light the screen from behind, and the speaker turns the sound signal into sound.'],
+  parts:['Power supply','Main board','LED backlight','LCD panel','Speaker','Remote sensor'],sci:'Physics: light, colour and sound',
+  model:'The LED is the screen backlight and the buzzer is the speaker. Both get power from the same supply.',
+  p:[['bat9',-300,90,{}],['sw',-130,-110,{}],['res',60,-150,{ohm:330}],['led',250,-130,{col:'blue'}],['buzz',60,0,{}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K],[1,1,4,0,RB_B],[4,1,0,1,RB_K]]},
+ {n:'Refrigerator',w:'100 to 250 W',ic:'<rect x="14" y="4" width="28" height="48" rx="4" fill="#E4E7EA" stroke="#8A99A3" stroke-width="2"/><path d="M14 22h28" stroke="#8A99A3" stroke-width="2"/><path d="M19 10v7M19 28v10" stroke="#55606A" stroke-width="2.5" stroke-linecap="round"/>',
+  what:'A fridge does not make cold. It moves heat from the inside to the outside, using a liquid called a refrigerant.',
+  steps:['The compressor squeezes the refrigerant gas, which becomes hot.','The hot gas cools in the coils at the back and becomes a liquid.','The liquid passes through a narrow valve, expands and becomes very cold.','The cold refrigerant takes heat from the food. The thermostat stops the compressor when it is cold enough.'],
+  parts:['Compressor','Condenser coils','Expansion valve','Evaporator','Thermostat','Door light'],sci:'Physics: heat transfer and change of state',
+  model:'The motor is the compressor. The push button is the door switch, which turns on the light inside.',
+  p:[['bat9',-300,90,{}],['sw',-130,-110,{}],['motor',80,-110,{}],['btn',-130,10,{}],['bulb',80,30,{}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,0,1,RB_K],[0,0,3,0,RB_B],[3,1,4,0,RB_B],[4,1,0,1,RB_K]]},
+ {n:'Washing machine',w:'400 to 2000 W',ic:'<rect x="10" y="4" width="36" height="48" rx="4" fill="#E4E7EA" stroke="#8A99A3" stroke-width="2"/><circle cx="28" cy="32" r="12" fill="#CDE3F5" stroke="#55606A" stroke-width="2.5"/><circle cx="17" cy="11" r="2.5" fill="#55606A"/><rect x="30" y="9" width="11" height="4" rx="2" fill="#8A99A3"/>',
+  what:'A motor turns a drum full of clothes, water and detergent. A small computer runs each step in order.',
+  steps:['A valve opens and fills the drum with water.','The motor turns the drum one way and then the other to wash the clothes.','A pump drains the dirty water, and clean water rinses the clothes.','The drum spins very fast. The water flies out through the holes. A buzzer tells you it has finished.'],
+  parts:['Motor','Drum','Water valve','Drain pump','Control board','Buzzer'],sci:'Physics: circular motion',
+  model:'The motor turns the drum. Press the push button to sound the finish buzzer.',
+  p:[['bat9',-300,90,{}],['sw',-130,-110,{}],['motor',80,-110,{}],['btn',-130,10,{}],['buzz',80,10,{}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,0,1,RB_K],[0,0,3,0,RB_B],[3,1,4,0,RB_B],[4,1,0,1,RB_K]]},
+ {n:'Electric iron',w:'750 to 1500 W',ic:'<path d="M6 40h44l-6-16a8 8 0 0 0-8-5H20c-8 0-14 10-14 21z" fill="#C9CED3" stroke="#55606A" stroke-width="2"/><path d="M22 19c0-8 16-8 16 0" fill="none" stroke="#1E63D0" stroke-width="5" stroke-linecap="round"/><rect x="6" y="40" width="44" height="5" rx="2" fill="#55606A"/>',
+  what:'Current passes through a coil of special wire that resists it strongly. The wire becomes hot and heats the metal plate.',
+  steps:['The switch sends current through the heating element.','The element has high resistance, so electrical energy becomes heat.','The heat spreads into the flat metal plate.','A thermostat cuts the current when the plate is hot enough, and joins it again when it cools.'],
+  parts:['Heating element','Sole plate','Thermostat','Indicator lamp','Fuse'],sci:'Physics: heating effect of electric current',
+  model:'The bulb stands for the heating element, which glows when hot. The fuse protects the circuit, and the LED is the indicator lamp.',
+  p:[['bat9',-300,90,{}],['sw',-150,-110,{}],['fuse',20,-110,{}],['bulb',200,-80,{}],['res',20,10,{ohm:330}],['led',200,60,{col:'red'}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K],[2,1,4,0,RB_B],[4,1,5,0,RB_B],[5,1,0,1,RB_K]]},
+ {n:'Mixer grinder',w:'500 to 750 W',ic:'<path d="M18 6h20l-3 24H21z" fill="#CDE3F5" stroke="#55606A" stroke-width="2"/><rect x="14" y="30" width="28" height="20" rx="4" fill="#D32F2F"/><circle cx="28" cy="40" r="4" fill="#fff"/><path d="M24 24h8" stroke="#55606A" stroke-width="3" stroke-linecap="round"/>',
+  what:'A very fast motor spins sharp blades at the bottom of the jar. The blades cut and crush the food.',
+  steps:['The speed knob sets how much current goes to the motor.','The motor spins at up to 20,000 turns a minute.','A coupler joins the motor shaft to the blades in the jar.','An overload switch cuts the power if the motor gets too hot.'],
+  parts:['Universal motor','Blades','Jar','Speed knob','Overload switch'],sci:'Physics: electric motor and energy change',
+  model:'The potentiometer is the speed knob and the DC motor spins the blades. Tap the potentiometer and move its slider to change the speed. The fuse works like the overload switch.',
+  p:[['bat9',-300,90,{}],['sw',-150,-110,{}],['fuse',10,-110,{}],['pot',160,-110,{pct:0}],['motor',310,-110,{}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,4,0,RB_R],[4,1,0,1,RB_K]]},
+ {n:'Water heater (geyser)',w:'2000 to 3000 W',ic:'<rect x="14" y="6" width="28" height="38" rx="12" fill="#E4E7EA" stroke="#8A99A3" stroke-width="2"/><circle cx="28" cy="34" r="3" fill="#D32F2F"/><path d="M20 44v8M36 44v8" stroke="#1E63D0" stroke-width="3" stroke-linecap="round"/><path d="M24 14c-3 4 3 5 0 9M32 14c-3 4 3 5 0 9" stroke="#D32F2F" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  what:'A heating element sits inside a tank of water. Current heats the element, and the element heats the water.',
+  steps:['Cold water enters the tank from the bottom.','The switch sends current through the heating element.','The element heats the water. Hot water rises to the top of the tank.','The thermostat cuts the power at the set temperature. A safety valve releases extra pressure.'],
+  parts:['Heating element','Insulated tank','Thermostat','Safety valve','Indicator lamp'],sci:'Physics: heating effect of current and convection',
+  model:'The bulb stands for the heating element and the LED is the indicator lamp. The fuse protects the circuit.',
+  p:[['bat9',-300,90,{}],['sw',-150,-110,{}],['fuse',20,-110,{}],['bulb',200,-80,{}],['res',20,10,{ohm:330}],['led',200,60,{col:'green'}]],c:[[0,0,1,0,RB_R],[1,1,2,0,RB_R],[2,1,3,0,RB_R],[3,1,0,1,RB_K],[2,1,4,0,RB_B],[4,1,5,0,RB_B],[5,1,0,1,RB_K]]}
+];
+function rbApplIcon(a){return '<svg viewBox="0 0 56 56" aria-hidden="true">'+a.ic+'</svg>';}
+function rbApplOpen(i){rb.tk.appl=i;rbApplPaint();const e=document.getElementById('rbTkAppl');if(e&&e.scrollIntoView)e.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function rbApplClose(){rb.tk.appl=null;rbApplPaint();}
+function rbApplBuild(i){
+  const t=rb.tk,a=RB_APPL[i];if(!a)return;if(t.sim)rbTkSim();
+  if(t.parts.length&&!confirm('Replace the circuit in the workspace with the '+a.n+' model?'))return;
+  rbTkPush();t.parts=[];t.wires=[];t.sel=null;t.pend=null;t.pts=[];t.code=null;rbTkPlace(a.p,a.c);rbTkSave();rbTkPaint();rbTkFit();
+  const sv=document.getElementById('rbTk');if(sv&&sv.scrollIntoView)sv.scrollIntoView({behavior:'smooth',block:'center'});
+  rbTkSay('The '+a.n+' model is ready. Press Start simulation, then tap the switch to turn it on.','ok');
+}
+function rbApplPaint(){
+  const e=document.getElementById('rbTkAppl');if(!e)return;const i=rb.tk.appl,a=RB_APPL[i];if(!a){e.innerHTML='';return;}
+  e.innerHTML='<div class="rbap"><div class="rbap-head">'+rbApplIcon(a)+'<div><div class="eyebrow">How it works · Home appliance</div><h3>'+a.n+'</h3><span>Typical power: <b>'+a.w+'</b></span></div>'+
+      '<button class="btn ghost" onclick="rbApplClose()" aria-label="Close">Close</button></div>'+
+    '<p>'+a.what+'</p>'+
+    '<div class="rbap-two"><div><b>Step by step</b><ol>'+a.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></div>'+
+      '<div><b>Main parts inside</b><div style="margin:6px 0 12px">'+a.parts.map(p=>'<span class="rb-chip">'+p+'</span>').join('')+'</div>'+
+        '<b>Model circuit</b><p style="margin:4px 0 10px">'+a.model+'</p><button class="btn teal" onclick="rbApplBuild('+i+')">Build the model circuit</button></div></div>'+
+    '<div class="rbap-safe"><b>Safety:</b> Real appliances use 230 V mains electricity, which can kill. Never open one. This model uses a safe 9 V battery.</div>'+
+    '<div><span class="rb-chip">'+a.sci+'</span></div></div>';
+}
 function rbTkTrayHTML(){
   const t=rb.tk,m=t.mode,dis=t.sim?' disabled':'';
   if(m==='starters')return '<div class="rbtk-grp">Starters · ready circuits with code</div>'+RB_TK_STARTERS.map((s,i)=>'<button class="rbtk-card"'+dis+' onclick="rbTkStarter('+i+')" title="Add this circuit"><svg viewBox="-84 -70 168 150" aria-hidden="true">'+rbTkDraw({k:s.k},null,true)+'</svg><span><b>'+s.n+'</b><em>'+s.d+'</em></span></button>').join('');
+  if(m==='appl')return '<div class="rbtk-grp">Appliances · how they work</div>'+RB_APPL.map((a,i)=>'<button class="rbtk-card" onclick="rbApplOpen('+i+')" title="See how it works">'+rbApplIcon(a)+'<span><b>'+a.n+'</b><em>'+a.w+'</em></span></button>').join('');
   if(m==='kits')return '<div class="rbtk-grp">Kits · a set of parts to build with</div>'+RB_TK_KITS.map((k,i)=>'<button class="rbtk-card"'+dis+' onclick="rbTkKit('+i+')" title="Add all parts of this kit"><span><b>'+k.n+'</b><em>'+k.d+'</em><em><u>'+k.parts.length+' parts</u></em></span></button>').join('');
   const groups=[];Object.keys(RB_TK_DEF).forEach(k=>{if(m==='basic'&&RB_TK_BASIC.indexOf(k)<0)return;const g=m==='basic'?'Basic parts':RB_TK_DEF[k].g;let o=groups.find(x=>x[0]===g);if(!o){o=[g,[]];groups.push(o);}o[1].push(k);});
   if(m==='basic')groups[0][1].sort((a,b)=>RB_TK_BASIC.indexOf(a)-RB_TK_BASIC.indexOf(b));
   return groups.map(g=>'<div class="rbtk-grp">'+g[0]+'</div>'+g[1].map(k=>{const s={k:k,ohm:330,col:'red',pct:50,light:50,temp:25,on:false};
     return '<button draggable="true"'+dis+' ondragstart="event.dataTransfer.setData(\'text/plain\',\'part:'+k+'\')" onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].board?'-84 -70 168 150':RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
 }
-function rbTkMode(m){rb.tk.mode=m;const tr=document.getElementById('rbTkTray');if(tr){tr.innerHTML=rbTkTrayHTML();tr.scrollTop=0;}const q=document.querySelector('.rbtk-search');if(q){q.value='';q.placeholder=m==='starters'?'Search starters':m==='kits'?'Search kits':'Search parts';}}
+function rbTkMode(m){rb.tk.mode=m;const tr=document.getElementById('rbTkTray');if(tr){tr.innerHTML=rbTkTrayHTML();tr.scrollTop=0;}const q=document.querySelector('.rbtk-search');if(q){q.value='';q.placeholder=m==='appl'?'Search appliances':m==='starters'?'Search starters':m==='kits'?'Search kits':'Search parts';}}
 function rbTkCodeOpen(){
   const t=rb.tk,sel=t.sel&&t.sel.t==='p'&&rbTkPart(t.sel.id),b=(sel&&RB_TK_DEF[sel.k].board)?sel:t.parts.find(p=>RB_TK_DEF[p.k].board);
   t.code=t.code?null:(b?b.id:'none');rbTkPaint();
@@ -2276,6 +2393,7 @@ function rbTkPaint(svgOnly){
   const dis=(id,v)=>{const b=document.getElementById(id);if(b)b.disabled=v;};
   dis('rbTkUndo',t.sim||!t.undo.length);dis('rbTkRedo',t.sim||!t.redo.length);dis('rbTkRotB',!selP);dis('rbTkDupB',!selP);dis('rbTkDelB',!hasSel);
   document.querySelectorAll('.rbtk-sw').forEach(b=>b.classList.toggle('on',b.dataset.c===t.color));
+  rbApplPaint();
   const sd=document.getElementById('rbTkSolB');if(sd){sd.disabled=t.sim;sd.classList.toggle('on',!!t.solder&&!t.sim);sd.setAttribute('aria-pressed',!!t.solder&&!t.sim);}sv.style.cursor=t.solder&&!t.sim?'none':'';
   const sc=rbTkSoldCount(),c=document.getElementById('rbTkCnt');if(c)c.textContent=t.parts.length+' parts · '+t.wires.length+' wires'+(sc[0]?' · '+sc[0]+' of '+sc[1]+' joints soldered':'');
 }
@@ -2378,11 +2496,12 @@ function rbCircuitsHTML(){
         tb('rbTkRotB','⟳ Rotate','rbTkRot()','Rotate (R)')+tb('rbTkDupB','⧉ Duplicate','rbTkDup()','Duplicate (Ctrl+D)')+tb('rbTkDelB','✕ Delete','rbTkDel()','Delete (Del)')+'<i></i>'+tb('rbTkSolB','🔥 Solder','rbTkSolder()','Soldering iron: fix wire joints (S)')+'<i></i>'+
         '<span class="rbtk-lab">Wire</span>'+cols.map(c=>'<button class="rbtk-sw" data-c="'+c[0]+'" aria-label="'+c[1]+' wire" title="'+c[1]+' wire" style="background:'+c[0]+'" onclick="rbTkColor(\''+c[0]+'\')"></button>').join('')+'<i></i>'+
         '<button class="rbtk-tb" title="Zoom out (-)" aria-label="Zoom out" onclick="rbTkZoom(1.25)">−</button><span class="rbtk-lab" id="rbTkZ">100%</span><button class="rbtk-tb" title="Zoom in (+)" aria-label="Zoom in" onclick="rbTkZoom(0.8)">+</button>'+tb('rbTkFitB','Fit','rbTkFit()','Show the whole circuit')+'</div>'+
-      '<div class="rbtk-wrap"><div><select class="rbtk-search" aria-label="What to show in the list" onchange="rbTkMode(this.value)">'+[['basic','Components · Basic'],['all','Components · All'],['starters','Starters'],['kits','Kits']].map(o=>'<option value="'+o[0]+'"'+(md===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+      '<div class="rbtk-wrap"><div><select class="rbtk-search" aria-label="What to show in the list" onchange="rbTkMode(this.value)">'+[['basic','Components · Basic'],['all','Components · All'],['starters','Starters'],['kits','Kits'],['appl','Appliances']].map(o=>'<option value="'+o[0]+'"'+(md===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
         '<input class="rbtk-search" type="search" placeholder="Search parts" aria-label="Search the list" oninput="rbTkFilter(this)"><div class="rbtk-tray" id="rbTkTray" aria-label="Parts list">'+tray+'</div></div>'+
         '<div style="min-width:0"><svg id="rbTk" class="rbtk-svg" viewBox="0 0 '+RB_TK_W+' '+RB_TK_H+'" tabindex="0" role="application" aria-label="Circuit workspace. Drag a part from the list or tap it to add it, then tap two terminals to wire them."></svg></div></div>'+
       '<div class="rbx-ctl" id="rbTkIns" style="min-height:40px"></div>'+
       '<div class="rb-msg" id="rbTkMsg" aria-live="polite"></div>'+
+      '<div id="rbTkAppl"></div>'+
       '<div id="rbTkCodeBox"></div>'+
       '<div class="rb-link"><b>How to build:</b> 1. Drag parts from the list onto the canvas. 2. Tap one terminal (the white dots), then another, to join them with a wire. Tap the empty canvas on the way to bend the wire. 3. Press Solder and tap each wire joint to fix the wire in place. 4. Tap a board and press Code to program it. 5. Press Start simulation.<br>'+
       '<b>Shortcuts:</b> R rotate · S soldering iron · Del delete · Ctrl+Z undo · Ctrl+Y redo · Ctrl+D duplicate · mouse wheel zoom · drag the canvas to move.<br>'+
@@ -2694,6 +2813,40 @@ function rbLiveHTML(){
       '<details class="rb-link"><summary style="cursor:pointer;font-weight:600">How a real robot connects</summary>Plug an Arduino robot into the computer with a USB cable and press Connect robot. The page sends one letter for each button at 9600 baud: F forward, B backward, L left, R right, S stop. The robot program reads the letter and drives its motors.</details>'+
       '<div class="rb-link"><span class="rb-chip">Physics: speed and distance</span><span class="rb-chip">Maths: angles</span><span class="rb-chip">Coding: sending commands</span></div></div></div>';
 }
+/* ─────────── Robotics Lab: Save and open named work on each station ─────────── */
+const RB_SV_TABS={circuits:'circuit',model:'3D model view',code:'program',music:'tune'};
+function rbSvAll(){try{return JSON.parse(localStorage.getItem('qe_rb_saves')||'{}')||{};}catch(e){return {};}}
+function rbSvList(tab){const a=rbSvAll()[tab];return Array.isArray(a)?a:[];}
+function rbSvGet(tab){return tab==='circuits'?rbTkSnap():tab==='model'?JSON.stringify(rb.rot):tab==='code'?JSON.stringify({m:rb.m,prog:rb.prog}):JSON.stringify({g:sm.g,bpm:sm.bpm});}
+function rbSvPut(tab,js){const d=JSON.parse(js);
+  if(tab==='circuits'){if(rb.tk.sim)rbTkSim();rbTkPush();rbTkRestore(js);rbTkFit();}
+  else if(tab==='model'){Object.assign(rb.rot,d);render();}
+  else if(tab==='code'){if(rb.running)return false;rb.m=d.m;rb.prog=d.prog;rb.msg='';rb.msgKind='';rb.bot=null;render();}
+  else{smStop();sm.g=d.g||{};sm.bpm=d.bpm||120;render();}
+  return true;}
+function rbSvNote(text,bad){const e=document.getElementById('rbSvNote');if(e){e.textContent=text;e.style.color=bad?'var(--vermilion)':'#0A5C50';}}
+function rbSave(tab){
+  const all=rbSvAll(),list=rbSvList(tab),what=RB_SV_TABS[tab];
+  let name=prompt('Name for this '+what+':','My '+what+' '+(list.length+1));if(name===null)return;
+  name=name.replace(/[<>&"']/g,'').trim().slice(0,40);if(!name){rbSvNote('Type a name to save.',true);return;}
+  const item={name:name,at:Date.now(),data:rbSvGet(tab)},i=list.findIndex(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(i>=0){if(!confirm('"'+name+'" is already saved. Replace it?'))return;list[i]=item;}else{if(list.length>=20){rbSvNote('You have 20 saved items here. Delete one first.',true);return;}list.push(item);}
+  all[tab]=list;
+  try{localStorage.setItem('qe_rb_saves',JSON.stringify(all));}catch(e){rbSvNote('Could not save. The browser storage is full.',true);return;}
+  render();rbSvNote('Saved "'+name+'".');
+}
+function rbSvOpen(tab,el){const i=Number(el.value);el.value='';const it=rbSvList(tab)[i];if(!it)return;
+  try{if(rbSvPut(tab,it.data)!==false)rbSvNote('Opened "'+it.name+'".');else rbSvNote('Stop the program first.',true);}catch(e){rbSvNote('This saved item could not be opened.',true);}}
+function rbSvDel(tab,el){const i=Number(el.value);el.value='';const all=rbSvAll(),list=rbSvList(tab),it=list[i];if(!it||!confirm('Delete "'+it.name+'"?'))return;
+  list.splice(i,1);all[tab]=list;try{localStorage.setItem('qe_rb_saves',JSON.stringify(all));}catch(e){}render();rbSvNote('Deleted "'+it.name+'".');}
+function rbSaveBar(tab){
+  if(!RB_SV_TABS[tab])return '';
+  const list=rbSvList(tab),opts=list.map((x,i)=>'<option value="'+i+'">'+x.name+' · '+new Date(x.at).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</option>').join('');
+  return '<div class="rbsv"><button class="btn teal" onclick="rbSave(\''+tab+'\')">💾 Save</button>'+
+    '<select aria-label="Open saved work" onchange="rbSvOpen(\''+tab+'\',this)"'+(list.length?'':' disabled')+'><option value="">'+(list.length?'Open saved ('+list.length+')':'Nothing saved yet')+'</option>'+opts+'</select>'+
+    (list.length?'<select aria-label="Delete saved work" onchange="rbSvDel(\''+tab+'\',this)"><option value="">Delete saved…</option>'+opts+'</select>':'')+
+    '<span id="rbSvNote" aria-live="polite"></span></div>';
+}
 function roboticsView(){
   const tabs=[['home','Overview'],['circuits','1. Circuits'],['model','2. 3D Modeling'],['code','3. Scratch Coding'],['live','4. My Robot'],['music','5. Buzzer Music'],['exp','6. Experiment']];
   const body=rb.tab==='music'?smHTML(true):rb.tab==='exp'?sxExpHTML('robotics'):rb.tab==='circuits'?rbCircuitsHTML():rb.tab==='model'?rb3dHTML():rb.tab==='code'?rbCodeHTML():rb.tab==='live'?rbLiveHTML():rbHomeHTML();
@@ -2702,7 +2855,7 @@ function roboticsView(){
     '<p class="muted" style="margin-top:6px">Circuits, 3D modeling and block coding in one place.</p></div>'+
     '<div class="rbx-nav" role="tablist">'+tabs.map(t=>'<button role="tab" aria-selected="'+(rb.tab===t[0])+'" class="'+(rb.tab===t[0]?'on':'')+'" onclick="rbTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>'+
     (rb.tab==='home'||rb.tab==='music'||rb.tab==='exp'?'':'<div class="rbx-conn"><span class="rbl-status'+(rbLinked()?' on':'')+'" id="rbTopSt"><i></i>'+(rbLinked()?'Connected':'Not connected')+'</span>'+
-      '<span id="rbTopTx">'+rbConnText()+'</span></div>')+body;
+      '<span id="rbTopTx">'+rbConnText()+'</span></div>')+rbSaveBar(rb.tab)+body;
 }
 
 /* ─────────── Immersia Lab: VR and AR viewer ─────────── */
@@ -2905,6 +3058,91 @@ function smHTML(robot){
     '<div class="sm-scroll"><div class="sm-grid" id="smGrid">'+g+'</div></div></div>'+
     (robot?'<div class="card rbx-pad" style="margin-top:12px"><b>Arduino code for this tune</b><div class="rbx-sub">Buzzer on pin 8. The code changes as you edit the tune.</div><pre class="sm-code" id="smCode">'+smCodeText()+'</pre></div>':'');
 }
+/* ─────────── Qubit Lab: quantum computing with a real state-vector simulator (1 qubit and 3 qubits) ─────────── */
+const QR=Math.SQRT1_2;
+const QG={H:[[QR,0],[QR,0],[QR,0],[-QR,0]],X:[[0,0],[1,0],[1,0],[0,0]],Y:[[0,0],[0,-1],[0,1],[0,0]],Z:[[1,0],[0,0],[0,0],[-1,0]],S:[[1,0],[0,0],[0,0],[0,1]],T:[[1,0],[0,0],[0,0],[QR,QR]]};
+const QG_INFO={H:'Hadamard: makes an equal mix of 0 and 1 (superposition).',X:'X (NOT): flips 0 to 1 and 1 to 0.',Y:'Y: flips the qubit and changes its phase.',Z:'Z: changes the phase of 1. The chances stay the same.',S:'S: a quarter turn of the phase.',T:'T: an eighth turn of the phase.','●':'Control: other gates in the same column act only when this qubit is 1.'};
+const qMul=(a,b)=>[a[0]*b[0]-a[1]*b[1],a[0]*b[1]+a[1]*b[0]],qAdd=(a,b)=>[a[0]+b[0],a[1]+b[1]],qAbs2=a=>a[0]*a[0]+a[1]*a[1];
+function qApply(st,n,q,U,ctrl){const bit=1<<(n-1-q),cm=(ctrl||[]).reduce((m,c)=>m|(1<<(n-1-c)),0),out=st.map(a=>a.slice());
+  for(let i=0;i<st.length;i++){if(i&bit||(i&cm)!==cm)continue;const j=i|bit,a=st[i],b=st[j];out[i]=qAdd(qMul(U[0],a),qMul(U[1],b));out[j]=qAdd(qMul(U[2],a),qMul(U[3],b));}return out;}
+function qZero(n){const s=Array.from({length:1<<n},()=>[0,0]);s[0]=[1,0];return s;}
+function qPick(st){let r=Math.random(),i=0;for(;i<st.length-1;i++){r-=qAbs2(st[i]);if(r<=0)break;}return i;}
+function qNum(a){const f=x=>{const v=Math.abs(x)<0.0005?0:x;return v.toFixed(2).replace(/\.?0+$/,'');};const re=f(a[0]),im=f(a[1]);return im==='0'?re:re==='0'?(im==='1'?'':im==='-1'?'−':im.replace('-','−'))+'i':re+(a[1]<0?' − ':' + ')+f(Math.abs(a[1]))+'i';}
+const QC_N=3,QC_W=8;
+let qc=(function(){let d=null;try{d=JSON.parse(localStorage.getItem('qe_quantum')||'null');}catch(e){}
+  const ok=d&&Array.isArray(d.g)&&d.g.length===QC_N&&d.g.every(r=>Array.isArray(r)&&r.length===QC_W);
+  return {g:ok?d.g:Array.from({length:QC_N},()=>Array(QC_W).fill('')),tool:'H',shots:null,one:qZero(1),log:[],note:''};})();
+function qcSave(){try{localStorage.setItem('qe_quantum',JSON.stringify({g:qc.g}));}catch(e){}}
+function qcRun(){let st=qZero(QC_N);for(let c=0;c<QC_W;c++){const ctrl=[];for(let r=0;r<QC_N;r++)if(qc.g[r][c]==='●')ctrl.push(r);
+  for(let r=0;r<QC_N;r++){const g=qc.g[r][c];if(g&&g!=='●')st=qApply(st,QC_N,r,QG[g],ctrl);}}return st;}
+function qcEntangled(st){for(let q=0;q<QC_N;q++){const bit=1<<(QC_N-1-q);let p0=0,p1=0,c=[0,0];for(let i=0;i<st.length;i++){if(i&bit)continue;const a=st[i],b=st[i|bit];p0+=qAbs2(a);p1+=qAbs2(b);c=qAdd(c,qMul(a,[b[0],-b[1]]));}
+  if(p0*p0+p1*p1+2*qAbs2(c)<0.98)return true;}return false;}
+function qcTool(t){qc.tool=t;render();}
+function qcCell(r,c){qc.g[r][c]=(qc.tool==='erase'||qc.g[r][c]===qc.tool)?'':qc.tool;qc.shots=null;qcSave();render();}
+function qcClear(){qc.g=Array.from({length:QC_N},()=>Array(QC_W).fill(''));qc.shots=null;qcSave();render();}
+function qcPreset(k){qcClearQuiet();const p={coin:[[0,0,'H']],bell:[[0,0,'H'],[0,1,'●'],[1,1,'X']],ghz:[[0,0,'H'],[0,1,'●'],[1,1,'X'],[1,2,'●'],[2,2,'X']],all:[[0,0,'H'],[1,0,'H'],[2,0,'H']],not:[[0,0,'X'],[0,1,'●'],[2,1,'X']]}[k];p.forEach(x=>qc.g[x[0]][x[1]]=x[2]);qc.shots=null;qcSave();render();}
+function qcClearQuiet(){qc.g=Array.from({length:QC_N},()=>Array(QC_W).fill(''));}
+function qcShots(){const st=qcRun(),n={};for(let i=0;i<100;i++){const k=qPick(st);n[k]=(n[k]||0)+1;}qc.shots=n;render();}
+function qcHTML(){
+  const st=qcRun(),lab=i=>'|'+i.toString(2).padStart(QC_N,'0')+'⟩',tools=['H','X','Y','Z','S','T','●'];
+  let grid='';for(let r=0;r<QC_N;r++){grid+='<div class="qc-q">q'+r+' <span>|0⟩</span></div>';for(let c=0;c<QC_W;c++){const g=qc.g[r][c],rows=[];for(let k=0;k<QC_N;k++)if(qc.g[k][c])rows.push(k);
+    const link=rows.length>1&&rows.some(k=>qc.g[k][c]==='●')&&r>=rows[0]&&r<=rows[rows.length-1];
+    grid+='<button class="qc-cell'+(link?' vl':'')+(link&&r===rows[0]?' top':'')+(link&&r===rows[rows.length-1]?' bot':'')+'" onclick="qcCell('+r+','+c+')" aria-label="Qubit '+r+', step '+(c+1)+': '+(g||'empty')+'">'+(g?'<i class="'+(g==='●'?'ctl':'g'+g)+'">'+(g==='●'?'':g)+'</i>':'')+'</button>';}}
+  const ent=qcEntangled(st),some=qc.g.some(r=>r.some(Boolean));
+  const bars=st.map((a,i)=>{const p=qAbs2(a);return '<div class="qc-bar" title="Amplitude '+qNum(a)+'"><span>'+lab(i)+'</span><div><i style="width:'+(p*100).toFixed(1)+'%"></i></div><b>'+(p*100).toFixed(p>0&&p<0.1?1:0)+'%</b>'+(qc.shots?'<em>'+(qc.shots[i]||0)+'</em>':'')+'</div>';}).join('');
+  return '<div class="rbx-h">Quantum circuit builder</div><div class="rbx-sub">Pick a gate, then tap a square on a qubit line. Time runs from left to right. All three qubits start at 0.</div>'+
+    '<div class="card rbx-pad"><div class="rbx-ctl" style="margin-top:0"><b>Gates</b>'+tools.map(t=>'<button class="qc-tool'+(qc.tool===t?' on':'')+'" aria-pressed="'+(qc.tool===t)+'" title="'+QG_INFO[t]+'" onclick="qcTool(\''+t+'\')">'+t+'</button>').join('')+
+      '<button class="qc-tool wide'+(qc.tool==='erase'?' on':'')+'" aria-pressed="'+(qc.tool==='erase')+'" onclick="qcTool(\'erase\')">Erase</button><button class="btn ghost" style="margin-left:auto" onclick="qcClear()">Clear</button></div>'+
+      '<div class="rb-msg" style="margin-top:10px">'+(qc.tool==='erase'?'Erase: tap a gate to remove it.':'<b>'+qc.tool+'</b> · '+QG_INFO[qc.tool])+'</div>'+
+      '<div class="sm-scroll"><div class="qc-grid">'+grid+'</div></div>'+
+      '<div class="rbx-ctl"><b>Ready-made circuits</b>'+[['coin','Quantum coin'],['bell','Bell pair'],['ghz','GHZ: three linked qubits'],['all','All 8 answers at once'],['not','Controlled NOT']].map(p=>'<button class="btn ghost" onclick="qcPreset(\''+p[0]+'\')">'+p[1]+'</button>').join('')+'</div></div>'+
+    '<div class="sx-layout" style="margin-top:12px"><div class="card rbx-pad"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>Chance of each answer</b><button class="btn teal" onclick="qcShots()">Measure 100 times</button></div>'+
+      '<div class="qc-bars'+(qc.shots?' shots':'')+'">'+(qc.shots?'<div class="qc-bar head"><span></span><div></div><b>Theory</b><em>Counted</em></div>':'')+bars+'</div>'+
+      '<div class="rbx-sub" style="margin-top:8px">The answer is read as q0 q1 q2. Hover over a bar to see its amplitude.</div></div>'+
+    '<div class="card rbx-pad"><b>What is happening</b><div class="rb-msg'+(ent?' ok':'')+'">'+(!some?'The circuit is empty, so the answer is always 000.':ent?'The qubits are entangled. Measuring one qubit tells you about the others at once.':st.filter(a=>qAbs2(a)>0.001).length>1?'The qubits are in superposition: more than one answer is possible until you measure.':'Only one answer is possible, so this circuit acts like an ordinary computer.')+'</div>'+
+      (qc.shots?'<div class="rb-msg">You measured 100 times. The counts are close to the theory, but not exact, because each measurement is random.</div>':'')+
+      '<div class="rb-link" style="margin-top:10px"><span class="rb-chip">Physics: waves and probability</span><span class="rb-chip">Maths: binary numbers</span><span class="rb-chip">Computing: logic gates</span></div></div></div>';
+}
+/* one qubit on the Bloch sphere */
+function q1Gate(g){qc.one=qApply(qc.one,1,0,QG[g]);qc.log.push(g);if(qc.log.length>12)qc.log.shift();qc.note=QG_INFO[g];render();}
+function q1Reset(){qc.one=qZero(1);qc.log=[];qc.note='The qubit is back at 0.';render();}
+function q1Measure(){const k=qPick(qc.one),p=qAbs2(qc.one[k]);qc.one=qZero(1);if(k)qc.one=[[0,0],[1,0]];qc.log.push('M');qc.note='You measured '+k+'. The chance was '+(p*100).toFixed(0)+'%. The superposition is gone and the qubit is now exactly '+k+'.';render();}
+function q1HTML(){
+  const a=qc.one[0],b=qc.one[1],ab=qMul([a[0],-a[1]],b),x=2*ab[0],y=2*ab[1],z=qAbs2(a)-qAbs2(b),R=92,cx=150,cy=130;
+  const px=cx+R*(y*0.92-x*0.38),py=cy-R*z*0.92+R*x*0.24,p0=qAbs2(a),p1=qAbs2(b);
+  return '<div class="rbx-h">One qubit</div><div class="rbx-sub">A normal bit is 0 or 1. A qubit can be a mix of both until it is measured. The arrow shows the state of the qubit.</div>'+
+    '<div class="sx-layout"><div class="card rbx-pad"><svg viewBox="0 0 300 260" class="sx-svg" role="img" aria-label="Bloch sphere. Chance of 0 is '+(p0*100).toFixed(0)+' percent, chance of 1 is '+(p1*100).toFixed(0)+' percent.">'+
+      '<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="#EEF2FF" stroke="#4338CA" stroke-width="2"/><ellipse cx="'+cx+'" cy="'+cy+'" rx="'+R+'" ry="24" fill="none" stroke="#4338CA" stroke-dasharray="4 5" opacity=".6"/>'+
+      '<line x1="'+cx+'" y1="'+(cy-R-12)+'" x2="'+cx+'" y2="'+(cy+R+12)+'" stroke="#8A99A3"/><text x="'+cx+'" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#11212D">|0⟩</text><text x="'+cx+'" y="254" text-anchor="middle" font-size="14" font-weight="700" fill="#11212D">|1⟩</text>'+
+      '<line x1="'+cx+'" y1="'+cy+'" x2="'+px.toFixed(1)+'" y2="'+py.toFixed(1)+'" stroke="#C8102E" stroke-width="4" stroke-linecap="round"/><circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="8" fill="#C8102E" stroke="#fff" stroke-width="2"/><circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#11212D"/></svg>'+
+      sxRead([['Chance of 0',(p0*100).toFixed(0)+' %'],['Chance of 1',(p1*100).toFixed(0)+' %'],['State','('+(qNum(a)||'1')+')|0⟩ + ('+(qNum(b)||'1')+')|1⟩']])+'</div>'+
+    '<div class="card rbx-pad"><b>Apply a gate</b><div class="rbx-ctl">'+['H','X','Y','Z','S','T'].map(g=>'<button class="qc-tool" title="'+QG_INFO[g]+'" onclick="q1Gate(\''+g+'\')">'+g+'</button>').join('')+'</div>'+
+      '<div class="rbx-ctl"><button class="btn teal" onclick="q1Measure()">Measure</button><button class="btn ghost" onclick="q1Reset()">Reset to 0</button></div>'+
+      '<div class="rb-msg" aria-live="polite">'+(qc.note||'Press H to put the qubit in superposition, then press Measure a few times.')+'</div>'+
+      '<div class="rbx-sub" style="margin-top:10px">Gates used: '+(qc.log.length?qc.log.join(' → '):'none yet')+'</div></div></div>';
+}
+function qHomeHTML(){
+  const ideas=[['Qubit','The quantum bit. It can be 0, 1, or a mix of both at the same time.'],['Superposition','A qubit in a mix of 0 and 1. The H gate makes it.'],['Measurement','Looking at a qubit forces it to pick 0 or 1. The mix is lost.'],
+    ['Entanglement','Two qubits linked so that measuring one tells you the other.'],['Quantum gate','An operation that changes a qubit, like H, X and Z.'],['Why it matters','Quantum computers may solve some problems in medicine, materials and security much faster.']];
+  const st=[['qubit','1','One qubit','See a qubit on the Bloch sphere and try each gate.','Open'],['sim','2','Circuit builder','Build circuits with three qubits and measure them.','Build a circuit'],['exp','3','Experiment','Make an entangled Bell pair and answer the viva.','Start']];
+  return '<div class="rbx-hero" style="background:linear-gradient(120deg,#4338CA,#0E7C6B)"><h3>Think in qubits.</h3><p>A real quantum simulator in your browser. No quantum computer is needed.</p></div>'+
+    '<div class="rbg-grid">'+st.map(s=>'<div class="card rbx-pad"><div class="qc-n">'+s[1]+'</div><b style="font-size:16px">'+s[2]+'</b><p class="muted" style="font-size:14px;margin:6px 0 12px">'+s[3]+'</p><button class="btn solid" onclick="sxTab(\'quantum\',\''+s[0]+'\')">'+s[4]+'</button></div>').join('')+'</div>'+
+    '<div class="rbx-h">Key ideas</div><div class="rbx-sub">Six words to know before you start.</div>'+
+    '<div class="rbg-grid">'+ideas.map((a,i)=>'<div class="card xl-adv"><i>'+(i+1)+'</i><div><b>'+a[0]+'</b><span>'+a[1]+'</span></div></div>').join('')+'</div>';
+}
+SX_EXP.quantum={name:'Make an entangled Bell pair',aim:'To link two qubits so that they always give the same answer.',
+  theory:'An H gate puts qubit 0 in superposition. A controlled NOT then flips qubit 1 only when qubit 0 is 1. The two qubits become entangled: the answers 00 and 11 each have a 50 % chance, and 01 and 10 never appear.',
+  need:['Quantum processor','Control electronics','Cooling system near absolute zero'],
+  steps:['Open the circuit builder and press Clear.','Pick H and tap the first square on the q0 line.','Pick ● and tap the second square on the q0 line.','Pick X and tap the second square on the q1 line.','Press Measure 100 times. Only 000 and 110 appear, about 50 times each.','Write the result: q0 and q1 always match, so they are entangled.'],sim:0,
+  viva:[['Which gate makes a superposition?',['H','X','Z'],0,'The Hadamard gate makes an equal mix of 0 and 1.'],['In a Bell pair, if q0 is measured as 1, then q1 is…',['always 0','always 1','random'],1,'Entangled qubits in this state always match.'],['What happens to a superposition when you measure it?',['It stays the same','It becomes 0 or 1','It doubles'],1,'Measurement forces the qubit to pick one value.']]};
+function quantumView(){
+  const t=sx.tab.quantum||'home',tabs=[['home','Overview'],['qubit','1. One Qubit'],['sim','2. Circuit Builder'],['exp','3. Experiment']];
+  return '<div class="rbx-top"><button class="rbx-back" onclick="state.labOpen=null;render()">← All labs</button></div>'+
+    '<div class="pagehead">'+eyebrow('Interactive Labs · Quantum Computing')+'<h2 class="display">Qubit Lab</h2><p class="muted" style="margin-top:6px">Learn how quantum computers work by building and measuring real quantum circuits.</p></div>'+
+    '<div class="rbx-nav" role="tablist">'+tabs.map(x=>'<button role="tab" aria-selected="'+(t===x[0])+'" class="'+(t===x[0]?'on':'')+'" onclick="sxTab(\'quantum\',\''+x[0]+'\')">'+x[1]+'</button>').join('')+'</div>'+
+    (t==='qubit'?q1HTML():t==='sim'?qcHTML():t==='exp'?sxExpHTML('quantum'):qHomeHTML());
+}
+
 function sciView(id){
   const lab=LABS.find(l=>l.id===id),t=sx.tab[id]||'bench';
   const tabs=[['bench','Lab bench'],['sim','Simulations'],['exp','Experiment']].concat(id==='physics'?[['sound','Sound Maker']]:[]);
@@ -2917,6 +3155,7 @@ function sciView(id){
 function labView(){
   if(state.labOpen==='robotics') return roboticsView();
   if(state.labOpen==='immersia') return immersiaView();
+  if(state.labOpen==='quantum') return quantumView();
   if(SX_SIMS[state.labOpen]) return sciView(state.labOpen);
   /* If a lab is open, show full-screen iframe */
   if(state.labOpen){
@@ -2938,7 +3177,7 @@ function labView(){
     }
   }
 
-  const labKind={physics:['Online simulation','#0E7C6B'],chemistry:['Online simulation','#0E7C6B'],biology:['Online simulation','#0E7C6B'],robotics:['Interactive platform','#5B3FC4'],immersia:['Virtual reality (VR) kit','#C2417A']};
+  const labKind={physics:['Online simulation','#0E7C6B'],chemistry:['Online simulation','#0E7C6B'],biology:['Online simulation','#0E7C6B'],robotics:['Interactive platform','#5B3FC4'],quantum:['Online simulation','#0E7C6B'],immersia:['Virtual reality (VR) kit','#C2417A']};
   const card = lab=>{
     const btnStyle='background:'+lab.color;
     return '<div class="lab-card">'+

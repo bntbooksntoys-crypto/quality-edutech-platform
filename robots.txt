@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bntbooksntoys-crypto.github.io/quality-edutech-platform/sitemap.xml

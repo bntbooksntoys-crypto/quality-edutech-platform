@@ -4,6 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Quality Education — EdTech Platform</title>
+<meta name="description" content="Quality Education is a learning platform for Grades 1 to 12 with lessons, assignments, quizzes, virtual science labs, a robotics lab and an AI assistant.">
+<meta property="og:title" content="Quality Education — EdTech Platform">
+<meta property="og:description" content="Quality Education is a learning platform for Grades 1 to 12 with lessons, assignments, quizzes, virtual science labs, a robotics lab and an AI assistant.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bntbooksntoys-crypto.github.io/quality-edutech-platform/">
+<meta property="og:image" content="https://bntbooksntoys-crypto.github.io/quality-edutech-platform/icon-512.png">
 <script src="report-config.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0E7C6B">
@@ -526,6 +532,20 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .ai-badges i{font-style:normal;font-size:22px;color:var(--marigold);line-height:1}
 .ai-badges b{display:block;font-size:13.5px}.ai-badges span{display:block;font-size:12px;color:var(--slate)}
 .ai-badges em{font-style:normal;font-size:11px;font-weight:700;color:var(--slate)}.ai-badges .on em{color:#0A5C50}
+.rbtk-card{align-items:flex-start!important;padding:8px!important}
+.rbtk-card span{display:block}.rbtk-card b{display:block;font-size:13px}.rbtk-card em{display:block;font-style:normal;font-weight:500;font-size:11.5px;color:var(--slate);line-height:1.35;margin-top:2px}.rbtk-card u{text-decoration:none;font-weight:700;color:#0A5C50}
+select.rbtk-search{font-weight:600;cursor:pointer}
+.ai-quick button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.ai-listbox{border-bottom:1px solid var(--line);padding:10px 14px;max-height:230px;overflow:auto;background:var(--card)}
+.ai-listhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ai-chat{display:flex;gap:6px;align-items:stretch;margin-bottom:5px}
+.ai-chat-open{flex:1;min-width:0;text-align:left;border:1px solid var(--line);background:var(--canvas);color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer}
+.ai-chat-open b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-chat-open span{font-size:11.5px;color:var(--slate)}
+.ai-chat.on .ai-chat-open{border-color:var(--teal);background:var(--tealSoft)}
+.ai-chat-open:hover{border-color:var(--teal)}
+.ai-chat-del{border:1px solid var(--line);background:var(--card);color:var(--slate);border-radius:10px;width:36px;cursor:pointer;font-size:13px}
+.ai-chat-del:hover{color:var(--vermilion);border-color:var(--vermilion)}
 </style>
 <!-- Google Translate -->
 <style>
@@ -1771,10 +1791,9 @@ function rbTkBranches(p,n){
    case 'npn':{const be=D(1,2,0.7),ce={p:p,a:n(0),b:n(2),kind:'S',on:false,gon:1/3,test:()=>(be.i||0)>0.0001};return [ce,be];}
    case 'reg':{const inn=R(0,1,2000),o={p:p,a:n(2),b:n(1),kind:'C',on:false,g:1,v:5,test:()=>(inn.dv||0)>=6.5};return [o,inn];}
    case 'ic555':{const sup=R(0,1,1500),o={p:p,a:n(2),b:n(1),kind:'C',on:false,g:0.1,v:0,test:()=>(sup.dv||0)>=4.5,pre:()=>{o.v=rb.tk.phase?Math.max(0,(sup.dv||0)-1.5):0;}};return [o,sup];}
-   case 'uno':case 'esp32':case 'esp8266':{const vcc=RB_TK_DEF[p.k].board[0];
+   case 'uno':case 'esp32':case 'esp8266':default:if(!RB_TK_DEF[p.k].board)return [R(0,1,rbTkOhm(p))];{const vcc=RB_TK_DEF[p.k].board[0];
      return [V(0,1,1,vcc),p.o1?V(2,1,25,vcc):R(2,1,25),p.o2?V(3,1,25,vcc):R(3,1,25)];}
    case 'sw':case 'btn':case 'bread':case 'perf':case 'pcb':case 'solder':case 'tape':return [];
-   default:return [R(0,1,rbTkOhm(p))];
   }
 }
 function rbTkSolve(){
@@ -1832,6 +1851,7 @@ function rbTkDraw(p,R,mini){
   const I=R?R.I[p.id]||0:0,V=R?R.V[p.id]||0:0,aI=Math.abs(I);
   const lead=(x1,y1,x2,y2)=>'<path d="M'+x1+' '+y1+'L'+x2+' '+y2+'" stroke="#9AA3AB" stroke-width="3" stroke-linecap="round"/>';
   const lbl=(x,y,s,c)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+(c||'#11212D')+'">'+s+'</text>';
+  if(RB_TK_DEF[p.k].shape)return rbArdDraw(p,R);
   switch(p.k){
   case 'bat9':return lead(-15,-50,-15,-40)+lead(15,-50,15,-40)+'<rect x="-31" y="-40" width="62" height="86" rx="6" fill="#1D1D1F"/><rect x="-31" y="-40" width="62" height="32" rx="6" fill="#C98A2B"/><rect x="-31" y="-20" width="62" height="12" fill="#C98A2B"/><rect x="-27" y="-36" width="5" height="78" rx="2.5" fill="#fff" opacity=".18"/>'+
     '<text y="28" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">9V</text>'+lbl(-15,-20,'+','#1D1D1F')+lbl(15,-20,'−','#1D1D1F');
@@ -1922,7 +1942,7 @@ function rbTkWorks(R){
 }
 function rbTkMsg(R){
   const t=rb.tk;
-  if(!t.sim)return [t.pend?'Now tap another terminal to finish the wire.':'Add parts, tap two terminals to join them with a wire, then press Start simulation.',''];
+  if(!t.sim)return [t.pend?'Now tap another terminal to finish the wire.':'Add parts or pick a Starter, wire the terminals, write the Code, then press Start simulation.',''];
   if(R.short)return ['Short circuit! Current runs straight from + to − and the battery gets hot. Put a part in the path.','bad'];
   if(t.parts.some(p=>p.burnt))return ['Too much current: an LED burned out. Add a resistor in its path, then restart the simulation.','bad'];
   if(t.parts.some(p=>p.blown))return ['The fuse blew to protect the circuit from too much current. Restart the simulation after fixing it.','bad'];
@@ -1939,6 +1959,118 @@ const RB_WW=1800, RB_WH=1080;                     /* size of the whole canvas; t
 const RB_TK_PINS={uno:['13','9'],esp32:['2','4'],esp8266:['D1','D2']};
 const RB_TK_WAITS=[100,200,500,1000,2000,5000];
 Object.assign(rb.tk,{vb:{x:0,y:0,w:RB_TK_W,h:RB_TK_H},undo:[],redo:[],code:null,codeView:'blocks',serial:[],pan:null,pts:[],tick:0});
+/* ── Arduino board family: one simple model, 23 boards ── */
+/* key, name, pin voltage, shape, colour, short label, [pin labels], [pin names in code] */
+const RB_ARD_BOARDS=[
+ ['unor4m','Arduino UNO R4 Minima',5,'uno','#00878F','UNO R4 MINIMA',['D13','D9'],['13','9']],
+ ['unor4w','Arduino UNO R4 WiFi',5,'uno','#00878F','UNO R4 WiFi',['D13','D9'],['13','9']],
+ ['unoq','Arduino UNO Q',3.3,'uno','#0B1F3A','UNO Q',['D13','D9'],['13','9']],
+ ['leo','Arduino Leonardo',5,'uno','#00878F','LEONARDO',['D13','D9'],['13','9']],
+ ['micro','Arduino Micro',5,'nano','#00878F','MICRO',['D13','D9'],['13','9']],
+ ['nano','Arduino Nano',5,'nano','#00878F','NANO',['D13','D9'],['13','9']],
+ ['nanoev','Arduino Nano Every',5,'nano','#00878F','NANO EVERY',['D13','D9'],['13','9']],
+ ['nano33iot','Arduino Nano 33 IoT',3.3,'nano','#00878F','NANO 33 IoT',['D13','D9'],['13','9']],
+ ['nano33ble','Arduino Nano 33 BLE',3.3,'nano','#00878F','NANO 33 BLE',['D13','D9'],['13','9']],
+ ['nano33sense','Arduino Nano 33 BLE Sense',3.3,'nano','#00878F','33 BLE SENSE',['D13','D9'],['13','9']],
+ ['nanorp','Arduino Nano RP2040 Connect',3.3,'nano','#00878F','NANO RP2040',['D13','D9'],['13','9']],
+ ['promini','Arduino Pro Mini',5,'nano','#1A56B8','PRO MINI',['D13','D9'],['13','9']],
+ ['mega','Arduino Mega 2560',5,'uno','#00878F','MEGA 2560',['D13','D9'],['13','9']],
+ ['due','Arduino Due',3.3,'uno','#0E5E86','DUE',['D13','D9'],['13','9']],
+ ['giga','Arduino GIGA R1 WiFi',3.3,'uno','#0B6E6E','GIGA R1 WiFi',['D13','D9'],['13','9']],
+ ['mkr1010','Arduino MKR WiFi 1010',3.3,'nano','#00878F','MKR WiFi 1010',['D6','D7'],['6','7']],
+ ['mkr1310','Arduino MKR WAN 1310',3.3,'nano','#00878F','MKR WAN 1310',['D6','D7'],['6','7']],
+ ['mkr1400','Arduino MKR GSM 1400',3.3,'nano','#00878F','MKR GSM 1400',['D6','D7'],['6','7']],
+ ['lily','Arduino LilyPad',3.3,'lily','#7B3FA0','LILYPAD',['D13','D9'],['13','9']],
+ ['portenta','Arduino Portenta H7',3.3,'nano','#1D1D1F','PORTENTA H7',['D0','D1'],['D0','D1']],
+ ['nicla','Arduino Nicla Sense ME',3.3,'nicla','#0B6E6E','NICLA',['D0','D1'],['0','1']],
+ ['opta','Arduino Opta',5,'opta','#D9DDE1','OPTA',['O1','O2'],['D0','D1']]
+];
+RB_TK_DEF.uno.n='Arduino UNO R3';RB_TK_DEF.uno.g='6. Arduino boards';
+(function(){const esp={esp32:RB_TK_DEF.esp32,esp8266:RB_TK_DEF.esp8266};delete RB_TK_DEF.esp32;delete RB_TK_DEF.esp8266;const uno=RB_TK_DEF.uno;delete RB_TK_DEF.uno;
+  RB_TK_DEF.uno=uno;
+  RB_ARD_BOARDS.forEach(b=>{RB_TK_DEF[b[0]]={n:b[1],g:'6. Arduino boards',t:[[-45,70],[-15,70],[15,70],[45,70]],tl:[b[2]===5?'5V':'3V3','GND',b[6][0],b[6][1]],box:[150,130],board:[b[2],b[6][0],b[6][1]],shape:b[3],col:b[4],lab:b[5],
+    note:'Powered by USB. Its pins work at '+b[2]+' V. Press Code to program its two output pins.'};RB_TK_POWER.push(b[0]);});
+  esp.esp32.g=esp.esp8266.g='7. ESP boards';RB_TK_DEF.esp32=esp.esp32;RB_TK_DEF.esp8266=esp.esp8266;})();
+function rbArdDraw(p,R){
+  const d=RB_TK_DEF[p.k],hi=m=>R&&!!m,led=(x,m)=>'<circle cx="'+x+'" cy="34" r="4" fill="'+(hi(m)?'#2ECC71':'#55606A')+'"/>';
+  const legs=[-45,-15,15,45].map(x=>'<path d="M'+x+' 70V44" stroke="#9AA3AB" stroke-width="3" stroke-linecap="round"/>').join('');
+  const pwr=(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="3" fill="'+(R?'#2ECC71':'#55606A')+'"/>',light=d.col==='#D9DDE1',ink=light?'#11212D':'#fff';
+  const hdr='<rect x="-58" y="28" width="116" height="14" rx="2" fill="#1D1D1F"/>'+led(15,p.o1)+led(45,p.o2);
+  const fs=d.lab.length>11?9:d.lab.length>8?10.5:12.5;let body='';
+  if(d.shape==='uno')body='<rect x="-68" y="-54" width="136" height="100" rx="8" fill="'+d.col+'"/><rect x="-78" y="-40" width="30" height="26" rx="2" fill="#C9CED3" stroke="#8C959D"/><rect x="-74" y="6" width="24" height="18" rx="2" fill="#1D1D1F"/>'+
+    '<rect x="-14" y="-4" width="70" height="18" rx="2" fill="#1D1D1F"/><rect x="-40" y="-52" width="100" height="9" fill="#1D1D1F"/>'+
+    '<text x="12" y="-24" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">ARDUINO</text><text x="12" y="-11" text-anchor="middle" font-size="'+Math.min(fs,10)+'" font-weight="700" fill="#CFF3F5">'+d.lab+'</text>'+pwr(-36,-24);
+  else if(d.shape==='nano')body='<rect x="-60" y="-34" width="120" height="78" rx="6" fill="'+d.col+'"/><rect x="-70" y="-8" width="18" height="22" rx="2" fill="#C9CED3" stroke="#8C959D"/>'+
+    '<rect x="16" y="-14" width="26" height="26" rx="2" fill="#1D1D1F" transform="rotate(45 29 -1)"/><g fill="#D7B84A">'+[-44,-32,-20,-8,4,16,28,40,52].map(x=>'<circle cx="'+x+'" cy="-27" r="2.4"/>').join('')+'</g>'+
+    '<text x="-18" y="-6" text-anchor="middle" font-size="'+Math.min(fs,10.5)+'" font-weight="800" fill="#fff">'+d.lab.split(' ').slice(0,2).join(' ')+'</text><text x="-18" y="8" text-anchor="middle" font-size="9" font-weight="700" fill="#CFF3F5">'+d.lab.split(' ').slice(2).join(' ')+'</text>'+pwr(-44,16);
+  else if(d.shape==='lily')body='<circle cx="0" cy="-6" r="50" fill="'+d.col+'"/><g fill="#D7B84A">'+[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>{const a=i*Math.PI/6;return '<circle cx="'+(Math.cos(a)*42).toFixed(1)+'" cy="'+(-6+Math.sin(a)*42).toFixed(1)+'" r="5"/>';}).join('')+'</g>'+
+    '<rect x="-12" y="-18" width="24" height="24" rx="2" fill="#1D1D1F" transform="rotate(45 0 -6)"/><text y="26" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">LILYPAD</text>'+pwr(0,-38);
+  else if(d.shape==='nicla')body='<rect x="-34" y="-40" width="68" height="68" rx="6" fill="'+d.col+'"/><rect x="-10" y="-22" width="20" height="20" rx="2" fill="#1D1D1F"/><rect x="-26" y="-34" width="12" height="10" rx="1" fill="#C9CED3"/>'+
+    '<text y="16" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">NICLA</text><text y="-46" text-anchor="middle" font-size="8" fill="#5A6B78">SENSE ME</text>'+pwr(22,-30);
+  else body='<rect x="-58" y="-56" width="116" height="100" rx="5" fill="'+d.col+'" stroke="#9AA3AB" stroke-width="2"/><rect x="-52" y="-50" width="104" height="14" rx="2" fill="#2E9E4F"/><g fill="#1D1D1F">'+[-44,-30,-16,-2,12,26,40].map(x=>'<circle cx="'+x+'" cy="-43" r="3"/>').join('')+'</g>'+
+    '<rect x="-46" y="-28" width="50" height="34" rx="3" fill="#F4F5F6" stroke="#9AA3AB"/><text x="-21" y="-7" text-anchor="middle" font-size="13" font-weight="800" fill="#11212D">OPTA</text><g fill="#55606A"><circle cx="20" cy="-22" r="3"/><circle cx="32" cy="-22" r="3"/><circle cx="44" cy="-22" r="3"/></g>'+
+    '<text x="32" y="-2" text-anchor="middle" font-size="8" font-weight="700" fill="'+ink+'">RELAY OUT</text>'+pwr(20,10);
+  return legs+body+hdr;
+}
+RB_ARD_BOARDS.forEach(b=>{RB_TK_PINS[b[0]]=b[7];});
+
+/* ── Parts list modes: Basic, All, Starters, Kits ── */
+rb.tk.mode='basic';
+const RB_TK_BASIC=['bat9','sw','btn','res','pot','led','bulb','buzz','motor','ldr','uno','esp32','bread','volt','amm'];
+/* starters: parts are placed relative to the middle of the view; w = [fromPart, terminal, toPart, terminal, colour] */
+const RB_TK_STARTERS=[
+ {n:'Blink',d:'An LED blinks once a second.',k:'uno',parts:[['uno',-220,-60,{prog:[{t:'pin',n:1,v:1},{t:'wait',ms:1000},{t:'pin',n:1,v:0},{t:'wait',ms:1000}]}],['res',40,-60,{ohm:220}],['led',220,60,{col:'red'}]],
+  w:[[0,2,1,0,'#D32F2F'],[1,1,2,0,'#D32F2F'],[2,1,0,1,'#1D1D1F']]},
+ {n:'Two-LED flasher',d:'Two LEDs flash in turn, like a railway signal.',k:'uno',parts:[['uno',-240,-80,{prog:[{t:'pin',n:1,v:1},{t:'pin',n:2,v:0},{t:'wait',ms:500},{t:'pin',n:1,v:0},{t:'pin',n:2,v:1},{t:'wait',ms:500}]}],['res',20,-110,{ohm:220}],['led',180,-40,{col:'red'}],['res',20,60,{ohm:220}],['led',180,130,{col:'green'}]],
+  w:[[0,2,1,0,'#D32F2F'],[1,1,2,0,'#D32F2F'],[2,1,0,1,'#1D1D1F'],[0,3,3,0,'#2E9E4F'],[3,1,4,0,'#2E9E4F'],[4,1,0,1,'#1D1D1F']]},
+ {n:'Buzzer alarm',d:'A buzzer beeps and prints a message.',k:'uno',parts:[['uno',-180,-40,{prog:[{t:'pin',n:2,v:1},{t:'print',text:'Beep!'},{t:'wait',ms:200},{t:'pin',n:2,v:0},{t:'wait',ms:1000}]}],['buzz',120,60,{}]],
+  w:[[0,3,1,0,'#D32F2F'],[1,1,0,1,'#1D1D1F']]},
+ {n:'Motor with transistor',d:'A transistor lets a small pin switch a motor.',k:'uno',parts:[['uno',-260,-60,{prog:[{t:'pin',n:2,v:1},{t:'wait',ms:2000},{t:'pin',n:2,v:0},{t:'wait',ms:2000}]}],['res',-20,90,{ohm:1000}],['npn',160,60,{}],['motor',160,-110,{}]],
+  w:[[0,3,1,0,'#F2C230'],[1,1,2,1,'#F2C230'],[0,0,3,0,'#D32F2F'],[3,1,2,0,'#1E63D0'],[2,2,0,1,'#1D1D1F']]},
+ {n:'ESP32 blink',d:'The same blink program on a 3.3 V Wi-Fi board.',k:'esp32',parts:[['esp32',-200,-60,{prog:[{t:'pin',n:1,v:1},{t:'wait',ms:500},{t:'pin',n:1,v:0},{t:'wait',ms:500}]}],['res',40,-60,{ohm:100}],['led',200,60,{col:'red'}]],
+  w:[[0,2,1,0,'#D32F2F'],[1,1,2,0,'#D32F2F'],[2,1,0,1,'#1D1D1F']]},
+ {n:'Power light',d:'An LED on the 5V pin with a start-up message.',k:'uno',parts:[['uno',-200,-60,{prog:[{t:'print',text:'Power on'},{t:'wait',ms:2000}]}],['res',40,-60,{ohm:330}],['led',200,60,{col:'green'}]],
+  w:[[0,0,1,0,'#D32F2F'],[1,1,2,0,'#D32F2F'],[2,1,0,1,'#1D1D1F']]}
+];
+const RB_TK_KITS=[
+ {n:'Arduino starter kit',d:'UNO R3, breadboard, LEDs, resistors, button, buzzer, knob and light sensor.',parts:['bread','uno','led','led','led','res','res','res','btn','buzz','pot','ldr']},
+ {n:'Robot car kit',d:'UNO R3, two motors, transistors, battery holder and switch.',parts:['uno','motor','motor','npn','npn','res','res','holder','sw']},
+ {n:'IoT kit',d:'ESP32, LEDs, thermistor, light sensor and relay.',parts:['esp32','led','led','res','res','therm','ldr','relay']},
+ {n:'Basic electricity kit',d:'Battery, switch, bulb, LED, resistor and meters.',parts:['bat9','sw','bulb','led','res','volt','amm']}
+];
+function rbTkPlace(defs,wires){
+  const t=rb.tk,v=t.vb,cx=Math.round((v.x+v.w/2)/10)*10,cy=Math.round((v.y+v.h/2)/10)*10,ids=[];
+  defs.forEach(d=>{const p=Object.assign({id:t.id++,k:d[0],x:Math.max(60,Math.min(RB_WW-60,cx+d[1])),y:Math.max(60,Math.min(RB_WH-60,cy+d[2])),r:0},JSON.parse(JSON.stringify(d[3]||{})));
+    if(p.k==='res'&&!p.ohm)p.ohm=330;if(p.k==='led'&&!p.col)p.col='red';if(p.k==='sw')p.on=false;if(p.k==='pot')p.pct=50;if(p.k==='ldr')p.light=50;if(p.k==='therm')p.temp=25;if(RB_TK_DEF[p.k].board)rbTkProg(p);
+    t.parts.push(p);ids.push(p.id);});
+  (wires||[]).forEach(w=>t.wires.push({a:[ids[w[0]],w[1]],b:[ids[w[2]],w[3]],c:w[4]}));
+  return ids;
+}
+function rbTkStarter(i){
+  const t=rb.tk,s=RB_TK_STARTERS[i];if(!s||t.sim)return;if(t.parts.length+s.parts.length>60){alert('The workspace is full. Clear it first.');return;}
+  rbTkPush();const ids=rbTkPlace(s.parts,s.w);t.sel={t:'p',id:ids[0]};t.code=ids[0];t.codeView='blocks';t.pend=null;rbTkSave();rbTkPaint();rbTkFit();
+}
+function rbTkKit(i){
+  const t=rb.tk,k=RB_TK_KITS[i];if(!k||t.sim)return;if(t.parts.length+k.parts.length>60){alert('The workspace is full. Clear it first.');return;}
+  rbTkPush();let n=0;const defs=k.parts.map(key=>{const base=RB_TK_DEF[key].box&&!RB_TK_DEF[key].t.length;if(base)return [key,0,0,{}];const d=[key,-300+(n%5)*150,-170+Math.floor(n/5)*150,{}];n++;return d;});
+  rbTkPlace(defs,[]);t.sel=null;t.pend=null;rbTkSave();rbTkPaint();rbTkFit();
+}
+function rbTkTrayHTML(){
+  const t=rb.tk,m=t.mode,dis=t.sim?' disabled':'';
+  if(m==='starters')return '<div class="rbtk-grp">Starters · ready circuits with code</div>'+RB_TK_STARTERS.map((s,i)=>'<button class="rbtk-card"'+dis+' onclick="rbTkStarter('+i+')" title="Add this circuit"><svg viewBox="-84 -70 168 150" aria-hidden="true">'+rbTkDraw({k:s.k},null,true)+'</svg><span><b>'+s.n+'</b><em>'+s.d+'</em></span></button>').join('');
+  if(m==='kits')return '<div class="rbtk-grp">Kits · a set of parts to build with</div>'+RB_TK_KITS.map((k,i)=>'<button class="rbtk-card"'+dis+' onclick="rbTkKit('+i+')" title="Add all parts of this kit"><span><b>'+k.n+'</b><em>'+k.d+'</em><em><u>'+k.parts.length+' parts</u></em></span></button>').join('');
+  const groups=[];Object.keys(RB_TK_DEF).forEach(k=>{if(m==='basic'&&RB_TK_BASIC.indexOf(k)<0)return;const g=m==='basic'?'Basic parts':RB_TK_DEF[k].g;let o=groups.find(x=>x[0]===g);if(!o){o=[g,[]];groups.push(o);}o[1].push(k);});
+  if(m==='basic')groups[0][1].sort((a,b)=>RB_TK_BASIC.indexOf(a)-RB_TK_BASIC.indexOf(b));
+  return groups.map(g=>'<div class="rbtk-grp">'+g[0]+'</div>'+g[1].map(k=>{const s={k:k,ohm:330,col:'red',pct:50,light:50,temp:25,on:false};
+    return '<button draggable="true"'+dis+' ondragstart="event.dataTransfer.setData(\'text/plain\',\'part:'+k+'\')" onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].board?'-84 -70 168 150':RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
+}
+function rbTkMode(m){rb.tk.mode=m;const tr=document.getElementById('rbTkTray');if(tr){tr.innerHTML=rbTkTrayHTML();tr.scrollTop=0;}const q=document.querySelector('.rbtk-search');if(q){q.value='';q.placeholder=m==='starters'?'Search starters':m==='kits'?'Search kits':'Search parts';}}
+function rbTkCodeOpen(){
+  const t=rb.tk,sel=t.sel&&t.sel.t==='p'&&rbTkPart(t.sel.id),b=(sel&&RB_TK_DEF[sel.k].board)?sel:t.parts.find(p=>RB_TK_DEF[p.k].board);
+  t.code=t.code?null:(b?b.id:'none');rbTkPaint();
+  const box=document.getElementById('rbTkCodeBox');if(box&&t.code&&box.scrollIntoView)box.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
 function rbTkClean(p){const q=Object.assign({},p);['burnt','blown','down','pc','o1','o2','until','m1','m2'].forEach(k=>delete q[k]);return q;}
 function rbTkSnap(){const t=rb.tk;return JSON.stringify({id:t.id,parts:t.parts.map(rbTkClean),wires:t.wires});}
 function rbTkSave(){try{localStorage.setItem('qe_circuit',rbTkSnap());}catch(e){}}
@@ -1988,7 +2120,9 @@ function rbTkStepEdit(i,what){
   rbTkSave();rbTkPaint();
 }
 function rbTkCodeHTML(){
-  const t=rb.tk,p=rbTkPart(t.code);if(!p||!RB_TK_DEF[p.k].board)return '';
+  const t=rb.tk,p=rbTkPart(t.code);
+  if(t.code==='none')return '<div class="rbtk-code"><div class="rbx-cbbar"><b>Code</b><button class="btn ghost" style="margin-left:auto" onclick="rbTkCodeOpen()">Close code</button></div><p class="muted" style="font-size:14px">Code runs on a microcontroller board. Add an Arduino or ESP board to this circuit, or start from a ready circuit.</p><div class="rbx-ctl"><button class="btn teal rbtk-edit" onclick="rbTkStarter(0)">Add the Blink starter</button><button class="btn ghost rbtk-edit" onclick="rbTkAdd(\'uno\');rb.tk.code=rb.tk.sel.id;rbTkPaint()">Add an Arduino UNO R3</button></div></div>';
+  if(!p||!RB_TK_DEF[p.k].board)return '';
   const d=RB_TK_DEF[p.k].board,prog=rbTkProg(p),dis=t.sim?' disabled':'',e=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const tools=i=>'<span class="rbs-tools" style="display:inline-flex"><button class="rb-mini" aria-label="Move up"'+dis+' onclick="rbTkStepEdit('+i+',\'up\')">↑</button><button class="rb-mini" aria-label="Move down"'+dis+' onclick="rbTkStepEdit('+i+',\'down\')">↓</button><button class="rb-mini" aria-label="Remove"'+dis+' onclick="rbTkStepEdit('+i+',\'del\')">✕</button></span>';
   const blocks='<div class="rbtk-codegrid"><div class="rbs-pal"><div class="rbs-cat"><i class="rbs-dot rbs-mo"></i>Output</div>'+
@@ -2144,20 +2278,19 @@ function rbTkWire(){
   rbTkPaint();
 }
 function rbCircuitsHTML(){
-  const groups=[];Object.keys(RB_TK_DEF).forEach(k=>{const g=RB_TK_DEF[k].g;let o=groups.find(x=>x[0]===g);if(!o){o=[g,[]];groups.push(o);}o[1].push(k);});
-  const tray=groups.map(g=>'<div class="rbtk-grp">'+g[0]+'</div>'+g[1].map(k=>{const s={k:k,ohm:330,col:'red',pct:50,light:50,temp:25,on:false};
-    return '<button draggable="true" ondragstart="event.dataTransfer.setData(\'text/plain\',\'part:'+k+'\')" onclick="rbTkAdd(\''+k+'\')" title="Add '+RB_TK_DEF[k].n+'"><svg viewBox="'+(RB_TK_DEF[k].board?'-84 -70 168 150':RB_TK_DEF[k].box?'-150 -150 300 300':'-58 -62 120 130')+'" aria-hidden="true">'+rbTkDraw(s,null,true)+'</svg><span>'+RB_TK_DEF[k].n+'</span></button>';}).join('')).join('');
+  const tray=rbTkTrayHTML(),md=rb.tk.mode;
   const cols=[['#D32F2F','Red'],['#1D1D1F','Black'],['#2E9E4F','Green'],['#1E63D0','Blue'],['#F2C230','Yellow']];
   const tb=(id,label,fn,tip)=>'<button class="rbtk-tb" id="'+id+'" title="'+tip+'" onclick="'+fn+'">'+label+'</button>';
   setTimeout(rbTkWire,0);
   return '<div class="card rbx-pad"><div class="rbx-cbbar"><b>Circuit workspace</b><span class="muted" id="rbTkCnt" style="font-size:12px"></span>'+
-        '<button class="btn ghost rbtk-edit" style="margin-left:auto" onclick="rbTkLoad()">Example</button><button class="btn ghost rbtk-edit" onclick="rbTkClear()">Clear</button>'+
+        '<button class="btn ghost rbtk-edit" style="margin-left:auto" onclick="rbTkLoad()">Example</button><button class="btn ghost" id="rbTkCodeB" onclick="rbTkCodeOpen()">&lt;/&gt; Code</button><button class="btn ghost rbtk-edit" onclick="rbTkClear()">Clear</button>'+
         '<button class="btn teal" id="rbTkSim" onclick="rbTkSim()">▶ Start simulation</button></div>'+
       '<div class="rbtk-bar" role="toolbar" aria-label="Workspace tools">'+tb('rbTkUndo','↶ Undo','rbTkUndo()','Undo (Ctrl+Z)')+tb('rbTkRedo','↷ Redo','rbTkRedo()','Redo (Ctrl+Y)')+'<i></i>'+
         tb('rbTkRotB','⟳ Rotate','rbTkRot()','Rotate (R)')+tb('rbTkDupB','⧉ Duplicate','rbTkDup()','Duplicate (Ctrl+D)')+tb('rbTkDelB','✕ Delete','rbTkDel()','Delete (Del)')+'<i></i>'+
         '<span class="rbtk-lab">Wire</span>'+cols.map(c=>'<button class="rbtk-sw" data-c="'+c[0]+'" aria-label="'+c[1]+' wire" title="'+c[1]+' wire" style="background:'+c[0]+'" onclick="rbTkColor(\''+c[0]+'\')"></button>').join('')+'<i></i>'+
         '<button class="rbtk-tb" title="Zoom out (-)" aria-label="Zoom out" onclick="rbTkZoom(1.25)">−</button><span class="rbtk-lab" id="rbTkZ">100%</span><button class="rbtk-tb" title="Zoom in (+)" aria-label="Zoom in" onclick="rbTkZoom(0.8)">+</button>'+tb('rbTkFitB','Fit','rbTkFit()','Show the whole circuit')+'</div>'+
-      '<div class="rbtk-wrap"><div><input class="rbtk-search" type="search" placeholder="Search parts" aria-label="Search parts" oninput="rbTkFilter(this)"><div class="rbtk-tray" id="rbTkTray" aria-label="Parts list">'+tray+'</div></div>'+
+      '<div class="rbtk-wrap"><div><select class="rbtk-search" aria-label="What to show in the list" onchange="rbTkMode(this.value)">'+[['basic','Components · Basic'],['all','Components · All'],['starters','Starters'],['kits','Kits']].map(o=>'<option value="'+o[0]+'"'+(md===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+        '<input class="rbtk-search" type="search" placeholder="Search parts" aria-label="Search the list" oninput="rbTkFilter(this)"><div class="rbtk-tray" id="rbTkTray" aria-label="Parts list">'+tray+'</div></div>'+
         '<div style="min-width:0"><svg id="rbTk" class="rbtk-svg" viewBox="0 0 '+RB_TK_W+' '+RB_TK_H+'" tabindex="0" role="application" aria-label="Circuit workspace. Drag a part from the list or tap it to add it, then tap two terminals to wire them."></svg></div></div>'+
       '<div class="rbx-ctl" id="rbTkIns" style="min-height:40px"></div>'+
       '<div class="rb-msg" id="rbTkMsg" aria-live="polite"></div>'+
@@ -2279,11 +2412,12 @@ const RB_ARD=[
   ['Portenta, Nicla and Opta','For industrial automation, Edge AI and advanced applications.']]]
 ];
 function rbArdHTML(){
-  const ic='<svg viewBox="-84 -70 168 150" aria-hidden="true">'+rbTkDraw({k:'uno'},null,true)+'</svg>';
+  const key={'UNO':'uno','Leonardo and Micro':'leo','Nano':'nano','Pro Mini':'promini','MEGA 2560':'mega','Due and GIGA':'due','MKR':'mkr1010','LilyPad':'lily','Portenta, Nicla and Opta':'portenta'};
+  const ic=n=>'<svg viewBox="-84 -70 168 150" aria-hidden="true">'+rbTkDraw({k:key[n]||'uno'},null,true)+'</svg>';
   return '<div class="rbx-h" style="font-size:22px;margin-top:30px">Arduino boards</div>'+
-    '<div class="rbx-sub">Arduino makes many boards. They fall into four groups, by what they are best at.</div>'+
+    '<div class="rbx-sub">Arduino makes many boards. They fall into four groups, by what they are best at. All 23 boards are in the workspace list under “Components · All”.</div>'+
     RB_ARD.map(g=>'<section class="rbg-sec"><div class="rbg-head"><i style="background:'+g[1]+'"></i><div><h4>'+g[0]+'</h4></div></div>'+
-      '<div class="rbg-grid">'+g[2].map(x=>'<div class="card rbg-item"><div class="rbg-ic">'+ic+'</div><div><b>'+x[0]+'</b><span>'+x[1]+'</span></div></div>').join('')+'</div></section>').join('');
+      '<div class="rbg-grid">'+g[2].map(x=>'<div class="card rbg-item"><div class="rbg-ic">'+ic(x[0])+'</div><div><b>'+x[0]+'</b><span>'+x[1]+'</span><em>In the workspace</em></div></div>').join('')+'</div></section>').join('');
 }
 
 /* 3D model made of CSS boxes */
@@ -3344,7 +3478,7 @@ function qzFinish(){
 }
 
 /* ─────────── AI Assistant: quiz, progress report and achievements in one chat ─────────── */
-let ai={msgs:[],quiz:null,busy:false};
+let ai={msgs:[],quiz:null,busy:false,id:null,list:false};
 const aiEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function aiGrade(){const m=String((state.user&&state.user.grade)||'8').match(/\d+/);return m?String(parseInt(m[0])):'8';}
 function aiName(){return ((state.user&&state.user.name)||'there').split(' ')[0];}
@@ -3353,6 +3487,7 @@ function aiMe(text){ai.msgs.push({who:'me',html:aiEsc(text)});}
 function aiMenu(){return [['Quiz','quiz'],['Progress Report','progress'],['Achievements','awards']];}
 function aiHello(){if(ai.msgs.length)return;aiSay('Hi '+aiEsc(aiName())+'! I am your learning assistant. I can run a quiz, show your progress report, or list your achievements. What would you like?',aiMenu());}
 function aiPaint(){
+  aiStore();
   const box=document.getElementById('aiMsgs');if(!box){render();return;}
   box.innerHTML=aiMsgsHTML();box.scrollTop=box.scrollHeight;
 }
@@ -3471,14 +3606,36 @@ function aiSend(ev){
   return false;
 }
 function aiBack(){return '<div class="rbx-top"><button class="rbx-back" onclick="go(\'ai\')">← AI Assistant</button></div>';}
-function aiReset(){ai={msgs:[],quiz:null,busy:false};aiHello();aiPaint();}
+/* saved chats (kept on this device, one list per student) */
+function aiUser(){return String((state.user&&state.user.email)||'guest').toLowerCase();}
+function aiChats(){try{const d=JSON.parse(localStorage.getItem('qe_ai_chats')||'[]');return Array.isArray(d)?d:[];}catch(e){return [];}}
+function aiStore(){
+  if(!ai.msgs.some(m=>m.who==='me'))return;                       /* nothing typed yet: do not save an empty chat */
+  if(!ai.id)ai.id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const first=ai.msgs.find(m=>m.who==='me'),tmp=document.createElement('div');tmp.innerHTML=first.html;
+  const all=aiChats().filter(c=>c.id!==ai.id);
+  all.unshift({id:ai.id,u:aiUser(),when:Date.now(),title:(tmp.textContent||'Chat').slice(0,40),msgs:ai.msgs.slice(-80)});
+  try{localStorage.setItem('qe_ai_chats',JSON.stringify(all.slice(0,60)));}catch(e){}
+}
+function aiListHTML(){
+  const mine=aiChats().filter(c=>c.u===aiUser());
+  if(!mine.length)return '<p class="muted" style="font-size:13px;padding:6px 2px">No saved chats yet. Start a quiz or ask for your progress and it will appear here.</p>';
+  return mine.map(c=>'<div class="ai-chat'+(c.id===ai.id?' on':'')+'"><button class="ai-chat-open" onclick="aiOpen(\''+c.id+'\')"><b>'+aiEsc(c.title)+'</b><span>'+new Date(c.when).toLocaleString([], {day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})+' · '+c.msgs.length+' messages</span></button>'+
+    '<button class="ai-chat-del" aria-label="Delete this chat" title="Delete this chat" onclick="aiDelete(\''+c.id+'\')">✕</button></div>').join('');
+}
+function aiToggleList(){ai.list=!ai.list;render();}
+function aiOpen(id){const c=aiChats().find(x=>x.id===id&&x.u===aiUser());if(!c)return;ai={msgs:c.msgs,quiz:null,busy:false,id:c.id,list:false};render();}
+function aiDelete(id){if(!confirm('Delete this chat?'))return;try{localStorage.setItem('qe_ai_chats',JSON.stringify(aiChats().filter(c=>!(c.id===id&&c.u===aiUser()))));}catch(e){}
+  if(ai.id===id){ai={msgs:[],quiz:null,busy:false,id:null,list:true};aiHello();}render();}
+function aiReset(){ai={msgs:[],quiz:null,busy:false,id:null,list:false};aiHello();render();}
 function aiView(){
   aiHello();
   setTimeout(()=>{const b=document.getElementById('aiMsgs');if(b)b.scrollTop=b.scrollHeight;},0);
   return '<div class="pagehead">'+eyebrow('Quiz · Progress Report · Achievements')+'<h2 class="display">AI Assistant</h2>'+
     '<p class="muted" style="margin-top:6px">One place for your quizzes, your progress report and your achievements.</p></div>'+
     '<div class="card ai-card"><div class="ai-top"><span class="ai-dot"></span><b>Learning assistant</b><span class="muted" style="font-size:12px">Grade '+aiEsc(aiGrade())+'</span>'+
-      '<span class="ai-quick">'+aiMenu().map(c=>'<button onclick="aiDo(\''+c[1]+'\',\''+c[0]+'\')">'+c[0]+'</button>').join('')+'<button onclick="aiReset()" aria-label="Start a new chat">New chat</button></span></div>'+
+      '<span class="ai-quick">'+aiMenu().map(c=>'<button onclick="aiDo(\''+c[1]+'\',\''+c[0]+'\')">'+c[0]+'</button>').join('')+'<button onclick="aiReset()" aria-label="Start a new chat">New chat</button><button class="'+(ai.list?'on':'')+'" onclick="aiToggleList()" aria-expanded="'+ai.list+'">My chats</button></span></div>'+
+      (ai.list?'<div class="ai-listbox"><div class="ai-listhead"><b>My chats</b><span class="muted" style="font-size:12px">Saved on this device</span></div>'+aiListHTML()+'</div>':'')+
       '<div class="ai-msgs" id="aiMsgs" aria-live="polite">'+aiMsgsHTML()+'</div>'+
       '<form class="ai-form" onsubmit="return aiSend(event)"><input id="aiIn" autocomplete="off" placeholder="Type quiz, progress or achievements…" aria-label="Message to the assistant"><button class="btn teal" type="submit">Send</button></form></div>';
 }

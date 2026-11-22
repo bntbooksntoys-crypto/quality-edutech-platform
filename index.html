@@ -490,6 +490,42 @@ footer.legal{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20
 .rbm-table{width:100%;border-collapse:collapse;font-size:14px}
 .rbm-table th{text-align:left;font-size:12px;color:var(--slate);background:var(--canvas);padding:10px 14px}
 .rbm-table td{padding:10px 14px;border-top:1px solid var(--line)}
+/* AI assistant */
+.ai-card{display:flex;flex-direction:column;height:calc(100vh - 250px);min-height:460px;overflow:hidden}
+.ai-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
+.ai-dot{width:9px;height:9px;border-radius:50%;background:#2DB67D;display:inline-block}
+.ai-quick{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.ai-quick button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.ai-quick button:hover{border-color:var(--teal)}
+.ai-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--canvas)}
+.ai-row{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
+.ai-row.me{align-items:flex-end}
+.ai-bub{max-width:min(640px,88%);padding:11px 14px;border-radius:14px;font-size:14px;line-height:1.5;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px;overflow-wrap:anywhere}
+.ai-row.me .ai-bub{background:var(--teal);border-color:var(--teal);color:#fff;border-radius:14px;border-bottom-right-radius:4px}
+.ai-bub p{margin-top:8px}
+.ai-tag{display:block;font-size:11px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.ai-ok{color:#0A5C50}.ai-no{color:var(--vermilion)}
+.ai-chips{display:flex;gap:6px;flex-wrap:wrap;max-width:min(640px,100%)}
+.ai-chip{border:1.5px solid var(--teal);background:var(--card);color:#0A5C50;border-radius:12px;padding:8px 13px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-align:left}
+.ai-chip:hover{background:var(--tealSoft)}
+.ai-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.ai-form input{flex:1;min-width:0;border:1px solid var(--line);background:var(--canvas);color:var(--ink);border-radius:10px;padding:11px 14px;font:inherit;font-size:14px;outline:none}
+.ai-form input:focus{border-color:var(--teal)}
+.ai-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+@media(max-width:620px){.ai-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ai-grid div{background:var(--canvas);border-radius:10px;padding:10px;text-align:center}
+.ai-grid b{display:block;font-family:var(--display);font-size:18px}.ai-grid span{font-size:11px;color:var(--slate)}
+.ai-list{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.ai-list div{display:grid;grid-template-columns:minmax(80px,150px) 1fr 44px;gap:8px;align-items:center;font-size:13px}
+.ai-list i{display:block;height:12px}.ai-list u{display:block;height:100%;background:#0E7C6B;border-radius:0 4px 4px 0}
+.ai-list em{font-style:normal;color:var(--slate);text-align:right;font-variant-numeric:tabular-nums}
+.ai-badges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
+@media(max-width:620px){.ai-badges{grid-template-columns:1fr}}
+.ai-badges>div{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px;opacity:.7}
+.ai-badges>div.on{opacity:1;border-color:var(--marigold);background:var(--marigoldSoft)}
+.ai-badges i{font-style:normal;font-size:22px;color:var(--marigold);line-height:1}
+.ai-badges b{display:block;font-size:13.5px}.ai-badges span{display:block;font-size:12px;color:var(--slate)}
+.ai-badges em{font-style:normal;font-size:11px;font-weight:700;color:var(--slate)}.ai-badges .on em{color:#0A5C50}
 </style>
 <!-- Google Translate -->
 <style>
@@ -2129,7 +2165,7 @@ function rbCircuitsHTML(){
       '<div class="rb-link"><b>How to build:</b> 1. Drag parts from the list onto the canvas. 2. Tap one terminal (the white dots), then another, to join them with a wire. Tap the empty canvas on the way to bend the wire. 3. Tap a board and press Code to program it. 4. Press Start simulation.<br>'+
       '<b>Shortcuts:</b> R rotate · Del delete · Ctrl+Z undo · Ctrl+Y redo · Ctrl+D duplicate · mouse wheel zoom · drag the canvas to move.<br>'+
       '<span class="rb-chip">Physics: Ohm\'s law</span><span class="rb-chip">Physics: series and parallel circuits</span><span class="rb-chip">Coding: Arduino programs</span><span class="rb-chip">Maths: division and units</span></div></div>'+
-    rbGuideHTML()+rbMcuHTML();
+    rbGuideHTML()+rbMcuHTML()+rbArdHTML();
 }
 
 /* ── Materials guide: what each part is and what it does ── */
@@ -2224,6 +2260,30 @@ function rbMcuHTML(){
     '<section class="rbg-sec"><div class="rbg-head"><i style="background:#C7791A"></i><div><h4>4. Popular microcontroller families</h4></div></div>'+
       '<div class="card" style="overflow:auto"><table class="rbm-table"><thead><tr><th>Family</th><th>Main application</th></tr></thead><tbody>'+
       RB_MCU_FAM.map(f=>'<tr><td><b>'+f[0]+'</b></td><td>'+f[1]+'</td></tr>').join('')+'</tbody></table></div></section>';
+}
+
+/* ── Arduino boards: a short guide ── */
+const RB_ARD=[
+ ['1. Entry-level and prototyping','#00878F',[
+  ['UNO','Best for beginners, learning and basic projects.'],
+  ['Leonardo and Micro','Can act as a USB keyboard or mouse.']]],
+ ['2. Compact and breadboard-friendly','#2F6FDB',[
+  ['Nano','Small boards for compact projects, with Wi-Fi, Bluetooth and sensor options.'],
+  ['Pro Mini','Compact, low-power board for embedded projects.']]],
+ ['3. High performance and more I/O','#8A4FD6',[
+  ['MEGA 2560','More pins and memory for robotics, 3D printers and many sensors.'],
+  ['Due and GIGA','Powerful 32-bit boards for complex projects and heavy calculations.']]],
+ ['4. Specialised, IoT and industrial','#C7791A',[
+  ['MKR','Low-power boards for IoT and wireless communication.'],
+  ['LilyPad','For wearable electronics and smart clothing.'],
+  ['Portenta, Nicla and Opta','For industrial automation, Edge AI and advanced applications.']]]
+];
+function rbArdHTML(){
+  const ic='<svg viewBox="-84 -70 168 150" aria-hidden="true">'+rbTkDraw({k:'uno'},null,true)+'</svg>';
+  return '<div class="rbx-h" style="font-size:22px;margin-top:30px">Arduino boards</div>'+
+    '<div class="rbx-sub">Arduino makes many boards. They fall into four groups, by what they are best at.</div>'+
+    RB_ARD.map(g=>'<section class="rbg-sec"><div class="rbg-head"><i style="background:'+g[1]+'"></i><div><h4>'+g[0]+'</h4></div></div>'+
+      '<div class="rbg-grid">'+g[2].map(x=>'<div class="card rbg-item"><div class="rbg-ic">'+ic+'</div><div><b>'+x[0]+'</b><span>'+x[1]+'</span></div></div>').join('')+'</div></section>').join('');
 }
 
 /* 3D model made of CSS boxes */
@@ -3283,21 +3343,161 @@ function qzFinish(){
   saveQz(); render(); window.scrollTo(0,0);
 }
 
+/* ─────────── AI Assistant: quiz, progress report and achievements in one chat ─────────── */
+let ai={msgs:[],quiz:null,busy:false};
+const aiEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function aiGrade(){const m=String((state.user&&state.user.grade)||'8').match(/\d+/);return m?String(parseInt(m[0])):'8';}
+function aiName(){return ((state.user&&state.user.name)||'there').split(' ')[0];}
+function aiSay(html,chips){ai.msgs.push({who:'bot',html:html,chips:chips||[]});}
+function aiMe(text){ai.msgs.push({who:'me',html:aiEsc(text)});}
+function aiMenu(){return [['Quiz','quiz'],['Progress Report','progress'],['Achievements','awards']];}
+function aiHello(){if(ai.msgs.length)return;aiSay('Hi '+aiEsc(aiName())+'! I am your learning assistant. I can run a quiz, show your progress report, or list your achievements. What would you like?',aiMenu());}
+function aiPaint(){
+  const box=document.getElementById('aiMsgs');if(!box){render();return;}
+  box.innerHTML=aiMsgsHTML();box.scrollTop=box.scrollHeight;
+}
+function aiMsgsHTML(){
+  return ai.msgs.map((m,i)=>{const last=i===ai.msgs.length-1;
+    return '<div class="ai-row '+m.who+'"><div class="ai-bub">'+m.html+'</div>'+
+      (m.chips&&m.chips.length&&last?'<div class="ai-chips">'+m.chips.map(c=>'<button class="ai-chip" onclick="aiDo(\''+c[1]+'\',this.textContent)">'+aiEsc(c[0])+'</button>').join('')+'</div>':'')+'</div>';}).join('');
+}
+function aiReply(fn){ai.busy=true;aiPaint();setTimeout(()=>{ai.busy=false;fn();aiPaint();},350);}
+
+/* quiz */
+function aiSubjects(){return Object.keys((window.QUIZZES||{})[aiGrade()]||{});}
+function aiQuizAsk(){
+  const subs=aiSubjects();
+  if(!subs.length){aiSay('The quiz questions are not loaded yet. Check the internet connection and try again.',aiMenu());return;}
+  aiSay('Which subject do you want a quiz on? Grade '+aiEsc(aiGrade())+' has these.',subs.map((s,i)=>[s,'sub:'+i]));
+}
+function aiQuizStart(sub){
+  const g=aiGrade(),all=((((window.QUIZZES||{})[g]||{})[sub]||{}).questions)||[];
+  if(!all.length){aiSay('There are no questions for that subject yet.',aiMenu());return;}
+  const idx=all.map((_,i)=>i),fresh=idx.filter(i=>state.qz.answers[g+'|'+sub+'|'+i]===undefined),pool=(fresh.length>=5?fresh:idx).slice();
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=pool[i];pool[i]=pool[j];pool[j]=t;}
+  ai.quiz={g:g,sub:sub,list:pool.slice(0,5),n:0,right:0};
+  aiSay('Here is a 5-question quiz on <b>'+aiEsc(sub)+'</b>. Pick the right answer.');
+  aiQuizNext();
+}
+function aiQuizNext(){
+  const z=ai.quiz,q=window.QUIZZES[z.g][z.sub].questions[z.list[z.n]];
+  aiSay('<span class="ai-tag">Question '+(z.n+1)+' of '+z.list.length+(q.topic?' · '+aiEsc(q.topic):'')+'</span><b>'+aiEsc(q.q)+'</b>',
+    ['a','b','c','d'].filter(k=>q[k]!=null&&q[k]!=='').map(k=>[k.toUpperCase()+'. '+q[k],'ans:'+k.toUpperCase()]));
+}
+function aiQuizAnswer(letter){
+  const z=ai.quiz;if(!z)return;const i=z.list[z.n],q=window.QUIZZES[z.g][z.sub].questions[i],ok=q.ans===letter;
+  state.qz.answers[z.g+'|'+z.sub+'|'+i]=ok;saveQz();if(ok)z.right++;
+  const right=q[String(q.ans||'').toLowerCase()];
+  aiSay((ok?'<b class="ai-ok">Correct.</b> ':'<b class="ai-no">Not quite.</b> The answer is <b>'+aiEsc(q.ans)+'. '+aiEsc(right)+'</b>. ')+aiEsc(q.exp||''));
+  z.n++;
+  if(z.n<z.list.length){aiQuizNext();return;}
+  const pct=Math.round(z.right/z.list.length*100);ai.quiz=null;
+  aiSay('Quiz finished. You scored <b>'+z.right+' out of '+z.list.length+'</b> ('+pct+'%) in '+aiEsc(z.sub)+'. '+(pct>=80?'Excellent work.':pct>=50?'Good effort. One more round will make it stronger.':'Keep practising. Read the explanations above, then try again.'),
+    [['Another quiz','quiz'],['Progress Report','progress'],['Achievements','awards']]);
+}
+
+/* numbers used by the report and the achievements */
+function aiStats(){
+  const g=aiGrade(),by={};let total=0,right=0;
+  Object.keys(state.qz.answers||{}).forEach(k=>{const p=k.split('|');if(p.length<3)return;const o=by[p[1]]||(by[p[1]]={n:0,r:0});o.n++;total++;if(state.qz.answers[k]===true){o.r++;right++;}});
+  const u=String((state.user&&state.user.email)||'').toLowerCase(),d=qtLoad(),wk=qtDay(Date.now()-6*864e5);
+  const ses=d.s.filter(s=>s.u===u),days={},foc={};let secWeek=0,secAll=0;
+  ses.forEach(s=>{days[qtDay(s.in)]=1;});
+  Object.keys(d.f).forEach(k=>{const i=k.lastIndexOf('|');if(k.slice(0,i)!==u)return;const day=k.slice(i+1);Object.keys(d.f[k]).forEach(x=>{secAll+=d.f[k][x];if(day>=wk){secWeek+=d.f[k][x];foc[x]=(foc[x]||0)+d.f[k][x];}});});
+  let stars=0;try{const r=rbDone();stars=Object.keys(r).reduce((a,k)=>a+(r[k]||0),0);}catch(e){}
+  let parts=0;try{const c=JSON.parse(localStorage.getItem('qe_circuit')||'null');parts=c&&Array.isArray(c.parts)?c.parts.length:0;}catch(e){}
+  return {by:by,total:total,right:right,sesWeek:ses.filter(s=>qtDay(s.in)>=wk).length,days:Object.keys(days).length,foc:foc,secWeek:secWeek,secAll:secAll,stars:stars,parts:parts};
+}
+function aiProgress(){
+  const s=aiStats(),subs=Object.keys(s.by).filter(k=>s.by[k].n>=3).sort((a,b)=>s.by[b].r/s.by[b].n-s.by[a].r/s.by[a].n);
+  const top=Object.keys(s.foc).sort((a,b)=>s.foc[b]-s.foc[a]);
+  let h='<b>Your progress report</b><div class="ai-grid">'+
+    '<div><b>'+trDur(s.secWeek)+'</b><span>Time this week</span></div><div><b>'+s.sesWeek+'</b><span>Logins this week</span></div>'+
+    '<div><b>'+(s.total?Math.round(s.right/s.total*100)+'%':'—')+'</b><span>Quiz accuracy</span></div><div><b>'+s.total+'</b><span>Questions answered</span></div></div>';
+  if(top.length)h+='<p>You spent the most time on <b>'+aiEsc(top[0])+'</b> ('+trDur(s.foc[top[0]])+')'+(top[1]?', then '+aiEsc(top[1]):'')+'.</p>';
+  if(Object.keys(s.by).length)h+='<div class="ai-list">'+Object.keys(s.by).sort().map(k=>{const o=s.by[k],p=Math.round(o.r/o.n*100);return '<div><span>'+aiEsc(k)+'</span><i><u style="width:'+Math.max(3,p)+'%"></u></i><em>'+o.r+'/'+o.n+'</em></div>';}).join('')+'</div>';
+  if(subs.length>=2)h+='<p>Strongest subject: <b>'+aiEsc(subs[0])+'</b>. Needs more practice: <b>'+aiEsc(subs[subs.length-1])+'</b>.</p>';
+  else if(!s.total)h+='<p>You have not answered any quiz questions yet. Take a quiz and your subject scores will appear here.</p>';
+  else h+='<p>Answer at least 3 questions in two subjects and I will tell you your strongest and weakest.</p>';
+  const chips=[['Open full report','open:progress']];
+  if(subs.length>=2)chips.unshift(['Practise '+subs[subs.length-1],'sub:'+aiSubjects().indexOf(subs[subs.length-1])]);else chips.unshift(['Take a quiz','quiz']);
+  chips.push(['Achievements','awards']);
+  aiSay(h,chips.filter(c=>c[1]!=='sub:-1'));
+}
+function aiAwards(){
+  const s=aiStats(),acc=s.total?s.right/s.total:0;
+  const list=[
+   ['First steps','Answer your first quiz question',s.total>=1,s.total+' answered'],
+   ['Quiz explorer','Answer 25 quiz questions',s.total>=25,s.total+' of 25'],
+   ['Sharp mind','Score 80% or more over at least 10 questions',s.total>=10&&acc>=0.8,s.total>=10?Math.round(acc*100)+'%':s.total+' of 10 answered'],
+   ['All-rounder','Try quizzes in 3 different subjects',Object.keys(s.by).length>=3,Object.keys(s.by).length+' of 3'],
+   ['Regular learner','Use the app on 3 different days',s.days>=3,s.days+' of 3 days'],
+   ['One hour strong','Spend 1 hour learning in the app',s.secAll>=3600,trDur(s.secAll)],
+   ['Robot coder','Earn 3 stars in the Robotics Lab coding missions',s.stars>=3,s.stars+' of 3 stars'],
+   ['Circuit builder','Build a circuit with 4 or more parts',s.parts>=4,s.parts+' of 4 parts']];
+  const got=list.filter(x=>x[2]).length;
+  aiSay('<b>Your achievements</b><p>You have earned <b>'+got+' of '+list.length+'</b> badges.</p><div class="ai-badges">'+
+    list.map(x=>'<div class="'+(x[2]?'on':'')+'"><i>'+(x[2]?'★':'☆')+'</i><div><b>'+x[0]+'</b><span>'+x[1]+'</span><em>'+(x[2]?'Earned':aiEsc(x[3]))+'</em></div></div>').join('')+'</div>',
+    [['Open achievements page','open:awards'],['Take a quiz','quiz'],['Progress Report','progress']]);
+}
+
+function aiDo(cmd,label){
+  if(ai.busy)return;
+  if(label)aiMe(label);
+  aiReply(()=>{
+    if(cmd==='quiz'){ai.quiz=null;aiQuizAsk();}
+    else if(cmd==='progress'){ai.quiz=null;aiProgress();}
+    else if(cmd==='awards'){ai.quiz=null;aiAwards();}
+    else if(cmd.indexOf('sub:')===0){const s=aiSubjects()[Number(cmd.slice(4))];if(s)aiQuizStart(s);else aiQuizAsk();}
+    else if(cmd.indexOf('ans:')===0){if(ai.quiz)aiQuizAnswer(cmd.slice(4));else aiSay('That quiz has ended. Start a new one?',aiMenu());}
+    else if(cmd.indexOf('open:')===0){const v=cmd.slice(5);if(v==='progress'||v==='awards'||v==='quiz'){go(v);return;}}
+    else aiSay('I can help with these.',aiMenu());
+  });
+}
+function aiSend(ev){
+  ev.preventDefault();const el=document.getElementById('aiIn'),text=(el.value||'').trim();if(!text||ai.busy)return false;el.value='';
+  const t=text.toLowerCase();aiMe(text);
+  aiReply(()=>{
+    if(ai.quiz){const m=t.match(/^\s*(?:option\s*)?([abcd])\b/);if(m){aiQuizAnswer(m[1].toUpperCase());return;}}
+    const subs=aiSubjects(),hit=subs.slice().sort((a,b)=>b.length-a.length).find(s=>t.indexOf(s.toLowerCase())>=0);
+    if(/quiz|test|question|practi[cs]e/.test(t)||hit){ai.quiz=null;if(hit)aiQuizStart(hit);else aiQuizAsk();}
+    else if(/progress|report|time|trend|score|how am i|doing/.test(t)){ai.quiz=null;aiProgress();}
+    else if(/achiev|badge|award|star|medal|trophy/.test(t)){ai.quiz=null;aiAwards();}
+    else if(/^(hi|hello|hey|vanakkam|namaste)\b/.test(t))aiSay('Hello '+aiEsc(aiName())+'! Pick one and we will start.',aiMenu());
+    else if(/thank/.test(t))aiSay('You are welcome. Anything else?',aiMenu());
+    else if(ai.quiz)aiSay('Please answer with A, B, C or D, or tap one of the options.',['a','b','c','d'].map(k=>[k.toUpperCase(),'ans:'+k.toUpperCase()]));
+    else aiSay('I can run a quiz, show your progress report or list your achievements. Type one of those, or tap a button.',aiMenu());
+  });
+  return false;
+}
+function aiBack(){return '<div class="rbx-top"><button class="rbx-back" onclick="go(\'ai\')">← AI Assistant</button></div>';}
+function aiReset(){ai={msgs:[],quiz:null,busy:false};aiHello();aiPaint();}
+function aiView(){
+  aiHello();
+  setTimeout(()=>{const b=document.getElementById('aiMsgs');if(b)b.scrollTop=b.scrollHeight;},0);
+  return '<div class="pagehead">'+eyebrow('Quiz · Progress Report · Achievements')+'<h2 class="display">AI Assistant</h2>'+
+    '<p class="muted" style="margin-top:6px">One place for your quizzes, your progress report and your achievements.</p></div>'+
+    '<div class="card ai-card"><div class="ai-top"><span class="ai-dot"></span><b>Learning assistant</b><span class="muted" style="font-size:12px">Grade '+aiEsc(aiGrade())+'</span>'+
+      '<span class="ai-quick">'+aiMenu().map(c=>'<button onclick="aiDo(\''+c[1]+'\',\''+c[0]+'\')">'+c[0]+'</button>').join('')+'<button onclick="aiReset()" aria-label="Start a new chat">New chat</button></span></div>'+
+      '<div class="ai-msgs" id="aiMsgs" aria-live="polite">'+aiMsgsHTML()+'</div>'+
+      '<form class="ai-form" onsubmit="return aiSend(event)"><input id="aiIn" autocomplete="off" placeholder="Type quiz, progress or achievements…" aria-label="Message to the assistant"><button class="btn teal" type="submit">Send</button></form></div>';
+}
+
 /* ─────────── shell ─────────── */
 function navHTML(){
   const t=T();
   const items=[["home",t.home,"grid"],["learn",t.learn,"book"],["live",t.live,"radio"],
-    ["assess",t.assess,"clip"],["quiz",t.quiz,"bolt"],["progress",t.progress,"trend"],["awards",t.awards,"medal"],["lab",t.lab,"flask"]];
+    ["assess",t.assess,"clip"],["ai","AI Assistant","spark"],["lab",t.lab,"flask"]];
   return '<div class="nav">'+items.map(n=>'<button class="'+(state.view===n[0]?'on':'')+'" onclick="go(\''+n[0]+'\')">'+
     I[n[2]](18)+'<span>'+n[1]+'</span></button>').join('')+'</div>';
 }
 function title(){
-  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab};
+  const t=T(), map={home:t.home,learn:t.learn,live:t.live,assess:t.assess,quiz:t.quiz,progress:t.progress,awards:t.awards,lab:t.lab,ai:"AI Assistant"};
   return state.view==="home" ? t.greet+", "+ME().who.split(" ")[0] : map[state.view];
 }
 function bodyHTML(){
   if(state.view==="home") return {student:studentHome,parent:parentHome,teacher:teacherHome,admin:adminHome}[state.role]();
-  return {learn:learnView,live:liveView,assess:assessView,quiz:quizView,progress:progressView,awards:awardsView,lab:labView}[state.view]();
+  return {learn:learnView,live:liveView,assess:assessView,quiz:()=>aiBack()+quizView(),progress:()=>aiBack()+progressView(),awards:()=>aiBack()+awardsView(),lab:labView,ai:aiView}[state.view]();
 }
 /* ─────────── auth screens ─────────── */
 function authScreen(){
@@ -3441,7 +3641,7 @@ function doSignOut(){
 
 /* ─────────── Real activity tracking + Trend analysis ─────────── */
 const QT_KEY='qe_activity', QT_TICK=5;
-const QT_NAMES={home:'Home',learn:'Learn',live:'Live classes',assess:'Assignment',quiz:'Quiz',progress:'Progress Report',awards:'Achievements',lab:'Lab'};
+const QT_NAMES={home:'Home',learn:'Learn',live:'Live classes',assess:'Assignment',quiz:'Quiz',progress:'Progress Report',awards:'Achievements',lab:'Lab',ai:'AI Assistant'};
 let qt={cur:null,lastSync:0};
 function qtLoad(){try{const d=JSON.parse(localStorage.getItem(QT_KEY)||'null');if(d&&Array.isArray(d.s)&&d.f)return d;}catch(e){}return {s:[],f:{}};}
 function qtStore(d){try{if(d.s.length>2000)d.s=d.s.slice(-2000);localStorage.setItem(QT_KEY,JSON.stringify(d));}catch(e){}}

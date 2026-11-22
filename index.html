@@ -3966,14 +3966,13 @@ function labView(){
       '</button>'+
     '</div>';
   };
-  const mine=labBandOf(),sel=state.labAge||mine,fit=(l,b)=>{const r=LAB_AGE[l.id]||[1,12];return r[0]<=b[4]&&r[1]>=b[3];};
+  const mine=labBandOf(),sel=(state.role&&state.role!=='student')?'all':mine,fit=(l,b)=>{const r=LAB_AGE[l.id]||[1,12];return r[0]<=b[4]&&r[1]>=b[3];};
   const top=LABS.filter(l=>!l.grp),pc=LABS.find(l=>l.id==='pcmb');
   const big='<button class="pc-big" style="background:'+pc.bg+'" onclick="openLab(\'pcmb\')"><div><span>PCMB Lab · the biggest lab</span><b>Physics · Chemistry · Maths · Biology</b><p>'+pc.desc+'</p></div><div class="pc-ls"><i>P</i><i>C</i><i>M</i><i>B</i></div></button>';
-  const group=b=>{const labs=top.filter(l=>fit(l,b));return '<div class="rbx-h">'+b[1]+' <span class="muted" style="font-weight:500;font-size:14px">· '+b[2]+(b[0]===mine?' · Your age group':'')+'</span></div><div class="rbx-sub">'+labs.length+' labs for this age group.</div>'+
+  const group=b=>{const labs=top.filter(l=>fit(l,b));return '<div class="rbx-h">'+b[1]+' <span class="muted" style="font-weight:500;font-size:14px">· '+b[2]+(b[0]===mine&&sel!=='all'?' · Your age group':'')+'</span></div><div class="rbx-sub">'+labs.length+' labs for this age group.</div>'+
     (labs.some(l=>l.id==='pcmb')?'<div class="rbx-sub" style="font-weight:700;color:var(--ink)">Core subjects</div>'+big+'<div class="rbx-sub" style="font-weight:700;color:var(--ink);margin-top:14px">Extracurricular labs</div>':'')+'<div class="lab-grid">'+labs.filter(l=>l.id!=='pcmb').map(card).join('')+'</div>';};
   return '<div class="pagehead">'+eyebrow('Interactive Labs')+'<h2 class="display">Virtual Lab Bench</h2>'+
-    '<p class="muted" style="margin-top:6px">Labs are arranged by age group. Choose a group to see the labs made for it.</p></div>'+
-    '<div class="rbx-nav" role="tablist">'+LAB_BANDS.map(b=>'<button role="tab" aria-selected="'+(sel===b[0])+'" class="'+(sel===b[0]?'on':'')+'" onclick="labAge(\''+b[0]+'\')">'+b[1]+' · '+b[2]+(b[0]===mine?' ★':'')+'</button>').join('')+'<button role="tab" aria-selected="'+(sel==='all')+'" class="'+(sel==='all'?'on':'')+'" onclick="labAge(\'all\')">All age groups</button></div>'+
+    '<p class="muted" style="margin-top:6px">'+(sel==='all'?'Labs for every age group, from Class 1 to Class 12.':'These labs are chosen for your class. They change by themselves as you move up.')+'</p></div>'+
     (sel==='all'?LAB_BANDS.map(group).join('<div style="height:18px"></div>'):group(LAB_BANDS.find(b=>b[0]===sel)));
 }
 

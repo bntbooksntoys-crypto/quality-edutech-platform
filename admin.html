@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>QE Admin · Student details</title>
+<script src="report-config.js"></script>
+<style>
+:root{--bg:#EEF1F0;--card:#fff;--ink:#11212D;--slate:#55606A;--line:#D8DEE3;--teal:#0E7C6B;--soft:#DDF1EC;--red:#C8102E;--redSoft:#FBE4E7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:26px;margin:0}h2{font-size:17px;margin:0 0 4px}.muted{color:var(--slate);font-size:13.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+button,.btn{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 14px;cursor:pointer;text-decoration:none;display:inline-block}
+button.main{background:var(--teal);border-color:var(--teal);color:#fff}
+input{font:inherit;border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;background:#fff;color:var(--ink)}
+label{display:block;font-size:13px;font-weight:600;color:var(--slate);margin-bottom:6px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}.tile span{display:block;font-size:12.5px;color:var(--slate)}.tile b{font-size:26px}
+.two{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:14px}
+@media(max-width:800px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px;margin-top:14px;border-bottom:1px solid var(--line)}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--slate)}
+.bars i{display:block;width:100%;background:var(--teal);border-radius:4px 4px 0 0;min-height:2px}
+.axis{display:flex;gap:4px;font-size:10.5px;color:var(--slate);margin-top:4px}.axis span{flex:1;text-align:center}
+.rowbar{display:grid;grid-template-columns:150px 1fr 80px;gap:8px;align-items:center;font-size:13.5px;margin-top:8px}.rowbar div{height:12px;background:var(--bg);border-radius:4px;overflow:hidden}.rowbar i{display:block;height:100%;background:var(--teal)}.rowbar b{text-align:right;font-weight:600}
+.scroll{overflow:auto;max-height:460px;margin-top:10px;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:#F6F8F8;font-size:12px;color:var(--slate);cursor:pointer}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.err{background:var(--redSoft);color:var(--red);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:14px}
+.login{max-width:420px;margin:60px auto 0}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let pw='',data=null,q='',sort=['last',-1];
+async function ask(password){
+  const url=window.QE_REPORT_URL;
+  if(!url||!/^https:\/\/script\.google\.com\//.test(url))return {ok:false,error:'config'};
+  try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({key:window.QE_REPORT_KEY||'',action:'admin',password:password})});return await r.json();}
+  catch(e){return {ok:false,error:'network'};}
+}
+const ERR={wrong:'Wrong admin password.',wait:'Too many tries. Wait 10 minutes and try again.',notset:'The admin password is not set yet. In Apps Script, open Project Settings → Script properties and add ADMIN_PASSWORD (8 characters or more).',config:'report-config.js on this site has no Apps Script address.',network:'Could not reach Google. Check the internet connection, and that the Apps Script has a new version deployed.','Wrong key':'The key in report-config.js does not match QE_KEY in Script properties.'};
+function loginView(msg){
+  $('app').innerHTML='<div class="card login"><h1>QE Admin</h1><p class="muted">Student details from your Google Sheet. For the school admin only.</p>'+
+    '<form id="f" style="margin-top:16px"><label for="p">Admin password</label><input id="p" type="password" autocomplete="current-password" required><button class="main" style="margin-top:12px;width:100%" id="go">Open</button></form>'+(msg?'<div class="err">'+esc(msg)+'</div>':'')+'</div>';
+  $('f').onsubmit=async e=>{e.preventDefault();const v=$('p').value;$('go').textContent='Opening…';$('go').disabled=true;const r=await ask(v);if(r&&r.ok){pw=v;data=r;dash();}else loginView(ERR[r&&r.error]||'Could not open. Try again.');};
+  $('p').focus();
+}
+async function refresh(){$('rf').textContent='Refreshing…';const r=await ask(pw);if(r&&r.ok){data=r;dash();}else{pw='';data=null;loginView(ERR[r&&r.error]||'Could not refresh.');}}
+function out(){pw='';data=null;loginView();}
+function csv(){const rows=[['Name','Email','Grade','Age','First seen','Last login','Logins','Signed up on this site']].concat(data.users.map(u=>[u.name,u.email,u.grade,u.age,u.first,u.last,u.logins,u.signedUp]));
+  const text=rows.map(r=>r.map(c=>{c=String(c==null?'':c);if(/^[=+\-@]/.test(c))c="'"+c;return '"'+c.replace(/"/g,'""')+'"';}).join(',')).join('\r\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+text],{type:'text/csv'}));a.download='qe-students.csv';a.click();}
+function setSort(k){sort=[k,sort[0]===k?-sort[1]:1];users();}
+function users(){
+  const t=q.toLowerCase(),list=data.users.filter(u=>!t||(u.name+' '+u.email+' '+u.grade).toLowerCase().indexOf(t)>=0).sort((a,b)=>{const x=a[sort[0]],y=b[sort[0]];return (typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y)))*sort[1];});
+  const th=(k,l,n)=>'<th class="'+(n?'num':'')+'" onclick="setSort(\''+k+'\')">'+l+(sort[0]===k?(sort[1]>0?' ▲':' ▼'):'')+'</th>';
+  $('ut').innerHTML='<table><thead><tr>'+th('name','Name')+th('email','Email')+th('grade','Grade')+th('age','Age',1)+th('first','First seen')+th('last','Last login')+th('logins','Logins',1)+'</tr></thead><tbody>'+
+    (list.length?list.map(u=>'<tr><td>'+esc(u.name)+'</td><td>'+esc(u.email)+'</td><td>'+esc(u.grade)+'</td><td class="num">'+esc(u.age)+'</td><td>'+esc(u.first)+'</td><td>'+esc(u.last)+'</td><td class="num">'+u.logins+'</td></tr>').join(''):'<tr><td colspan="7" class="muted">No students match.</td></tr>')+'</tbody></table>';
+  $('uc').textContent=list.length+' of '+data.users.length+' students';
+}
+function dash(){
+  const d=data,t=d.totals,mx=Math.max(1,...d.daily.map(x=>x.n)),ms=Math.max(1,...d.sections.map(x=>x.sec));
+  $('app').innerHTML='<div class="top"><div><h1>QE Admin · Student details</h1><div class="muted">Updated '+esc(d.generated)+' · read from your Google Sheet</div></div>'+
+    '<div><button id="rf" onclick="refresh()">Refresh</button> <a class="btn" href="'+esc(d.sheet)+'" target="_blank" rel="noopener">Open Google Sheet</a> <button onclick="out()">Sign out</button></div></div>'+
+    '<div class="tiles">'+[['Accounts',t.accounts],['Students seen',t.users],['Logins today',t.loginsToday],['Active this week',t.activeWeek]].map(x=>'<div class="tile"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div>'+
+    '<div class="two"><div class="card"><h2>Logins each day</h2><div class="muted">Last 14 days · '+t.logins14+' logins and sign-ups</div><div class="bars" role="img" aria-label="Logins each day for the last 14 days">'+d.daily.map(x=>'<div title="'+esc(x.date)+': '+x.n+'">'+(x.n||'')+'<i style="height:'+(x.n/mx*100).toFixed(0)+'%"></i></div>').join('')+'</div>'+
+      '<div class="axis">'+d.daily.map(x=>'<span>'+esc(x.date.slice(8))+'</span>').join('')+'</div></div>'+
+    '<div class="card"><h2>Most used sections</h2><div class="muted">Last 7 days · total time '+esc(t.timeWeek)+'</div>'+(d.sections.length?d.sections.map(x=>'<div class="rowbar"><span>'+esc(x.name)+'</span><div><i style="width:'+(x.sec/ms*100).toFixed(0)+'%"></i></div><b>'+esc(x.time)+'</b></div>').join(''):'<p class="muted">No activity yet.</p>')+'</div></div>'+
+    '<div class="card"><div class="top"><div><h2>Students</h2><div class="muted" id="uc"></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="q" placeholder="Search name, email or grade" style="width:240px" value="'+esc(q)+'"><button onclick="csv()">Download CSV</button></div></div><div class="scroll" id="ut"></div><p class="muted" style="margin:10px 0 0">Passwords are never shown or stored in readable form.</p></div>'+
+    '<div class="card"><h2>Recent logins and sign-ups</h2><div class="muted">Latest '+d.logins.length+'</div><div class="scroll"><table><thead><tr><th>Time</th><th>Event</th><th>Name</th><th>Email</th><th>Grade</th><th class="num">Age</th></tr></thead><tbody>'+
+      (d.logins.length?d.logins.map(l=>'<tr><td>'+esc(l.time)+'</td><td>'+esc(l.event)+'</td><td>'+esc(l.name)+'</td><td>'+esc(l.email)+'</td><td>'+esc(l.grade)+'</td><td class="num">'+esc(l.age)+'</td></tr>').join(''):'<tr><td colspan="6" class="muted">No logins recorded yet.</td></tr>')+'</tbody></table></div></div>';
+  $('q').oninput=e=>{q=e.target.value;users();};users();
+}
+loginView();
+</script>
+</body>
+</html>

@@ -5028,6 +5028,13 @@ function render(){
 /* ─────────── auth actions ─────────── */
 function switchAuth(screen){state.auth={screen,error:'',loading:false};render();}
 
+/* accounts kept online (Google Sheet through the Apps Script), so one account works on every device */
+async function qeCloud(action,data){
+  const url=window.QE_REPORT_URL;if(!url||!/^https:\/\/script\.google\.com\//.test(url))return null;
+  try{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),15000);
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',signal:ctl.signal,body:JSON.stringify(Object.assign({key:window.QE_REPORT_KEY||'',action:action},data))});
+    clearTimeout(tm);return await r.json();}catch(e){return null;}
+}
 async function doSignIn(e){
   e.preventDefault();
   const email=document.getElementById('f_email').value.trim().toLowerCase();
@@ -5036,8 +5043,20 @@ async function doSignIn(e){
   try {
     const pwHash = await sha256(password);
     const users = getUsers();
-    const user = users.find(u=>u.email===email && u.passwordHash===pwHash);
-    if(!user){ qeLog('failed',{email:email}); throw new Error('Incorrect email or password.'); }
+    let user = users.find(u=>u.email===email && u.passwordHash===pwHash);
+    if(user){ qeCloud('register',{email:user.email,name:user.name,grade:user.grade,age:user.age,hash:pwHash}); }   /* copies an older account online, in the background */
+    else{
+      const res = await qeCloud('login',{email:email,hash:pwHash});
+      if(res&&res.ok&&res.user){
+        user={name:res.user.name,email:email,passwordHash:pwHash,grade:res.user.grade,age:Number(res.user.age)||'',createdAt:new Date().toISOString()};
+        saveUsers(users.filter(u=>u.email!==email).concat([user]));
+      }else{
+        qeLog('failed',{email:email});
+        if(res&&res.error==='wait') throw new Error('Too many tries. Wait 10 minutes and try again.');
+        if(!res&&!users.find(u=>u.email===email)) throw new Error('This account is not on this device yet. Connect to the internet and try again.');
+        throw new Error('Incorrect email or password.');
+      }
+    }
     const userData = {name:user.name,email:user.email,grade:user.grade,age:user.age};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
@@ -5065,6 +5084,8 @@ async function doSignUp(e){
     const users = getUsers();
     if(users.find(u=>u.email===email)) throw new Error('An account with this email already exists.');
     const pwHash = await sha256(password);
+    const res = await qeCloud('register',{email:email,name:name,grade:grade,age:Number(age),hash:pwHash});
+    if(res&&res.error==='exists') throw new Error('An account with this email already exists. Sign in instead.');
     users.push({name,email,passwordHash:pwHash,grade,age:Number(age),createdAt:new Date().toISOString()});
     saveUsers(users);
     const userData = {name,email,grade,age:Number(age)};

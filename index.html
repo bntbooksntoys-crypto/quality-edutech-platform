@@ -5150,7 +5150,7 @@ async function doSignIn(e){
     else{
       const res = await qeCloud('login',{email:email,hash:pwHash});
       if(res&&res.ok&&res.user){
-        user={name:res.user.name,email:email,passwordHash:pwHash,grade:res.user.grade,age:Number(res.user.age)||'',createdAt:new Date().toISOString()};
+        user={name:res.user.name,email:email,passwordHash:pwHash,grade:res.user.grade,age:Number(res.user.age)||'',createdAt:new Date().toISOString()};if(res.user.address)user.address=res.user.address;
         saveUsers(users.filter(u=>u.email!==email).concat([user]));
       }else{
         qeLog('failed',{email:email});
@@ -5160,6 +5160,7 @@ async function doSignIn(e){
       }
     }
     const userData = {name:user.name,email:user.email,grade:user.grade,age:user.age};
+    if(user.address)userData.address=user.address;else userData.needAddress=true;   /* older accounts are asked for the address once */
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
     state.user = userData; qeLog('signin',userData); setTimeout(qtBeat,50);
@@ -5226,7 +5227,7 @@ function doAddress(e){
   if(Object.keys(a).some(k=>!a[k])){state.auth.error='Please fill in every blank.';render();return;}
   if(!/^[1-9][0-9]{5}$/.test(a.pin)){state.auth.error='The PIN code must have 6 digits.';render();return;}
   const u=state.user;u.address=a;delete u.needAddress;
-  try{localStorage.setItem('qe_user',JSON.stringify(u));const users=getUsers(),me=users.find(x=>x.email===u.email);if(me){me.address=a;saveUsers(users);}}catch(err){}
+  try{localStorage.setItem('qe_user',JSON.stringify(u));const users=getUsers(),me=users.find(x=>x.email===u.email);if(me){me.address=a;saveUsers(users);qeCloud('address',{email:u.email,name:u.name,grade:u.grade,age:u.age,hash:me.passwordHash,address:a});}}catch(err){}
   state.auth={screen:'app',error:'',loading:false};setTimeout(qtBeat,50);render();
 }
 

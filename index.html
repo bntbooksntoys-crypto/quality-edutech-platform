@@ -697,6 +697,7 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .rbl-obs{position:absolute;background:#8A5A2B;border-radius:4px;border:2px solid #5B3A1A}
 .rbl-beam{position:absolute;left:92%;top:30%;height:40%;border-radius:0 40% 40% 0;pointer-events:none}
 #rbLvIn{position:relative}
+.auth-row .auth-field{min-width:0}.auth-row .auth-field input,.auth-row .auth-field select{min-width:0;width:100%}
 </style>
 <!-- Google Translate -->
 <style>
@@ -5081,6 +5082,10 @@ function render(){
     document.getElementById('app').innerHTML = authScreen();
     return;
   }
+  if(state.user.needAddress){
+    document.getElementById('app').innerHTML = addressScreen();
+    return;
+  }
 
   const t=T(), me=ME();
   const u=state.user;
@@ -5185,18 +5190,44 @@ async function doSignUp(e){
     if(res&&res.error==='exists') throw new Error('An account with this email already exists. Sign in instead.');
     users.push({name,email,passwordHash:pwHash,grade,age:Number(age),createdAt:new Date().toISOString()});
     saveUsers(users);
-    const userData = {name,email,grade,age:Number(age)};
+    const userData = {name,email,grade,age:Number(age),needAddress:true};
     localStorage.setItem('qe_token','local-'+Date.now());
     localStorage.setItem('qe_user',JSON.stringify(userData));
-    state.user = userData; qeLog('signup',userData); setTimeout(qtBeat,50);
+    state.user = userData; qeLog('signup',userData);
     const _gm2=String(grade).match(/\d+/); state.libGrade=_gm2?parseInt(_gm2[0])||8:8;
-    state.auth = {screen:'app',error:'',loading:false};
+    state.auth = {screen:'address',error:'',loading:false};
     render();
   } catch(err){
     state.auth.error = err.message;
     state.auth.loading = false;
     render();
   }
+}
+
+/* address page: shown once, straight after sign-up */
+const QE_STATES=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'];
+function addressScreen(){
+  const s=state.auth,err=s.error?'<div class="auth-error">'+s.error+'</div>':'',f=(id,label,ph,extra)=>'<div class="auth-field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" required maxlength="80" '+(extra||'')+'/></div>';
+  return '<div class="auth-bg"><div class="auth-box">'+
+    '<div class="auth-brand">'+I.cap(28)+'<div><div class="auth-brand-name">Quality Education</div><div class="auth-brand-sub">EDTECH PLATFORM</div></div></div>'+
+    '<h2 class="auth-title">Your address</h2><p class="auth-sub">Step 2 of 2 · One last step, '+aiEsc(String(state.user.name||'').split(' ')[0])+'. Fill in every blank.</p>'+err+
+    '<form class="auth-form" onsubmit="doAddress(event)">'+
+      f('a_line1','House or flat number, and street','e.g. 12, Gandhi Street','autocomplete="address-line1"')+
+      f('a_area','Area or village','e.g. Anna Nagar','autocomplete="address-line2"')+
+      '<div class="auth-row">'+f('a_city','City or town','e.g. Chennai','autocomplete="address-level2"')+f('a_dist','District','e.g. Chennai')+'</div>'+
+      '<div class="auth-row"><div class="auth-field"><label for="a_state">State</label><select id="a_state" required autocomplete="address-level1"><option value="">Select state</option>'+QE_STATES.map(x=>'<option>'+x+'</option>').join('')+'</select></div>'+
+        f('a_pin','PIN code','6 digits','inputmode="numeric" pattern="[1-9][0-9]{5}" title="A 6-digit PIN code" autocomplete="postal-code"')+'</div>'+
+      '<button type="submit" class="auth-btn">Save and continue →</button>'+
+    '</form></div></div>';
+}
+function doAddress(e){
+  e.preventDefault();
+  const v=id=>document.getElementById(id).value.replace(/[<>]/g,'').trim(),a={line1:v('a_line1'),area:v('a_area'),city:v('a_city'),district:v('a_dist'),state:v('a_state'),pin:v('a_pin')};
+  if(Object.keys(a).some(k=>!a[k])){state.auth.error='Please fill in every blank.';render();return;}
+  if(!/^[1-9][0-9]{5}$/.test(a.pin)){state.auth.error='The PIN code must have 6 digits.';render();return;}
+  const u=state.user;u.address=a;delete u.needAddress;
+  try{localStorage.setItem('qe_user',JSON.stringify(u));const users=getUsers(),me=users.find(x=>x.email===u.email);if(me){me.address=a;saveUsers(users);}}catch(err){}
+  state.auth={screen:'app',error:'',loading:false};setTimeout(qtBeat,50);render();
 }
 
 function doSignOut(){

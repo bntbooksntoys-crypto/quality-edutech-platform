@@ -53,14 +53,14 @@ function loginView(msg){
 }
 async function refresh(){$('rf').textContent='Refreshing…';const r=await ask(pw);if(r&&r.ok){data=r;dash();}else{pw='';data=null;loginView(ERR[r&&r.error]||'Could not refresh.');}}
 function out(){pw='';data=null;loginView();}
-function csv(){const rows=[['Name','Email','Grade','Age','First seen','Last login','Logins','Signed up on this site']].concat(data.users.map(u=>[u.name,u.email,u.grade,u.age,u.first,u.last,u.logins,u.signedUp]));
+function csv(){const rows=[['Name','Email','Grade','Age','First seen','Last login','Logins','Signed up on this site','Address']].concat(data.users.map(u=>[u.name,u.email,u.grade,u.age,u.first,u.last,u.logins,u.signedUp,u.address]));
   const text=rows.map(r=>r.map(c=>{c=String(c==null?'':c);if(/^[=+\-@]/.test(c))c="'"+c;return '"'+c.replace(/"/g,'""')+'"';}).join(',')).join('\r\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+text],{type:'text/csv'}));a.download='qe-students.csv';a.click();}
 function setSort(k){sort=[k,sort[0]===k?-sort[1]:1];users();}
 function users(){
-  const t=q.toLowerCase(),list=data.users.filter(u=>!t||(u.name+' '+u.email+' '+u.grade).toLowerCase().indexOf(t)>=0).sort((a,b)=>{const x=a[sort[0]],y=b[sort[0]];return (typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y)))*sort[1];});
+  const t=q.toLowerCase(),list=data.users.filter(u=>!t||(u.name+' '+u.email+' '+u.grade+' '+(u.address||'')).toLowerCase().indexOf(t)>=0).sort((a,b)=>{const x=a[sort[0]],y=b[sort[0]];return (typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y)))*sort[1];});
   const th=(k,l,n)=>'<th class="'+(n?'num':'')+'" onclick="setSort(\''+k+'\')">'+l+(sort[0]===k?(sort[1]>0?' ▲':' ▼'):'')+'</th>';
-  $('ut').innerHTML='<table><thead><tr>'+th('name','Name')+th('email','Email')+th('grade','Grade')+th('age','Age',1)+th('first','First seen')+th('last','Last login')+th('logins','Logins',1)+'</tr></thead><tbody>'+
-    (list.length?list.map(u=>'<tr><td>'+esc(u.name)+'</td><td>'+esc(u.email)+'</td><td>'+esc(u.grade)+'</td><td class="num">'+esc(u.age)+'</td><td>'+esc(u.first)+'</td><td>'+esc(u.last)+'</td><td class="num">'+u.logins+'</td></tr>').join(''):'<tr><td colspan="7" class="muted">No students match.</td></tr>')+'</tbody></table>';
+  $('ut').innerHTML='<table><thead><tr>'+th('name','Name')+th('email','Email')+th('grade','Grade')+th('age','Age',1)+th('first','First seen')+th('last','Last login')+th('logins','Logins',1)+th('address','Address')+'</tr></thead><tbody>'+
+    (list.length?list.map(u=>'<tr><td>'+esc(u.name)+'</td><td>'+esc(u.email)+'</td><td>'+esc(u.grade)+'</td><td class="num">'+esc(u.age)+'</td><td>'+esc(u.first)+'</td><td>'+esc(u.last)+'</td><td class="num">'+u.logins+'</td><td>'+esc(u.address||'Not given')+'</td></tr>').join(''):'<tr><td colspan="8" class="muted">No students match.</td></tr>')+'</tbody></table>';
   $('uc').textContent=list.length+' of '+data.users.length+' students';
 }
 function dash(){
@@ -71,7 +71,7 @@ function dash(){
     '<div class="two"><div class="card"><h2>Logins each day</h2><div class="muted">Last 14 days · '+t.logins14+' logins and sign-ups</div><div class="bars" role="img" aria-label="Logins each day for the last 14 days">'+d.daily.map(x=>'<div title="'+esc(x.date)+': '+x.n+'">'+(x.n||'')+'<i style="height:'+(x.n/mx*100).toFixed(0)+'%"></i></div>').join('')+'</div>'+
       '<div class="axis">'+d.daily.map(x=>'<span>'+esc(x.date.slice(8))+'</span>').join('')+'</div></div>'+
     '<div class="card"><h2>Most used sections</h2><div class="muted">Last 7 days · total time '+esc(t.timeWeek)+'</div>'+(d.sections.length?d.sections.map(x=>'<div class="rowbar"><span>'+esc(x.name)+'</span><div><i style="width:'+(x.sec/ms*100).toFixed(0)+'%"></i></div><b>'+esc(x.time)+'</b></div>').join(''):'<p class="muted">No activity yet.</p>')+'</div></div>'+
-    '<div class="card"><div class="top"><div><h2>Students</h2><div class="muted" id="uc"></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="q" placeholder="Search name, email or grade" style="width:240px" value="'+esc(q)+'"><button onclick="csv()">Download CSV</button></div></div><div class="scroll" id="ut"></div><p class="muted" style="margin:10px 0 0">Passwords are never shown or stored in readable form.</p></div>'+
+    '<div class="card"><div class="top"><div><h2>Students</h2><div class="muted" id="uc"></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="q" placeholder="Search name, email, grade or address" style="width:240px" value="'+esc(q)+'"><button onclick="csv()">Download CSV</button></div></div><div class="scroll" id="ut"></div><p class="muted" style="margin:10px 0 0">Passwords are never shown or stored in readable form.</p></div>'+
     '<div class="card"><h2>Recent logins and sign-ups</h2><div class="muted">Latest '+d.logins.length+'</div><div class="scroll"><table><thead><tr><th>Time</th><th>Event</th><th>Name</th><th>Email</th><th>Grade</th><th class="num">Age</th></tr></thead><tbody>'+
       (d.logins.length?d.logins.map(l=>'<tr><td>'+esc(l.time)+'</td><td>'+esc(l.event)+'</td><td>'+esc(l.name)+'</td><td>'+esc(l.email)+'</td><td>'+esc(l.grade)+'</td><td class="num">'+esc(l.age)+'</td></tr>').join(''):'<tr><td colspan="6" class="muted">No logins recorded yet.</td></tr>')+'</tbody></table></div></div>';
   $('q').oninput=e=>{q=e.target.value;users();};users();

@@ -694,6 +694,9 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .gm-clock b{font-family:var(--display);font-size:28px;font-variant-numeric:tabular-nums}.gm-clock em{font-style:normal;font-size:12.5px;color:var(--slate)}
 .gm-track{height:10px;border-radius:5px;background:var(--canvas);overflow:hidden}.gm-track i{display:block;height:100%;background:var(--teal);transition:width 1s linear}
 .gm-q{font-size:19px;font-weight:600;line-height:1.5;margin:16px 0 4px}
+.rbl-obs{position:absolute;background:#8A5A2B;border-radius:4px;border:2px solid #5B3A1A}
+.rbl-beam{position:absolute;left:92%;top:30%;height:40%;border-radius:0 40% 40% 0;pointer-events:none}
+#rbLvIn{position:relative}
 </style>
 <!-- Google Translate -->
 <style>
@@ -3034,72 +3037,166 @@ function rbCodeHTML(){
     '</div>';
 }
 
-/* ── My Robot: drive a preview robot; a real robot can be linked over USB ── */
-rb.live={x:100,y:60,a:0,cmd:'S',speed:5,raf:0,last:0,link:false,note:'',port:null,writer:null};
+/* ── My Robot: a sensor car. Circuits + 3D model together, an on-screen test drive, and a link to a real hardware car over USB ── */
+rb.live={x:30,y:60,a:0,cmd:'S',speed:5,raf:0,last:0,link:false,note:'',port:null,writer:null,reader:null,view:'car',auto:false,real:null,spin:false};
 const RB_AW=200, RB_AH=120;   /* arena size in cm */
-function rbLiveDist(){const L=rb.live,r=L.a*Math.PI/180,dx=Math.cos(r),dy=Math.sin(r);let t=1e9;
-  if(dx>0)t=Math.min(t,(RB_AW-L.x)/dx);if(dx<0)t=Math.min(t,(0-L.x)/dx);if(dy>0)t=Math.min(t,(RB_AH-L.y)/dy);if(dy<0)t=Math.min(t,(0-L.y)/dy);
-  return Math.max(0,t-9);}
+const RB_OBS=[[90,20,16,34],[140,74,26,16],[60,86,14,14]];   /* obstacles: x, y, width, height in cm */
+function rbLiveRay(x,y,dx,dy){let t=1e9;
+  if(dx>0)t=Math.min(t,(RB_AW-x)/dx);if(dx<0)t=Math.min(t,(0-x)/dx);if(dy>0)t=Math.min(t,(RB_AH-y)/dy);if(dy<0)t=Math.min(t,(0-y)/dy);
+  RB_OBS.forEach(o=>{let a=0,b=1e9;[[x,dx,o[0],o[0]+o[2]],[y,dy,o[1],o[1]+o[3]]].forEach(q=>{if(Math.abs(q[1])<1e-9){if(q[0]<q[2]||q[0]>q[3])a=1e9;}else{let t1=(q[2]-q[0])/q[1],t2=(q[3]-q[0])/q[1];if(t1>t2)[t1,t2]=[t2,t1];a=Math.max(a,t1);b=Math.min(b,t2);}});if(a<=b&&a>=0)t=Math.min(t,a);});
+  return t;}
+/* the sensor sees a cone, modelled as three rays across the width of the car */
+function rbLiveDist(){const L=rb.live,r=L.a*Math.PI/180,dx=Math.cos(r),dy=Math.sin(r);return Math.max(0,Math.min(...[-9,0,9].map(k=>rbLiveRay(L.x-dy*k,L.y+dx*k,dx,dy)))-9);}
 function rbLinked(){return !!rb.live.link||rb.tab==='circuits';}
 function rbConnText(){
-  if(rb.live.link)return 'A robot kit is connected over USB.';
+  if(rb.live.link)return 'A hardware car is connected over USB.';
   return {circuits:'Circuit simulator connected. Build your circuit and press Start simulation.',model:'No 3D printer is connected. This is an on-screen model.',
-    code:'No robot is connected. Your program drives the on-screen robot.',live:'No robot is connected. The remote drives the preview robot only.'}[rb.tab]||'';
+    code:'No robot is connected. Your program drives the on-screen robot.',live:'No hardware car is connected. Everything here runs on the on-screen car.'}[rb.tab]||'';
 }
 function rbLivePaint(){
   const ts=document.getElementById('rbTopSt');if(ts){ts.className='rbl-status'+(rbLinked()?' on':'');ts.innerHTML='<i></i>'+(rbLinked()?'Connected':'Not connected');
     const tx=document.getElementById('rbTopTx');if(tx)tx.textContent=rbConnText();}
-  const L=rb.live,g=id=>document.getElementById(id);if(!g('rbLv'))return;
-  g('rbLv').style.left=(L.x/RB_AW*100)+'%';g('rbLv').style.top=(L.y/RB_AH*100)+'%';g('rbLvIn').style.transform='rotate('+L.a+'deg)';
-  const d=rbLiveDist();g('rbLvD').textContent=d.toFixed(0)+' cm';g('rbLvA').textContent=(((Math.round(L.a)%360)+360)%360)+'°';
-  g('rbLvC').textContent={F:'Forward',B:'Backward',L:'Turning left',R:'Turning right',S:'Stopped'}[L.cmd];
+  const L=rb.live,g=id=>document.getElementById(id),set=(id,v)=>{const e=g(id);if(e)e.textContent=v;},d=rbLiveDist();
+  if(g('rbLv')){g('rbLv').style.left=(L.x/RB_AW*100)+'%';g('rbLv').style.top=(L.y/RB_AH*100)+'%';g('rbLvIn').style.transform='rotate('+L.a+'deg)';
+    const bm=g('rbLvBeam');if(bm){bm.style.width=(Math.min(d,60)/24*100)+'%';bm.style.background=d<25?'rgba(200,16,46,.35)':'rgba(14,124,107,.28)';}}
+  set('rbLvD',d.toFixed(0)+' cm');set('rbLvA',(((Math.round(L.a)%360)+360)%360)+'°');set('rbLvC',{F:'Forward',B:'Backward',L:'Turning left',R:'Turning right',S:'Stopped'}[L.cmd]);
+  set('rbLvReal',L.link?(L.real==null?'Waiting…':L.real+' cm'):'Not connected');
   document.querySelectorAll('.rbl-pad button').forEach(b=>b.classList.toggle('on',b.dataset.c===L.cmd&&L.cmd!=='S'));
-  g('rbLvSt').className='rbl-status'+(L.link?' on':'');g('rbLvSt').innerHTML='<i></i>'+(L.link?'Connected':'Not connected');
-  g('rbLvBtn').textContent=L.link?'Disconnect':'Connect robot';
-  g('rbLvNote').textContent=L.note||(L.link?'Your buttons now drive the real robot too.':'No robot is connected. The buttons drive the preview robot only.');
-  g('rbLvMode').textContent=L.link?'Real robot + preview':'Preview only';
+  document.querySelectorAll('.rbLvSt').forEach(e=>{e.className='rbl-status rbLvSt'+(L.link?' on':'');e.innerHTML='<i></i>'+(L.link?'Connected':'Not connected');});
+  set('rbLvBtn',L.link?'Disconnect':'Connect hardware car');const ab=g('rbLvAuto');if(ab){ab.textContent=L.auto?'■ Stop auto mode':'▶ Auto mode: avoid obstacles';ab.setAttribute('aria-pressed',L.auto);}
+  set('rbLvNote',L.note||(L.auto?'Auto mode: the car drives forward and turns when the sensor sees something closer than 25 cm.':L.link?'Your buttons now drive the hardware car too.':'No hardware car is connected. The buttons drive the on-screen car only.'));
+  set('rbLvMode',L.link?'Hardware car + on-screen car':'On-screen car only');
 }
 function rbLiveTick(ts){
-  const L=rb.live;if(!document.getElementById('rbLv')||L.cmd==='S'){L.raf=0;return;}
-  const dt=Math.min(0.05,(ts-(L.last||ts))/1000);L.last=ts;const v=8+L.speed*6,r=L.a*Math.PI/180;
+  const L=rb.live;if(!document.getElementById('rbLv')||(L.cmd==='S'&&!L.auto)){L.raf=0;return;}
+  const dt=Math.min(0.05,(ts-(L.last||ts))/1000);L.last=ts;const v=8+L.speed*6,r=L.a*Math.PI/180,d=rbLiveDist();
+  if(L.auto){const want=d<25?'R':(L.cmd==='R'&&d<45?'R':'F');if(want!==L.cmd)L.cmd=want;}
   if(L.cmd==='L')L.a-=120*dt;else if(L.cmd==='R')L.a+=120*dt;
-  else{const s=(L.cmd==='F'?1:-1)*v*dt;
-    if(L.cmd==='F'&&rbLiveDist()<=2){L.cmd='S';L.note='Obstacle ahead! The robot stopped by itself.';rbLiveSend('S');rbLivePaint();L.raf=0;return;}
-    L.x=Math.max(10,Math.min(RB_AW-10,L.x+Math.cos(r)*s));L.y=Math.max(10,Math.min(RB_AH-10,L.y+Math.sin(r)*s));}
+  else if(L.cmd!=='S'){const s=(L.cmd==='F'?1:-1)*v*dt;
+    if(L.cmd==='F'&&d<=2){L.cmd='S';L.note='Obstacle ahead! The sensor stopped the car.';rbLiveSend('S');rbLivePaint();L.raf=0;return;}
+    const nx=Math.max(10,Math.min(RB_AW-10,L.x+Math.cos(r)*s)),ny=Math.max(10,Math.min(RB_AH-10,L.y+Math.sin(r)*s));
+    if(!RB_OBS.some(o=>nx>o[0]-8&&nx<o[0]+o[2]+8&&ny>o[1]-8&&ny<o[1]+o[3]+8)&&(nx!==L.x||ny!==L.y)){L.x=nx;L.y=ny;}
+    else if(L.auto)L.a+=120*dt;   /* touching something the sensor cannot see: turn away */
+    else L.note='The car is touching an obstacle. Turn or reverse.';}
   rbLivePaint();L.raf=requestAnimationFrame(rbLiveTick);
 }
-function rbLiveCmd(c){const L=rb.live;L.cmd=c;L.note='';L.last=0;rbLiveSend(c);rbLivePaint();if(c!=='S'&&!L.raf)L.raf=requestAnimationFrame(rbLiveTick);}
+function rbLiveCmd(c){const L=rb.live;if(L.auto){L.auto=false;rbLiveSend('M');}L.cmd=c;L.note='';L.last=0;rbLiveSend(c);rbLivePaint();if(c!=='S'&&!L.raf)L.raf=requestAnimationFrame(rbLiveTick);}
+function rbLiveAuto(){const L=rb.live;L.auto=!L.auto;L.note='';L.last=0;if(L.auto){L.cmd='F';rbLiveSend('A');if(!L.raf)L.raf=requestAnimationFrame(rbLiveTick);}else{L.cmd='S';rbLiveSend('M');}rbLivePaint();}
+function rbLiveReset(){const L=rb.live;L.auto=false;L.cmd='S';L.x=30;L.y=60;L.a=0;L.note='';rbLiveSend('M');rbLivePaint();}
 function rbLiveSpeed(el){rb.live.speed=Number(el.value);const o=document.getElementById('rbLvSp');if(o)o.textContent=el.value;}
-function rbLiveSend(c){const L=rb.live;if(L.link&&L.writer){L.writer.write(new TextEncoder().encode(c)).catch(()=>rbLiveDrop('The robot stopped answering.'));}}
-function rbLiveDrop(note){const L=rb.live;try{if(L.writer)L.writer.releaseLock();}catch(e){}try{if(L.port)L.port.close();}catch(e){}L.port=null;L.writer=null;L.link=false;L.note=note||'';rbLivePaint();}
+function rbLiveSend(c){const L=rb.live;if(L.link&&L.writer){L.writer.write(new TextEncoder().encode(c)).catch(()=>rbLiveDrop('The hardware car stopped answering.'));}}
+function rbLiveDrop(note){const L=rb.live;try{if(L.reader)L.reader.cancel();}catch(e){}try{if(L.writer)L.writer.releaseLock();}catch(e){}const p=L.port;L.port=null;L.writer=null;L.reader=null;L.link=false;L.real=null;L.note=note||'';setTimeout(()=>{try{if(p)p.close();}catch(e){}},200);rbLivePaint();}
+async function rbLiveRead(port){const L=rb.live,dec=new TextDecoder();let buf='';
+  try{L.reader=port.readable.getReader();for(;;){const r=await L.reader.read();if(r.done)break;buf+=dec.decode(r.value,{stream:true});let i;while((i=buf.indexOf('\n'))>=0){const m=buf.slice(0,i).trim().match(/^D:(\d{1,4})$/);buf=buf.slice(i+1);if(m){L.real=Number(m[1]);const e=document.getElementById('rbLvReal');if(e)e.textContent=L.real+' cm';}}if(buf.length>200)buf='';}}
+  catch(e){}finally{try{if(L.reader)L.reader.releaseLock();}catch(e){}}}
 async function rbLiveConnect(){
   const L=rb.live;
-  if(L.link){rbLiveSend('S');rbLiveDrop('Robot disconnected.');return;}
-  if(!('serial' in navigator)){L.note='Not connected. This browser cannot link to a robot here. Use Chrome or Edge on a computer, on a secure (https) or localhost address.';rbLivePaint();return;}
+  if(L.link){rbLiveSend('S');rbLiveDrop('Hardware car disconnected.');return;}
+  if(!('serial' in navigator)){L.note='Not connected. This browser cannot link to hardware. Use Chrome or Edge on a computer, on the online (https) site.';rbLivePaint();return;}
   try{
     const port=await navigator.serial.requestPort();await port.open({baudRate:9600});
-    L.port=port;L.writer=port.writable.getWriter();L.link=true;L.note='';
-    port.addEventListener('disconnect',()=>rbLiveDrop('The robot was unplugged.'));
-  }catch(e){L.note='Not connected. No robot was selected.';}
+    L.port=port;L.writer=port.writable.getWriter();L.link=true;L.note='';L.real=null;rbLiveRead(port);
+    port.addEventListener('disconnect',()=>rbLiveDrop('The hardware car was unplugged.'));
+  }catch(e){L.note='Not connected. No device was selected.';}
   rbLivePaint();
 }
 function rbLiveKey(e){const c={ArrowUp:'F',ArrowDown:'B',ArrowLeft:'L',ArrowRight:'R',' ':'S'}[e.key];if(c){e.preventDefault();rbLiveCmd(c);}}
+function rbLiveView(v){const L=rb.live;L.auto=false;L.cmd='S';rb.live.view=v;render();}
+const RB_CAR_CODE=`// QE Sensor Car: Arduino Uno + L298N motor driver + HC-SR04 sensor
+const int IN1 = 5, IN2 = 6, IN3 = 7, IN4 = 8;   // motor driver
+const int TRIG = 9, ECHO = 10;                  // distance sensor
+char cmd = 'S';
+bool autoMode = false;
+unsigned long lastSend = 0;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(IN1, OUTPUT); pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT); pinMode(IN4, OUTPUT);
+  pinMode(TRIG, OUTPUT); pinMode(ECHO, INPUT);
+}
+
+long distanceCm() {
+  digitalWrite(TRIG, LOW);  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH); delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+  long t = pulseIn(ECHO, HIGH, 30000);
+  return t == 0 ? 400 : t / 58;
+}
+
+void drive(char c) {                 // left motor: IN1, IN2   right motor: IN3, IN4
+  digitalWrite(IN1, c == 'F' || c == 'R');
+  digitalWrite(IN2, c == 'B' || c == 'L');
+  digitalWrite(IN3, c == 'F' || c == 'L');
+  digitalWrite(IN4, c == 'B' || c == 'R');
+}
+
+void loop() {
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 'A') autoMode = true;
+    else if (c == 'M') { autoMode = false; cmd = 'S'; }
+    else if (c == 'F' || c == 'B' || c == 'L' || c == 'R' || c == 'S') { cmd = c; autoMode = false; }
+  }
+  long d = distanceCm();
+  if (autoMode) cmd = (d < 25) ? 'R' : 'F';      // turn away from obstacles
+  if (cmd == 'F' && d < 15) cmd = 'S';           // safety stop
+  drive(cmd);
+  if (millis() - lastSend > 200) { lastSend = millis(); Serial.print("D:"); Serial.println(d); }
+}`;
+function rbCarCopy(){const b=document.getElementById('rbCarCp');(navigator.clipboard?navigator.clipboard.writeText(RB_CAR_CODE):Promise.reject()).then(()=>{if(b)b.textContent='Copied';},()=>{if(b)b.textContent='Select the code and copy it';});}
+function rbCar3d(){
+  const L=rb.live,K='#1D1D1F',wh=(x,z)=>'<div style="left:0;top:0;transform:translate3d('+x+'px,34px,'+z+'px)"><div class="mw-sz" style="left:0;top:0">'+rbBox(40,40,14,0,0,0,K)+'</div></div>';
+  setTimeout(mwWire,0);
+  return '<div class="'+(L.spin?'mw-on':'')+'"><div class="rbx-stage" id="mwStage" tabindex="0" role="application" aria-label="3D model of the sensor car. Drag or use the arrow keys to rotate."><div class="rbx-model" id="mwModel" style="transform:scale(1.15) rotateX('+mw.rx+'deg) rotateY('+mw.ry+'deg)">'+
+    rbBox(190,10,96,0,22,0,'#0E7C6B')+wh(-62,56)+wh(62,56)+wh(-62,-56)+wh(62,-56)+
+    rbBox(30,22,22,-62,34,36,'#E8A317')+rbBox(30,22,22,-62,34,-36,'#E8A317')+rbBox(30,22,22,62,34,36,'#E8A317')+rbBox(30,22,22,62,34,-36,'#E8A317')+
+    rbBox(70,8,54,-30,12,0,'#1E63D0')+rbBox(44,14,44,36,9,0,'#D32F2F')+rbBox(60,26,30,-40,-6,0,'#1D1D1F')+
+    rbBox(8,30,6,90,2,0,'#8A99A3')+rbBox(6,24,50,96,-14,0,'#2F6FDB')+rbBox(10,16,16,101,-14,-13,'#C9CED3')+rbBox(10,16,16,101,-14,13,'#C9CED3')+
+    rbBox(70,2,40,140,-14,0,'rgba(14,124,107,.35)')+'</div></div></div>';
+}
+function rbCarWire(){
+  const box=(x,y,w,h,f,t,s)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="8" fill="'+f+'" stroke="#11212D" stroke-width="1.5"/><text x="'+(x+w/2)+'" y="'+(y+h/2-(s?4:-4))+'" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">'+t+'</text>'+(s?'<text x="'+(x+w/2)+'" y="'+(y+h/2+13)+'" text-anchor="middle" font-size="10.5" fill="#fff" opacity=".9">'+s+'</text>':'');
+  const w=(d,c)=>'<path d="'+d+'" fill="none" stroke="'+c+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>',pin=(x,y,t,a)=>'<text x="'+x+'" y="'+y+'" font-size="10" font-weight="700" fill="#11212D" text-anchor="'+(a||'start')+'">'+t+'</text>';
+  return '<svg viewBox="0 0 640 380" class="mw-svg" role="img" aria-label="Wiring diagram of the sensor car"><rect width="640" height="380" fill="#F6F1E4"/>'+
+    w('M134 96H250','#D32F2F')+w('M134 116H250','#1D1D1F')+w('M134 136H240V150H250','#2E9E4F')+w('M134 156H230V172H250','#F2C230')+
+    w('M400 222H450','#1E63D0')+w('M400 240H450','#1E63D0')+w('M400 258H450','#8A4FD6')+w('M400 276H450','#8A4FD6')+
+    w('M510 200V150H560','#E8A317')+w('M530 200V170H560','#E8A317')+w('M510 300V330H560','#E8A317')+w('M530 300V350H560 ','#E8A317')+
+    w('M130 300H325V290','#D32F2F')+w('M130 320H480V300','#D32F2F')+w('M130 340H345V290','#1D1D1F')+w('M345 340H500V300','#1D1D1F')+
+    box(14,70,120,110,'#2F6FDB','HC-SR04','Distance sensor')+box(250,80,150,210,'#0E7C6B','Arduino Uno','The brain')+box(450,200,100,100,'#D32F2F','L298N','Motor driver')+
+    box(560,130,70,60,'#E8A317','Motor','Left')+box(560,315,70,60,'#E8A317','Motor','Right')+box(30,285,100,70,'#1D1D1F','Battery','7.4 V to 9 V')+
+    pin(140,91,'VCC → 5V')+pin(140,111,'GND → GND')+pin(140,131,'Trig → D9')+pin(140,151,'Echo → D10')+
+    pin(446,218,'D5 → IN1','end')+pin(446,236,'D6 → IN2','end')+pin(446,254,'D7 → IN3','end')+pin(446,272,'D8 → IN4','end')+pin(136,296,'+ → VIN and 12V')+pin(136,354,'− → GND and GND')+'</svg>';
+}
 function rbLiveHTML(){
   setTimeout(rbLivePaint,0);
-  const btn=(c,l,a)=>'<button data-c="'+c+'" aria-label="'+a+'" onclick="rbLiveCmd(\''+c+'\')">'+l+'</button>';
-  return '<div class="rbx-two">'+
-    '<div class="card rbx-pad"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><b>Robot preview</b><span class="rbl-status" id="rbLvSt"><i></i>Not connected</span></div>'+
-      '<div class="rbl-arena" tabindex="0" onkeydown="rbLiveKey(event)" aria-label="Robot arena. Use the arrow keys to drive and space to stop."><div class="rbl-bot" id="rbLv"><div id="rbLvIn">'+
-        '<svg viewBox="0 0 60 48" aria-hidden="true"><rect x="8" y="0" width="16" height="8" rx="2" fill="#22343F"/><rect x="8" y="40" width="16" height="8" rx="2" fill="#22343F"/><rect x="4" y="6" width="46" height="36" rx="8" fill="#0E7C6B"/><rect x="14" y="14" width="20" height="20" rx="3" fill="#2F6FDB"/><rect x="46" y="12" width="8" height="24" rx="2" fill="#F5A524"/><circle cx="50" cy="18" r="2.5" fill="#fff"/><circle cx="50" cy="30" r="2.5" fill="#fff"/></svg>'+
+  const L=rb.live,v=L.view,tabs=[['car','1. Car and sensor (3D)'],['wire','2. Wiring (circuit)'],['drive','3. Test drive'],['hw','4. Connect hardware']];
+  const btn=(c,l,a)=>'<button data-c="'+c+'" aria-label="'+a+'" onclick="rbLiveCmd(\''+c+'\')">'+l+'</button>',st='<span class="rbl-status rbLvSt"><i></i>Not connected</span>';
+  const parts=[['Chassis','The flat base that holds every part.','#0E7C6B'],['4 wheels and 4 DC motors','The motors turn the wheels.','#E8A317'],['Arduino Uno','The brain. It runs the program.','#1E63D0'],['L298N motor driver','Lets the small Arduino signals switch the large motor current.','#D32F2F'],['Battery pack','Powers the Arduino and the motors.','#1D1D1F'],['HC-SR04 ultrasonic sensor','Sends out sound and times the echo to measure distance.','#2F6FDB']];
+  let body='';
+  if(v==='car')body='<div class="sx-layout"><div class="card rbx-pad">'+rbCar3d()+'<div class="rbx-ctl"><button class="btn ghost" aria-pressed="'+L.spin+'" onclick="rb.live.spin=!rb.live.spin;render()">'+(L.spin?'■ Stop the motors':'▶ Run the motors')+'</button><span class="muted" style="font-size:13px">Drag the model to turn it. The pale green strip is the sensor beam.</span></div></div>'+
+      '<div class="card rbx-pad"><b>What the car is made of</b><ol class="mw-leg">'+parts.map(p=>'<li><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+p[2]+';margin-right:6px"></i><b>'+p[0]+'</b>: '+p[1]+'</li>').join('')+'</ol>'+
+      '<div class="rb-msg" style="margin-top:12px">This car joins your two skills: the <b>3D model</b> gives the body, and the <b>circuit</b> gives it power, movement and a sense of distance.</div><button class="btn teal" style="margin-top:10px" onclick="rbLiveView(\'wire\')">Next: the wiring</button></div></div>';
+  else if(v==='wire')body='<div class="sx-layout"><div class="card rbx-pad">'+rbCarWire()+'</div><div class="card rbx-pad"><b>Connections</b><div style="overflow:auto"><table class="tu-tab"><tr><th>From</th><th>To</th></tr>'+
+      [['Sensor VCC','Arduino 5V'],['Sensor GND','Arduino GND'],['Sensor Trig','Arduino D9'],['Sensor Echo','Arduino D10'],['Driver IN1, IN2','Arduino D5, D6 (left motors)'],['Driver IN3, IN4','Arduino D7, D8 (right motors)'],['Driver OUT1, OUT2','Left motors'],['Driver OUT3, OUT4','Right motors'],['Battery +','Driver 12V and Arduino VIN'],['Battery −','Driver GND and Arduino GND']].map(r=>'<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td></tr>').join('')+'</table></div>'+
+      '<div class="rb-msg" style="margin-top:10px"><b>How the sensor works:</b> Trig sends a short burst of sound. Echo goes high until the sound comes back. Distance in cm = time in microseconds ÷ 58.</div>'+
+      '<div class="rbap-safe" style="margin-bottom:0"><b>Safety:</b> Join the wires with the battery unplugged. Check + and − twice before switching on. Ask a teacher to check your wiring.</div><button class="btn teal" style="margin-top:10px" onclick="rbLiveView(\'drive\')">Next: test drive</button></div></div>';
+  else if(v==='drive')body='<div class="rbx-two"><div class="card rbx-pad"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><b>Test track</b>'+st+'</div>'+
+      '<div class="rbl-arena" tabindex="0" onkeydown="rbLiveKey(event)" aria-label="Test track. Use the arrow keys to drive and space to stop.">'+RB_OBS.map(o=>'<div class="rbl-obs" style="left:'+(o[0]/RB_AW*100)+'%;top:'+(o[1]/RB_AH*100)+'%;width:'+(o[2]/RB_AW*100)+'%;height:'+(o[3]/RB_AH*100)+'%"></div>').join('')+
+        '<div class="rbl-bot" id="rbLv"><div id="rbLvIn"><div id="rbLvBeam" class="rbl-beam"></div>'+
+        '<svg viewBox="0 0 60 48" aria-hidden="true"><rect x="8" y="0" width="16" height="8" rx="2" fill="#22343F"/><rect x="8" y="40" width="16" height="8" rx="2" fill="#22343F"/><rect x="34" y="0" width="14" height="8" rx="2" fill="#22343F"/><rect x="34" y="40" width="14" height="8" rx="2" fill="#22343F"/><rect x="4" y="6" width="46" height="36" rx="8" fill="#0E7C6B"/><rect x="12" y="14" width="18" height="20" rx="3" fill="#1E63D0"/><rect x="46" y="12" width="8" height="24" rx="2" fill="#2F6FDB"/><circle cx="50" cy="18" r="3" fill="#C9CED3"/><circle cx="50" cy="30" r="3" fill="#C9CED3"/></svg>'+
       '</div></div></div>'+
-      '<div class="rbx-read"><div><b id="rbLvD"></b><span>Distance sensor</span></div><div><b id="rbLvA"></b><span>Heading</span></div><div><b id="rbLvC"></b><span>Motors</span></div></div>'+
-      '<div class="rb-msg" id="rbLvNote" aria-live="polite"></div></div>'+
-    '<div class="card rbx-pad"><b>Remote control</b>'+
-      '<div class="rbl-pad"><span></span>'+btn('F','▲','Forward')+'<span></span>'+btn('L','◀','Turn left')+btn('S','■','Stop')+btn('R','▶','Turn right')+'<span></span>'+btn('B','▼','Backward')+'<span></span></div>'+
-      '<div class="rbx-ctl"><label for="rbLvS">Speed</label><input id="rbLvS" type="range" min="1" max="10" value="'+rb.live.speed+'" oninput="rbLiveSpeed(this)" style="flex:1;min-width:120px;accent-color:#0E7C6B"><b id="rbLvSp">'+rb.live.speed+'</b></div>'+
-      '<div class="rbx-ctl"><button class="btn solid" id="rbLvBtn" onclick="rbLiveConnect()">Connect robot</button><span class="muted" style="font-size:13px">Mode: <b id="rbLvMode"></b></span></div>'+
-      '<details class="rb-link"><summary style="cursor:pointer;font-weight:600">How a real robot connects</summary>Plug an Arduino robot into the computer with a USB cable and press Connect robot. The page sends one letter for each button at 9600 baud: F forward, B backward, L left, R right, S stop. The robot program reads the letter and drives its motors.</details>'+
-      '<div class="rb-link"><span class="rb-chip">Physics: speed and distance</span><span class="rb-chip">Maths: angles</span><span class="rb-chip">Coding: sending commands</span></div></div></div>';
+      '<div class="rbx-read"><div><b id="rbLvD"></b><span>Distance sensor</span></div><div><b id="rbLvA"></b><span>Heading</span></div><div><b id="rbLvC"></b><span>Motors</span></div></div><div class="rb-msg" id="rbLvNote" aria-live="polite"></div></div>'+
+    '<div class="card rbx-pad"><b>Remote control</b><div class="rbl-pad"><span></span>'+btn('F','▲','Forward')+'<span></span>'+btn('L','◀','Turn left')+btn('S','■','Stop')+btn('R','▶','Turn right')+'<span></span>'+btn('B','▼','Backward')+'<span></span></div>'+
+      '<div class="rbx-ctl"><label for="rbLvS">Speed</label><input id="rbLvS" type="range" min="1" max="10" value="'+L.speed+'" oninput="rbLiveSpeed(this)" style="flex:1;min-width:120px;accent-color:#0E7C6B"><b id="rbLvSp">'+L.speed+'</b></div>'+
+      '<div class="rbx-ctl"><button class="btn teal" id="rbLvAuto" aria-pressed="false" onclick="rbLiveAuto()"></button><button class="btn ghost" onclick="rbLiveReset()">Back to start</button></div>'+
+      '<div class="rbx-sub" style="margin-top:10px">Mode: <b id="rbLvMode"></b></div><div class="rb-link"><span class="rb-chip">Physics: sound and echo</span><span class="rb-chip">Maths: speed, distance, time</span><span class="rb-chip">Coding: if and else</span></div></div></div>';
+  else body='<div class="sx-layout"><div class="card rbx-pad"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>Arduino program for the car</b><button class="btn ghost" id="rbCarCp" onclick="rbCarCopy()">Copy the code</button></div><pre class="sm-code" style="max-height:420px">'+aiEsc(RB_CAR_CODE)+'</pre></div>'+
+    '<div class="card rbx-pad"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b>Hardware car</b>'+st+'</div><ol class="sx-steps"><li>Build the car and wire it as shown in step 2.</li><li>Copy the code and upload it to the Arduino Uno with the Arduino IDE.</li><li>Close the Arduino Serial Monitor.</li><li>Keep the USB cable plugged in and press <b>Connect hardware car</b>.</li><li>Choose the Arduino in the list. Then open <b>Test drive</b> and use the remote.</li></ol>'+
+      '<div class="rbx-ctl"><button class="btn solid" id="rbLvBtn" onclick="rbLiveConnect()">Connect hardware car</button></div>'+sxRead([['Real sensor reading','<span id="rbLvReal">Not connected</span>'],['Mode','<span id="rbLvMode"></span>']])+
+      '<div class="rb-msg" id="rbLvNote" aria-live="polite"></div><div class="rbx-sub" style="margin-top:10px">Works in Chrome or Edge on a computer, on the online site. The page sends one letter for each button: F, B, L, R, S, and A for auto mode. The car sends back its distance reading.</div></div></div>';
+  return '<div class="rbx-h" style="margin-top:0">My Robot: the sensor car</div><div class="rbx-sub">Circuits + 3D modeling = a car that senses obstacles. Learn it here, test it on screen, then connect the real hardware.</div>'+
+    '<div class="rbx-seg" style="margin-bottom:12px">'+tabs.map(t=>'<button class="'+(v===t[0]?'on':'')+'" onclick="rbLiveView(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>'+body;
 }
 /* ─────────── Robotics Lab: Save and open named work on each station ─────────── */
 const RB_SV_TABS={circuits:'circuit',model:'3D model view',code:'program',music:'tune'};

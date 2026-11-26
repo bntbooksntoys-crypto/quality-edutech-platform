@@ -3030,13 +3030,16 @@ function b3HTML(){
 const PR_MAT={PLA:[1.24,'200 °C','Easy to print. Made from plants. Best for school models.'],PETG:[1.27,'235 °C','Stronger and a little flexible. Good for parts that are used outdoors.'],ABS:[1.04,'245 °C','Tough and heat resistant. Needs a closed printer and fresh air.']};
 let pr={p:0,run:false,timer:0,layer:0.2,infill:20,mat:'PLA',ph:0};
 function prBox(){let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,top=0;b3.b.forEach(q=>{x0=Math.min(x0,q.x-q.w/2);x1=Math.max(x1,q.x+q.w/2);z0=Math.min(z0,q.z-q.d/2);z1=Math.max(z1,q.z+q.d/2);top=Math.max(top,-(q.y-q.h/2));});return b3.b.length?{w:x1-x0,d:z1-z0,h:top,cx:(x0+x1)/2,cz:(z0+z1)/2}:{w:0,d:0,h:0,cx:0,cz:0};}
-function prStats(){const bx=prBox(),vol=b3.b.reduce((a,q)=>a+q.w*q.h*q.d,0)/1000,plastic=vol*(0.2+0.8*pr.infill/100),g=plastic*PR_MAT[pr.mat][0];
+function prStats(){const k=pr.scale||1,b0=prBox(),bx={w:b0.w*k,d:b0.d*k,h:b0.h*k,cx:b0.cx,cz:b0.cz};let vol=0,plastic=0;
+  /* each shape is printed as a 1.2 mm solid skin with a lighter infill pattern inside, as a slicer does */
+  b3.b.forEach(q=>{const w=q.w*k,h=q.h*k,d=q.d*k,v=w*h*d,skin=Math.min(v,2*(w*h+w*d+h*d)*1.2);vol+=v;plastic+=skin+(v-skin)*pr.infill/100;});vol/=1000;plastic/=1000;
+  const g=plastic*PR_MAT[pr.mat][0];
   const float=b3.b.filter(q=>{const bot=q.y+q.h/2;if(bot>-0.5)return false;return !b3.b.some(o=>o!==q&&Math.abs((o.y-o.h/2)-bot)<1.5&&Math.abs(o.x-q.x)<(o.w+q.w)/2&&Math.abs(o.z-q.z)<(o.d+q.d)/2);}).length;
-  return {bx:bx,vol:vol,plastic:plastic,g:g,m:plastic*1000/(Math.PI*0.875*0.875)/1000,hours:plastic/(15*pr.layer/0.2),layers:Math.ceil(bx.h/pr.layer),fits:bx.w<=220&&bx.d<=220&&bx.h<=250,float:float};}
-function prTime(h){const m=Math.round(h*60);return m<60?m+' min':Math.floor(m/60)+' h '+(m%60)+' min';}
+  return {bx:bx,vol:vol,plastic:plastic,g:g,m:plastic*1000/(Math.PI*0.875*0.875)/1000,hours:plastic/(14.4*pr.layer/0.2)+0.1,layers:Math.ceil(bx.h/pr.layer),fits:bx.w<=220&&bx.d<=220&&bx.h<=250,float:float};}
+function prTime(h){const m=Math.max(1,Math.round(h*60));if(m<60)return m+' min';if(m<1440)return Math.floor(m/60)+' h '+(m%60)+' min';const d=Math.floor(m/1440);return d+' day'+(d===1?'':'s')+' '+Math.round((m-d*1440)/60)+' h';}
 /* realistic printer: heats up, homes, prints each layer by tracing the outline of the shapes while the bed slides, then cools down */
 const PR_TEMP={PLA:[200,60],PETG:[235,80],ABS:[245,100]};
-Object.assign(pr,{stage:'idle',tn:25,tb:25,wait:0});
+Object.assign(pr,{stage:'idle',tn:25,tb:25,wait:0,scale:0.5});
 /* a box whose side walls show the layer lines of printed plastic */
 function prLayerBox(w,h,d,x,y,z,col){
   const ln='repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0 1px,rgba(255,255,255,.06) 1px 2px,transparent 2px 3px)';
@@ -3064,9 +3067,9 @@ function prModel(){
 }
 function prPaint(){
   const m=document.getElementById('prModel');if(!m)return;m.innerHTML=prModel();
-  const s=prStats(),pc=s.bx.h?Math.min(100,pr.p/s.bx.h*100):0,set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;},T=PR_TEMP[pr.mat];
+  const s=prStats(),H=prBox().h,pc=H?Math.min(100,pr.p/H*100):0,set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;},T=PR_TEMP[pr.mat];
   const bar=document.getElementById('prBar');if(bar)bar.style.width=pc.toFixed(1)+'%';
-  set('prPc',pc.toFixed(0)+' %');set('prLay',Math.min(s.layers,Math.ceil(pr.p/pr.layer))+' of '+s.layers);set('prLeft',pr.stage==='done'?'Finished':prTime(s.hours*(1-pc/100)));
+  set('prPc',pc.toFixed(0)+' %');set('prLay',Math.min(s.layers,Math.ceil(s.layers*pc/100))+' of '+s.layers);set('prLeft',pc>=100?'Finished':prTime(s.hours*(1-pc/100)));
   const st={idle:'Ready',heat:'Heating the nozzle and the bed',home:'Finding the start position',print:'Printing',cool:'Cooling down',done:'Finished. Remove the model when the bed is cool.'}[pr.stage];
   set('prLcdS',st);set('prLcdN',Math.round(pr.tn)+' / '+(pr.stage==='idle'||pr.stage==='cool'||pr.stage==='done'?0:T[0])+' °C');set('prLcdB',Math.round(pr.tb)+' / '+(pr.stage==='idle'||pr.stage==='cool'||pr.stage==='done'?0:T[1])+' °C');set('prLcdP',pc.toFixed(0)+' %');
   const b=document.getElementById('prGo');if(b)b.textContent=pr.run?'❚❚ Pause':pr.stage==='done'?'↺ Print again':pr.stage==='idle'?'▶ Start printing':'▶ Continue';
@@ -3094,24 +3097,25 @@ function prWire(){const st=document.getElementById('prStage'),m=document.getElem
   st.onpointerup=st.onpointercancel=()=>{px=null;};prPaint();}
 function prSTL(){
   if(!b3.b.length)return;const out=['solid qe_model'],f=(n,a,b,c)=>out.push('facet normal '+n.join(' '),' outer loop','  vertex '+a.join(' '),'  vertex '+b.join(' '),'  vertex '+c.join(' '),' endloop','endfacet');
-  b3.b.forEach(q=>{const x0=q.x-q.w/2,x1=q.x+q.w/2,y0=q.z-q.d/2,y1=q.z+q.d/2,z0=-(q.y+q.h/2),z1=-(q.y-q.h/2),v=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]];
+  const K=pr.scale||1,R=n=>+(n*K).toFixed(3);b3.b.forEach(q=>{const x0=R(q.x-q.w/2),x1=R(q.x+q.w/2),y0=R(q.z-q.d/2),y1=R(q.z+q.d/2),z0=R(-(q.y+q.h/2)),z1=R(-(q.y-q.h/2)),v=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]];
     [[[0,0,-1],0,2,1,0,3,2],[[0,0,1],4,5,6,4,6,7],[[0,-1,0],0,1,5,0,5,4],[[0,1,0],2,3,7,2,7,6],[[-1,0,0],0,4,7,0,7,3],[[1,0,0],1,2,6,1,6,5]].forEach(s=>{f(s[0],v[s[1]],v[s[2]],v[s[3]]);f(s[0],v[s[4]],v[s[5]],v[s[6]]);});});
   out.push('endsolid qe_model');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out.join('\n')],{type:'model/stl'}));a.download='my-model.stl';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-  const n=document.getElementById('prNote');if(n)n.textContent='Saved my-model.stl. Open it in the slicer program of a 3D printer.';
+  const n=document.getElementById('prNote');if(n)n.textContent='Saved my-model.stl at '+(K*100)+' % size. Open it in the slicer program of a 3D printer.';
 }
 function prHTML(){
   if(!b3.b.length)return '<div class="card rbx-pad"><div class="rb-msg">There is no model to print. Open <b>Build your own model</b> and add some shapes first.</div></div>';
   setTimeout(prWire,0);const s=prStats(),seg=(f,list,cur,fmt)=>'<div class="rbx-seg" style="margin-top:6px">'+list.map(v=>'<button class="'+(cur===v?'on':'')+'" onclick="prSet(\''+f+'\',\''+v+'\')">'+fmt(v)+'</button>').join('')+'</div>';
-  const warn=(!s.fits?'<div class="rb-msg bad">The model is '+s.bx.w.toFixed(0)+' × '+s.bx.d.toFixed(0)+' × '+s.bx.h.toFixed(0)+' mm. It is too big for the 220 × 220 × 250 mm printer. Make it smaller in the builder.</div>':'')+
+  const warn=(!s.fits?'<div class="rb-msg bad">The model is '+s.bx.w.toFixed(0)+' × '+s.bx.d.toFixed(0)+' × '+s.bx.h.toFixed(0)+' mm. It is too big for the 220 × 220 × 250 mm printer. Choose a smaller print size.</div>':'')+
     (s.float?'<div class="rb-msg">'+s.float+' shape'+(s.float===1?' has':'s have')+' nothing underneath. A real printer cannot print in the air, so these need support material.</div>':'');
   return '<div class="rbx-two"><div class="card rbx-pad"><b style="display:block;margin-bottom:10px">3D printer</b>'+
       '<div class="rbx-stage" id="prStage" style="height:470px" tabindex="0" aria-label="3D printer printing your model. Drag to turn the view."><div class="rbx-model" id="prWrap" style="top:80%;transform:scale(.7) rotateX('+b3.rx+'deg) rotateY('+b3.ry+'deg)"><div id="prModel" style="left:0;top:0"></div></div>'+
         '<div class="pr-lcd" aria-live="polite"><b id="prLcdS">Ready</b><div><span>Nozzle</span><i id="prLcdN"></i></div><div><span>Bed</span><i id="prLcdB"></i></div><div><span>Done</span><i id="prLcdP"></i></div></div></div>'+
       '<div class="gm-track" style="margin-top:12px"><i id="prBar" style="width:0%;transition:none"></i></div>'+
-      '<div class="rbx-read"><div><b id="prPc">0 %</b><span>Printed</span></div><div><b id="prLay"></b><span>Layer</span></div><div><b id="prLeft"></b><span>Real time left</span></div></div>'+
+      '<div class="rbx-read"><div><b id="prPc">0 %</b><span>Printed</span></div><div><b id="prLay"></b><span>Layer</span></div><div><b id="prLeft"></b><span>Time left on a real printer</span></div></div>'+
       '<div class="rbx-ctl"><button class="btn teal" id="prGo" onclick="prGo()">▶ Start printing</button><button class="btn ghost" onclick="prReset()">Reset</button><button class="btn solid" onclick="prSTL()">⬇ Download STL file</button></div>'+
-      '<div class="rb-msg" id="prNote" aria-live="polite">To print on a real 3D printer, download the STL file and open it in the printer\'s slicer program.</div>'+warn+'</div>'+
+      '<div class="rbx-sub" style="margin-top:8px">The picture runs fast so you can watch the whole print in about half a minute. The time shown is what a real printer would need.</div><div class="rb-msg" id="prNote" aria-live="polite">To print on a real 3D printer, download the STL file and open it in the printer\'s slicer program.</div>'+warn+'</div>'+
     '<div class="card rbx-pad"><b>Print settings</b>'+
+      '<div class="b3-h">Print size</div>'+seg('scale',[0.25,0.5,1],pr.scale,v=>(v*100)+' %')+'<div class="rbx-sub" style="margin-top:6px">A smaller print is much quicker. At half size it needs about one eighth of the plastic.</div>'+
       '<div class="b3-h">Material</div>'+seg('mat',Object.keys(PR_MAT),pr.mat,v=>v)+'<div class="rbx-sub" style="margin-top:6px">'+PR_MAT[pr.mat][2]+' Nozzle temperature: '+PR_MAT[pr.mat][1]+'.</div>'+
       '<div class="b3-h">Layer height</div>'+seg('layer',[0.1,0.2,0.3],pr.layer,v=>v+' mm')+'<div class="rbx-sub" style="margin-top:6px">Thin layers look smoother but take longer.</div>'+
       '<div class="b3-h">Infill (how solid the inside is)</div>'+seg('infill',[10,20,50,100],pr.infill,v=>v+' %')+'<div class="rbx-sub" style="margin-top:6px">More infill is stronger, but uses more plastic and time.</div>'+

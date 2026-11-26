@@ -3039,7 +3039,9 @@ function prStats(){const k=pr.scale||1,b0=prBox(),bx={w:b0.w*k,d:b0.d*k,h:b0.h*k
 function prTime(h){const m=Math.max(1,Math.round(h*60));if(m<60)return m+' min';if(m<1440)return Math.floor(m/60)+' h '+(m%60)+' min';const d=Math.floor(m/1440);return d+' day'+(d===1?'':'s')+' '+Math.round((m-d*1440)/60)+' h';}
 /* realistic printer: heats up, homes, prints each layer by tracing the outline of the shapes while the bed slides, then cools down */
 const PR_TEMP={PLA:[200,60],PETG:[235,80],ABS:[245,100]};
-Object.assign(pr,{stage:'idle',tn:25,tb:25,wait:0,scale:0.5});
+Object.assign(pr,{stage:'idle',tn:25,tb:25,wait:0,scale:0.5,speed:1,last:0});
+function prClock(h){const t=Math.max(0,Math.round(h*3600)),d=Math.floor(t/86400),hh=Math.floor(t%86400/3600),mm=Math.floor(t%3600/60),ss=t%60,p=n=>String(n).padStart(2,'0');return (d?d+' day'+(d===1?' ':'s '):'')+p(hh)+':'+p(mm)+':'+p(ss);}
+function prSpeed(v){pr.speed=Number(v);pr.last=0;document.querySelectorAll('#prSpd button').forEach(b=>b.classList.toggle('on',Number(b.dataset.v)===pr.speed));}
 /* a box whose side walls show the layer lines of printed plastic */
 function prLayerBox(w,h,d,x,y,z,col){
   const ln='repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0 1px,rgba(255,255,255,.06) 1px 2px,transparent 2px 3px)';
@@ -3069,7 +3071,7 @@ function prPaint(){
   const m=document.getElementById('prModel');if(!m)return;m.innerHTML=prModel();
   const s=prStats(),H=prBox().h,pc=H?Math.min(100,pr.p/H*100):0,set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;},T=PR_TEMP[pr.mat];
   const bar=document.getElementById('prBar');if(bar)bar.style.width=pc.toFixed(1)+'%';
-  set('prPc',pc.toFixed(0)+' %');set('prLay',Math.min(s.layers,Math.ceil(s.layers*pc/100))+' of '+s.layers);set('prLeft',pc>=100?'Finished':prTime(s.hours*(1-pc/100)));
+  set('prPc',pc.toFixed(0)+' %');set('prLay',Math.min(s.layers,Math.ceil(s.layers*pc/100))+' of '+s.layers);set('prLeft',pc>=100?'Finished':prClock(s.hours*(1-pc/100)));
   const st={idle:'Ready',heat:'Heating the nozzle and the bed',home:'Finding the start position',print:'Printing',cool:'Cooling down',done:'Finished. Remove the model when the bed is cool.'}[pr.stage];
   set('prLcdS',st);set('prLcdN',Math.round(pr.tn)+' / '+(pr.stage==='idle'||pr.stage==='cool'||pr.stage==='done'?0:T[0])+' °C');set('prLcdB',Math.round(pr.tb)+' / '+(pr.stage==='idle'||pr.stage==='cool'||pr.stage==='done'?0:T[1])+' °C');set('prLcdP',pc.toFixed(0)+' %');
   const b=document.getElementById('prGo');if(b)b.textContent=pr.run?'❚❚ Pause':pr.stage==='done'?'↺ Print again':pr.stage==='idle'?'▶ Start printing':'▶ Continue';
@@ -3077,17 +3079,19 @@ function prPaint(){
 function prStop(){clearInterval(pr.timer);pr.timer=0;pr.run=false;}
 function prTick(){
   if(!document.getElementById('prModel')){prStop();return;}
-  const h=prBox().h,T=PR_TEMP[pr.mat];
-  if(pr.stage==='heat'){pr.tn=Math.min(T[0],pr.tn+(T[0]-25)/65);pr.tb=Math.min(T[1],pr.tb+(T[1]-25)/65);if(pr.tn>=T[0]&&pr.tb>=T[1]){pr.stage='home';pr.wait=16;}}
-  else if(pr.stage==='home'){if(--pr.wait<=0)pr.stage='print';}
-  else if(pr.stage==='print'){pr.p=Math.min(h,pr.p+h/420);pr.ph+=0.045;pr.tn=T[0]+Math.sin(pr.ph*3)*1.2;if(pr.p>=h){pr.stage='cool';}}
-  else if(pr.stage==='cool'){pr.tn=Math.max(45,pr.tn-4);pr.tb=Math.max(35,pr.tb-1.2);if(pr.tn<=45){pr.stage='done';prStop();}}
+  const h=prBox().h,T=PR_TEMP[pr.mat],now=Date.now(),dt=Math.min(0.5,(now-(pr.last||now))/1000);pr.last=now;
+  /* speed 1 is real time: one second on the clock takes one second. 0 is the quick demo of about 30 seconds. */
+  const total=prStats().hours*3600,heat=pr.speed===1?60:pr.speed===0?4:Math.max(4,60/Math.sqrt(pr.speed));
+  if(pr.stage==='heat'){const k=dt/heat;pr.tn=Math.min(T[0],pr.tn+(T[0]-25)*k);pr.tb=Math.min(T[1],pr.tb+(T[1]-25)*k);if(pr.tn>=T[0]&&pr.tb>=T[1]){pr.stage='home';pr.wait=1;}}
+  else if(pr.stage==='home'){pr.wait-=dt;if(pr.wait<=0)pr.stage='print';}
+  else if(pr.stage==='print'){pr.p=Math.min(h,pr.p+h*(pr.speed===0?dt/26:dt*pr.speed/total));pr.ph+=dt*0.75;pr.tn=T[0]+Math.sin(pr.ph*3)*1.2;if(pr.p>=h){pr.stage='cool';}}
+  else if(pr.stage==='cool'){pr.tn=Math.max(45,pr.tn-dt*60);pr.tb=Math.max(35,pr.tb-dt*18);if(pr.tn<=45){pr.stage='done';prStop();}}
   prPaint();
 }
 function prGo(){
   if(!prBox().h)return;if(pr.run){prStop();prPaint();return;}
   if(pr.stage==='done'||pr.stage==='idle'){pr.p=0;pr.ph=0;pr.stage='heat';if(pr.tn>60)pr.tn=60;}
-  pr.run=true;pr.timer=setInterval(prTick,60);prPaint();
+  pr.run=true;pr.last=0;pr.timer=setInterval(prTick,60);prPaint();
 }
 function prReset(){prStop();pr.p=0;pr.ph=0;pr.stage='idle';pr.tn=25;pr.tb=25;prPaint();}
 function prSet(f,v){pr[f]=f==='mat'?v:Number(v);if(pr.stage!=='idle'){prStop();pr.p=0;pr.stage='idle';pr.tn=25;pr.tb=25;}render();}
@@ -3113,7 +3117,7 @@ function prHTML(){
       '<div class="gm-track" style="margin-top:12px"><i id="prBar" style="width:0%;transition:none"></i></div>'+
       '<div class="rbx-read"><div><b id="prPc">0 %</b><span>Printed</span></div><div><b id="prLay"></b><span>Layer</span></div><div><b id="prLeft"></b><span>Time left on a real printer</span></div></div>'+
       '<div class="rbx-ctl"><button class="btn teal" id="prGo" onclick="prGo()">▶ Start printing</button><button class="btn ghost" onclick="prReset()">Reset</button><button class="btn solid" onclick="prSTL()">⬇ Download STL file</button></div>'+
-      '<div class="rbx-sub" style="margin-top:8px">The picture runs fast so you can watch the whole print in about half a minute. The time shown is what a real printer would need.</div><div class="rb-msg" id="prNote" aria-live="polite">To print on a real 3D printer, download the STL file and open it in the printer\'s slicer program.</div>'+warn+'</div>'+
+      '<div class="rbx-ctl"><span class="rbtk-lab">Speed</span><div class="rbx-seg" id="prSpd">'+[[1,'Real time'],[60,'60× faster'],[600,'600× faster'],[0,'Quick demo']].map(o=>'<button data-v="'+o[0]+'" class="'+(pr.speed===o[0]?'on':'')+'" onclick="prSpeed('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div><div class="rbx-sub" style="margin-top:8px">In <b>Real time</b> the clock counts one second each second, like a real printer. Choose a faster speed to see the model finish sooner. Keep this page open while it prints.</div><div class="rb-msg" id="prNote" aria-live="polite">To print on a real 3D printer, download the STL file and open it in the printer\'s slicer program.</div>'+warn+'</div>'+
     '<div class="card rbx-pad"><b>Print settings</b>'+
       '<div class="b3-h">Print size</div>'+seg('scale',[0.25,0.5,1],pr.scale,v=>(v*100)+' %')+'<div class="rbx-sub" style="margin-top:6px">A smaller print is much quicker. At half size it needs about one eighth of the plastic.</div>'+
       '<div class="b3-h">Material</div>'+seg('mat',Object.keys(PR_MAT),pr.mat,v=>v)+'<div class="rbx-sub" style="margin-top:6px">'+PR_MAT[pr.mat][2]+' Nozzle temperature: '+PR_MAT[pr.mat][1]+'.</div>'+

@@ -700,6 +700,14 @@ select.rbtk-search{font-weight:600;cursor:pointer}
 .auth-row .auth-field{min-width:0}.auth-row .auth-field input,.auth-row .auth-field select{min-width:0;width:100%}
 .auth-field[hidden]{display:none}
 .auth-row[hidden],.auth-error[hidden]{display:none}
+.b3.sel .rbx-face{outline:3px solid #FFE27A;outline-offset:-3px}
+.b3-h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);margin-top:16px}
+.b3-pad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
+.b3-k{min-height:44px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:inherit;font-weight:700;font-size:16px;cursor:pointer}
+.b3-k:hover{border-color:var(--teal)}.b3-k:active{background:var(--tealSoft)}
+.b3-row{display:grid;grid-template-columns:52px 48px 1fr 48px;gap:8px;align-items:center;margin-top:6px;font-size:14px}.b3-row b{text-align:center;font-variant-numeric:tabular-nums}.b3-row span{font-weight:600}
+.pr-lcd{position:absolute;left:12px;top:12px;background:#0B2A4A;border:2px solid #3D8BFF;border-radius:8px;padding:8px 10px;color:#CFE6FF;font:12px ui-monospace,Menlo,monospace;min-width:200px;pointer-events:none}
+.pr-lcd b{display:block;color:#fff;margin-bottom:4px;font-size:12.5px}.pr-lcd div{display:flex;justify-content:space-between;gap:14px}.pr-lcd i{font-style:normal;color:#fff}
 </style>
 <!-- Google Translate -->
 <style>
@@ -2949,7 +2957,173 @@ function rbModelWire(){
   st.onkeydown=e=>{const k={ArrowLeft:[-10,0],ArrowRight:[10,0],ArrowUp:[0,8],ArrowDown:[0,-8]}[e.key];if(k){e.preventDefault();rbSpin(k[0],k[1]);}};
   rbModelPaint();
 }
+/* ── 3D Builder: make a model from blocks. Tap a shape to pick it, then use the big buttons to move, resize and colour it. ── */
+const B3_COL=['#D32F2F','#E8A317','#F2C230','#2E9E4F','#0E7C6B','#1E63D0','#8A4FD6','#C2417A','#8A5A2B','#F4F7FA','#8A99A3','#1D1D1F','#CDE3F5'];
+const B3_SHAPES={Cube:[60,60,60],Plate:[140,10,100],Pillar:[20,100,20],Beam:[140,20,20],Wall:[140,80,10],Wheel:[40,40,14,'z'],Blade:[120,6,20,'y']};
+const B3_READY={
+ Car:[[200,40,90,0,-45,0,'#D32F2F'],[110,40,80,-10,-85,0,'#CDE3F5'],[40,40,14,-65,-20,52,'#1D1D1F','z'],[40,40,14,65,-20,52,'#1D1D1F','z'],[40,40,14,-65,-20,-52,'#1D1D1F','z'],[40,40,14,65,-20,-52,'#1D1D1F','z'],[6,12,16,102,-45,28,'#F2C230'],[6,12,16,102,-45,-28,'#F2C230']],
+ House:[[160,100,120,0,-50,0,'#F2C230'],[180,16,140,0,-108,0,'#D32F2F'],[120,16,140,0,-124,0,'#D32F2F'],[60,16,140,0,-140,0,'#D32F2F'],[30,56,4,0,-28,62,'#8A5A2B'],[30,30,4,-50,-60,62,'#CDE3F5'],[30,30,4,50,-60,62,'#CDE3F5']],
+ Robot:[[24,50,24,-22,-25,0,'#8A99A3'],[24,50,24,22,-25,0,'#8A99A3'],[80,80,50,0,-90,0,'#0E7C6B'],[18,60,18,-52,-95,0,'#8A99A3'],[18,60,18,52,-95,0,'#8A99A3'],[50,44,44,0,-152,0,'#F2C230'],[10,10,4,-12,-156,24,'#1D1D1F'],[10,10,4,12,-156,24,'#1D1D1F']],
+ Table:[[180,12,100,0,-86,0,'#8A5A2B'],[12,80,12,-80,-40,40,'#8A5A2B'],[12,80,12,80,-40,40,'#8A5A2B'],[12,80,12,-80,-40,-40,'#8A5A2B'],[12,80,12,80,-40,-40,'#8A5A2B']],
+ Tower:[[100,40,100,0,-20,0,'#1E63D0'],[80,40,80,0,-60,0,'#0E7C6B'],[60,40,60,0,-100,0,'#F2C230'],[40,40,40,0,-140,0,'#D32F2F']],
+ Windmill:[[50,140,50,0,-70,0,'#F4F7FA'],[60,20,60,0,-150,0,'#D32F2F'],[160,10,6,0,-120,32,'#8A5A2B','z'],[10,160,6,0,-120,32,'#8A5A2B','z'],[20,40,4,0,-20,27,'#8A5A2B']]
+};
+const b3mk=a=>({w:a[0],h:a[1],d:a[2],x:a[3],y:a[4],z:a[5],c:a[6],s:a[7]||''});
+let b3=(function(){let d=null;try{d=JSON.parse(localStorage.getItem('qe_model3d')||'null');}catch(e){}
+  const ok=d&&Array.isArray(d.b)&&d.b.every(q=>q&&isFinite(q.w)&&isFinite(q.x));
+  return {b:ok?d.b.slice(0,60):B3_READY.Car.map(b3mk),sel:0,rx:-22,ry:-35,zoom:1,undo:[],play:false,view:'build'};})();
+function b3Save(){try{localStorage.setItem('qe_model3d',JSON.stringify({b:b3.b}));}catch(e){}}
+function b3Push(){b3.undo.push(JSON.stringify(b3.b));if(b3.undo.length>40)b3.undo.shift();}
+function b3Done(){b3.sel=Math.max(0,Math.min(b3.b.length-1,b3.sel));b3Save();render();}
+function b3Undo(){if(!b3.undo.length)return;b3.b=JSON.parse(b3.undo.pop());b3Done();}
+function b3Add(k){if(b3.b.length>=60){alert('A model can have up to 60 shapes.');return;}const s=B3_SHAPES[k];b3Push();b3.b.push({w:s[0],h:s[1],d:s[2],x:0,y:-s[1]/2,z:0,c:B3_COL[b3.b.length%8],s:s[3]||''});b3.sel=b3.b.length-1;b3Done();}
+function b3Ready(k){if(b3.b.length&&!confirm('Replace your model with the ready-made '+k.toLowerCase()+'?'))return;b3Push();b3.b=B3_READY[k].map(b3mk);b3.sel=0;b3Done();}
+function b3Clear(){if(!b3.b.length||!confirm('Remove every shape?'))return;b3Push();b3.b=[];b3Done();}
+function b3Sel(i){b3.sel=i;render();}
+function b3Move(ax,n){const q=b3.b[b3.sel];if(!q)return;b3Push();q[ax]=Math.max(-300,Math.min(300,q[ax]+n*10));if(ax==='y')q.y=Math.min(q.y,-q.h/2);b3Done();}
+function b3Size(ax,n){const q=b3.b[b3.sel];if(!q)return;const v=Math.max(4,Math.min(300,q[ax]+n*10));if(v===q[ax])return;b3Push();if(ax==='h')q.y-=(v-q.h)/2;   /* the bottom stays where it is */
+  q[ax]=v;b3Done();}
+function b3Col(c){const q=b3.b[b3.sel];if(!q)return;b3Push();q.c=c;b3Done();}
+function b3Spin(v){const q=b3.b[b3.sel];if(!q)return;b3Push();q.s=v;b3Done();}
+function b3Copy(){const q=b3.b[b3.sel];if(!q||b3.b.length>=60)return;b3Push();b3.b.push(Object.assign({},q,{x:Math.min(300,q.x+20),z:Math.min(300,q.z+20)}));b3.sel=b3.b.length-1;b3Done();}
+function b3Del(){if(!b3.b[b3.sel])return;b3Push();b3.b.splice(b3.sel,1);b3Done();}
+function b3Ground(){const q=b3.b[b3.sel];if(!q)return;b3Push();q.y=-q.h/2;b3Done();}
+function b3View(rx,ry){b3.rx=rx;b3.ry=ry;b3Tf();}
+function b3Zoom(n){b3.zoom=Math.max(0.5,Math.min(2,+(b3.zoom+n*0.15).toFixed(2)));b3Tf();}
+function b3Tf(){const m=document.getElementById('b3Model');if(m)m.style.transform='scale('+b3.zoom+') rotateX('+b3.rx+'deg) rotateY('+b3.ry+'deg)';}
+function b3Wire(){
+  const st=document.getElementById('b3Stage');if(!st)return;let px=null,py=null,sx=0,sy=0;
+  st.onpointerdown=e=>{px=sx=e.clientX;py=sy=e.clientY;try{st.setPointerCapture(e.pointerId);}catch(_){}};
+  st.onpointermove=e=>{if(px===null)return;b3.ry+=(e.clientX-px)*0.6;b3.rx=Math.max(-90,Math.min(90,b3.rx-(e.clientY-py)*0.6));px=e.clientX;py=e.clientY;b3Tf();};
+  st.onpointerup=e=>{if(px===null)return;px=null;if(Math.hypot(e.clientX-sx,e.clientY-sy)<5){const el=document.elementFromPoint(e.clientX,e.clientY),hit=el&&el.closest('[data-b]');if(hit)b3Sel(Number(hit.dataset.b));}};
+  st.onpointercancel=()=>{px=null;};
+  st.onkeydown=e=>{const k={ArrowLeft:['x',-1],ArrowRight:['x',1],ArrowUp:['y',-1],ArrowDown:['y',1],PageUp:['z',-1],PageDown:['z',1]}[e.key];if(k){e.preventDefault();b3Move(k[0],k[1]);setTimeout(()=>{const s=document.getElementById('b3Stage');if(s)s.focus();},0);}else if(e.key==='Delete'){b3Del();}};
+}
+function b3HTML(){
+  setTimeout(b3Wire,0);
+  const q=b3.b[b3.sel],vol=b3.b.reduce((a,x)=>a+x.w*x.h*x.d,0)/1000;
+  const grid=rbBox(520,4,520,0,2,0,'#3E5563');
+  const blocks=b3.b.map((x,i)=>'<div data-b="'+i+'" class="b3'+(i===b3.sel?' sel':'')+'" style="left:0;top:0">'+(x.s?'<div style="left:0;top:0;transform:translate3d('+x.x+'px,'+x.y+'px,'+x.z+'px)"><div class="mw-s'+x.s+'" style="left:0;top:0">'+rbBox(x.w,x.h,x.d,0,0,0,x.c)+'</div></div>':rbBox(x.w,x.h,x.d,x.x,x.y,x.z,x.c))+'</div>').join('');
+  const nb=(l,fn,t)=>'<button class="b3-k" title="'+t+'" aria-label="'+t+'" onclick="'+fn+'">'+l+'</button>';
+  const sz=(ax,name)=>'<div class="b3-row"><span>'+name+'</span>'+nb('−','b3Size(\''+ax+'\',-1)','Make it less '+name.toLowerCase())+'<b>'+q[ax]+' mm</b>'+nb('+','b3Size(\''+ax+'\',1)','Make it more '+name.toLowerCase())+'</div>';
+  const panel=!q?'<div class="rb-msg">Your model is empty. Tap a shape under <b>Add a shape</b>, or pick a ready model.</div>':
+    '<b>Shape '+(b3.sel+1)+' of '+b3.b.length+'</b><div class="rbx-sub">Tap a shape in the picture to pick another one.</div>'+
+    '<div class="b3-h">Move</div><div class="b3-pad">'+nb('←','b3Move(\'x\',-1)','Move left')+nb('→','b3Move(\'x\',1)','Move right')+nb('↑','b3Move(\'y\',-1)','Move up')+nb('↓','b3Move(\'y\',1)','Move down')+nb('Front','b3Move(\'z\',1)','Move to the front')+nb('Back','b3Move(\'z\',-1)','Move to the back')+'</div>'+
+    '<div class="b3-h">Size</div>'+sz('w','Wide')+sz('h','Tall')+sz('d','Deep')+
+    '<div class="b3-h">Colour</div><div class="rbx-ctl" style="margin-top:6px">'+B3_COL.map(c=>'<button class="rbtk-sw'+(q.c===c?' on':'')+'" style="background:'+c+'" aria-label="Colour '+c+'" onclick="b3Col(\''+c+'\')"></button>').join('')+'</div>'+
+    '<div class="b3-h">Movement</div><div class="rbx-seg" style="margin-top:6px">'+[['','Still'],['z','Wheel'],['y','Fan'],['x','Propeller']].map(o=>'<button class="'+((q.s||'')===o[0]?'on':'')+'" onclick="b3Spin(\''+o[0]+'\')">'+o[1]+'</button>').join('')+'</div>'+
+    '<div class="rbx-ctl"><button class="btn ghost" onclick="b3Copy()">Copy shape</button><button class="btn ghost" onclick="b3Ground()">Put on the ground</button><button class="btn ghost" onclick="b3Del()">Delete shape</button></div>';
+  return '<div class="rbx-two"><div class="card rbx-pad">'+
+      '<div class="rbx-ctl" style="margin-top:0"><b>Add a shape</b>'+Object.keys(B3_SHAPES).map(k=>'<button class="btn ghost" style="padding:7px 12px" onclick="b3Add(\''+k+'\')">+ '+k+'</button>').join('')+'</div>'+
+      '<div class="'+(b3.play?'mw-on':'')+'" style="margin-top:12px"><div class="rbx-stage" id="b3Stage" style="height:400px" tabindex="0" role="application" aria-label="3D building area. Drag to turn the view. Tap a shape to pick it. Arrow keys move the picked shape."><div class="rbx-model" id="b3Model" style="top:62%;transform:scale('+b3.zoom+') rotateX('+b3.rx+'deg) rotateY('+b3.ry+'deg)">'+grid+blocks+'</div></div></div>'+
+      '<div class="rbx-ctl"><span class="rbtk-lab">View</span><div class="rbx-seg"><button onclick="b3View(-22,-35)">3D</button><button onclick="b3View(0,0)">Front</button><button onclick="b3View(0,-90)">Side</button><button onclick="b3View(-90,0)">Top</button></div>'+
+        '<button class="btn ghost" style="padding:7px 12px" onclick="b3Zoom(-1)" aria-label="Zoom out">−</button><button class="btn ghost" style="padding:7px 12px" onclick="b3Zoom(1)" aria-label="Zoom in">+</button>'+
+        '<button class="btn ghost" aria-pressed="'+b3.play+'" onclick="b3.play=!b3.play;render()">'+(b3.play?'■ Stop moving parts':'▶ Run moving parts')+'</button>'+
+        '<button class="btn ghost" onclick="b3Undo()"'+(b3.undo.length?'':' disabled')+'>↶ Undo</button><button class="btn ghost" onclick="b3Clear()">Clear</button></div>'+
+      '<div class="rbx-ctl"><b>Ready models</b>'+Object.keys(B3_READY).map(k=>'<button class="btn ghost" style="padding:7px 12px" onclick="b3Ready(\''+k+'\')">'+k+'</button>').join('')+'</div>'+
+      '<div class="rbx-read"><div><b>'+b3.b.length+'</b><span>Shapes</span></div><div><b>'+vol.toFixed(0)+' cm³</b><span>Total volume</span></div><div><b>'+(q?q.w+' × '+q.h+' × '+q.d:'–')+'</b><span>Picked shape (mm)</span></div></div>'+
+    '</div><div class="card rbx-pad">'+panel+'</div></div>'+
+    '<div class="card rbx-pad" style="margin-top:12px"><b>How to build</b><ol class="sx-steps" style="margin-bottom:0"><li>Tap <b>+ Cube</b> or another shape. It appears on the ground in the middle.</li><li>Tap a shape in the picture to pick it. The picked shape has a yellow edge.</li><li>Use the <b>Move</b> and <b>Size</b> buttons. Each tap is 10 mm.</li><li>Drag the picture to look from another side, or use the View buttons.</li><li>Press <b>Save</b> at the top to keep your model. It is also saved by itself on this device.</li></ol>'+
+    '<div class="rb-link" style="margin-top:10px"><span class="rb-chip">Maths: length, width, height and volume</span><span class="rb-chip">Design: front, side and top views</span></div></div>';
+}
+/* ── 3D printer: prints the built model layer by layer on screen, estimates the print, and saves an STL file for a real printer ── */
+const PR_MAT={PLA:[1.24,'200 °C','Easy to print. Made from plants. Best for school models.'],PETG:[1.27,'235 °C','Stronger and a little flexible. Good for parts that are used outdoors.'],ABS:[1.04,'245 °C','Tough and heat resistant. Needs a closed printer and fresh air.']};
+let pr={p:0,run:false,timer:0,layer:0.2,infill:20,mat:'PLA',ph:0};
+function prBox(){let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,top=0;b3.b.forEach(q=>{x0=Math.min(x0,q.x-q.w/2);x1=Math.max(x1,q.x+q.w/2);z0=Math.min(z0,q.z-q.d/2);z1=Math.max(z1,q.z+q.d/2);top=Math.max(top,-(q.y-q.h/2));});return b3.b.length?{w:x1-x0,d:z1-z0,h:top,cx:(x0+x1)/2,cz:(z0+z1)/2}:{w:0,d:0,h:0,cx:0,cz:0};}
+function prStats(){const bx=prBox(),vol=b3.b.reduce((a,q)=>a+q.w*q.h*q.d,0)/1000,plastic=vol*(0.2+0.8*pr.infill/100),g=plastic*PR_MAT[pr.mat][0];
+  const float=b3.b.filter(q=>{const bot=q.y+q.h/2;if(bot>-0.5)return false;return !b3.b.some(o=>o!==q&&Math.abs((o.y-o.h/2)-bot)<1.5&&Math.abs(o.x-q.x)<(o.w+q.w)/2&&Math.abs(o.z-q.z)<(o.d+q.d)/2);}).length;
+  return {bx:bx,vol:vol,plastic:plastic,g:g,m:plastic*1000/(Math.PI*0.875*0.875)/1000,hours:plastic/(15*pr.layer/0.2),layers:Math.ceil(bx.h/pr.layer),fits:bx.w<=220&&bx.d<=220&&bx.h<=250,float:float};}
+function prTime(h){const m=Math.round(h*60);return m<60?m+' min':Math.floor(m/60)+' h '+(m%60)+' min';}
+/* realistic printer: heats up, homes, prints each layer by tracing the outline of the shapes while the bed slides, then cools down */
+const PR_TEMP={PLA:[200,60],PETG:[235,80],ABS:[245,100]};
+Object.assign(pr,{stage:'idle',tn:25,tb:25,wait:0});
+/* a box whose side walls show the layer lines of printed plastic */
+function prLayerBox(w,h,d,x,y,z,col){
+  const ln='repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0 1px,rgba(255,255,255,.06) 1px 2px,transparent 2px 3px)';
+  const f=(ww,hh,tr,a,side)=>'<div class="rbx-face" style="border:0;width:'+ww+'px;height:'+hh+'px;left:'+(-ww/2)+'px;top:'+(-hh/2)+'px;background-color:color-mix(in srgb,'+col+' '+a+'%,#000);'+(side?'background-image:'+ln+';':'')+'transform:'+tr+'"></div>';
+  return '<div style="left:0;top:0;transform:translate3d('+x+'px,'+y+'px,'+z+'px)">'+f(w,h,'translateZ('+d/2+'px)',100,1)+f(w,h,'rotateY(180deg) translateZ('+d/2+'px)',70,1)+
+    f(d,h,'rotateY(90deg) translateZ('+w/2+'px)',82,1)+f(d,h,'rotateY(-90deg) translateZ('+w/2+'px)',82,1)+f(w,d,'rotateX(90deg) translateZ('+h/2+'px)',94,0)+'</div>';
+}
+/* where the nozzle is now: it walks round the outline of each shape that crosses the current layer */
+function prTarget(bx){
+  const L=-pr.p,act=b3.b.filter(q=>q.y+q.h/2>L+0.01&&q.y-q.h/2<=L+0.01);if(pr.stage!=='print'||!act.length)return [bx.cx-100,bx.cz+90];
+  const q=act[Math.floor(pr.ph)%act.length],t=(pr.ph%1)*4,k=Math.floor(t),u=t-k,x0=q.x-q.w/2,x1=q.x+q.w/2,z0=q.z-q.d/2,z1=q.z+q.d/2;
+  return k===0?[x0+(x1-x0)*u,z1]:k===1?[x1,z1-(z1-z0)*u]:k===2?[x1-(x1-x0)*u,z0]:[x0,z0+(z1-z0)*u];
+}
+function prModel(){
+  const bx=prBox(),L=-pr.p,cx=bx.cx,cz=bx.cz,t=prTarget(bx),hx=Math.max(cx-118,Math.min(cx+118,t[0])),lift=pr.stage==='print'?0:12,gy=L-lift,A='#B4BEC6',D='#1F2A33',hot=pr.tn>120;
+  const printed=b3.b.map(q=>{const bot=q.y+q.h/2,top=Math.max(q.y-q.h/2,L);if(bot<=L+0.01)return '';const h=bot-top;return prLayerBox(q.w,h,q.d,q.x,bot-h/2,q.z,q.c);}).join('');
+  return rbBox(300,46,310,cx,34,cz,D)+rbBox(86,30,6,cx+92,30,cz+157,'#11181E')+rbBox(64,18,2,cx+92,29,cz+161,pr.stage==='idle'?'#1E3A5F':'#3D8BFF')+rbBox(14,14,6,cx+136,30,cz+160,'#C9CED3')+
+    rbBox(20,350,20,cx-150,-140,cz-30,A)+rbBox(20,350,20,cx+150,-140,cz-30,A)+rbBox(320,20,20,cx,-325,cz-30,A)+rbBox(5,330,5,cx-150,-150,cz-14,'#6B7780')+
+    rbBox(8,36,8,cx+60,-353,cz-30,D)+rbBox(96,96,34,cx+60,-398,cz-30,'#2A2F35')+rbBox(84,84,38,cx+60,-398,cz-30,b3.b[0]?b3.b[0].c:'#E8A317')+
+    '<div style="left:0;top:0;transform:translate3d(0,0,'+(cz-t[1]).toFixed(1)+'px)">'+rbBox(238,5,238,cx,8,cz,'#39444D')+rbBox(232,3,232,cx,3,cz,pr.tb>45?'#3A2F2A':'#2B3138')+printed+'</div>'+
+    rbBox(330,16,16,cx,gy-62,cz-30,A)+rbBox(26,40,30,cx-150,gy-62,cz-30,D)+
+    rbBox(50,52,34,hx,gy-52,cz-4,D)+rbBox(34,34,6,hx,gy-56,cz+15,'#39444D')+rbBox(22,22,3,hx,gy-56,cz+19,'#11181E')+
+    rbBox(18,12,18,hx,gy-20,cz,hot?'#D9793A':'#C9CED3')+rbBox(6,9,6,hx,gy-9.5,cz,'#C9A227')+rbBox(4,5,4,hx,gy-2.5,cz,hot?'#FF8A1F':'#C9A227')+
+    rbBox(3,Math.max(10,300+gy),3,hx,(gy-78-325)/2+6,cz-12,'#F4F7FA');
+}
+function prPaint(){
+  const m=document.getElementById('prModel');if(!m)return;m.innerHTML=prModel();
+  const s=prStats(),pc=s.bx.h?Math.min(100,pr.p/s.bx.h*100):0,set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;},T=PR_TEMP[pr.mat];
+  const bar=document.getElementById('prBar');if(bar)bar.style.width=pc.toFixed(1)+'%';
+  set('prPc',pc.toFixed(0)+' %');set('prLay',Math.min(s.layers,Math.ceil(pr.p/pr.layer))+' of '+s.layers);set('prLeft',pr.stage==='done'?'Finished':prTime(s.hours*(1-pc/100)));
+  const st={idle:'Ready',heat:'Heating the nozzle and the bed',home:'Finding the start position',print:'Printing',cool:'Cooling down',done:'Finished. Remove the model when the bed is cool.'}[pr.stage];
+  set('prLcdS',st);set('prLcdN',Math.round(pr.tn)+' / '+(pr.stage==='idle'||pr.stage==='cool'||pr.stage==='done'?0:T[0])+' °C');set('prLcdB',Math.round(pr.tb)+' / '+(pr.stage==='idle'||pr.stage==='cool'||pr.stage==='done'?0:T[1])+' °C');set('prLcdP',pc.toFixed(0)+' %');
+  const b=document.getElementById('prGo');if(b)b.textContent=pr.run?'❚❚ Pause':pr.stage==='done'?'↺ Print again':pr.stage==='idle'?'▶ Start printing':'▶ Continue';
+}
+function prStop(){clearInterval(pr.timer);pr.timer=0;pr.run=false;}
+function prTick(){
+  if(!document.getElementById('prModel')){prStop();return;}
+  const h=prBox().h,T=PR_TEMP[pr.mat];
+  if(pr.stage==='heat'){pr.tn=Math.min(T[0],pr.tn+(T[0]-25)/65);pr.tb=Math.min(T[1],pr.tb+(T[1]-25)/65);if(pr.tn>=T[0]&&pr.tb>=T[1]){pr.stage='home';pr.wait=16;}}
+  else if(pr.stage==='home'){if(--pr.wait<=0)pr.stage='print';}
+  else if(pr.stage==='print'){pr.p=Math.min(h,pr.p+h/420);pr.ph+=0.045;pr.tn=T[0]+Math.sin(pr.ph*3)*1.2;if(pr.p>=h){pr.stage='cool';}}
+  else if(pr.stage==='cool'){pr.tn=Math.max(45,pr.tn-4);pr.tb=Math.max(35,pr.tb-1.2);if(pr.tn<=45){pr.stage='done';prStop();}}
+  prPaint();
+}
+function prGo(){
+  if(!prBox().h)return;if(pr.run){prStop();prPaint();return;}
+  if(pr.stage==='done'||pr.stage==='idle'){pr.p=0;pr.ph=0;pr.stage='heat';if(pr.tn>60)pr.tn=60;}
+  pr.run=true;pr.timer=setInterval(prTick,60);prPaint();
+}
+function prReset(){prStop();pr.p=0;pr.ph=0;pr.stage='idle';pr.tn=25;pr.tb=25;prPaint();}
+function prSet(f,v){pr[f]=f==='mat'?v:Number(v);if(pr.stage!=='idle'){prStop();pr.p=0;pr.stage='idle';pr.tn=25;pr.tb=25;}render();}
+function prWire(){const st=document.getElementById('prStage'),m=document.getElementById('prWrap');if(!st||!m)return;let px=null,py=null;const tf=()=>{m.style.transform='scale(.7) rotateX('+b3.rx+'deg) rotateY('+b3.ry+'deg)';};
+  st.onpointerdown=e=>{px=e.clientX;py=e.clientY;try{st.setPointerCapture(e.pointerId);}catch(_){}};
+  st.onpointermove=e=>{if(px===null)return;b3.ry+=(e.clientX-px)*0.6;b3.rx=Math.max(-90,Math.min(90,b3.rx-(e.clientY-py)*0.6));px=e.clientX;py=e.clientY;tf();};
+  st.onpointerup=st.onpointercancel=()=>{px=null;};prPaint();}
+function prSTL(){
+  if(!b3.b.length)return;const out=['solid qe_model'],f=(n,a,b,c)=>out.push('facet normal '+n.join(' '),' outer loop','  vertex '+a.join(' '),'  vertex '+b.join(' '),'  vertex '+c.join(' '),' endloop','endfacet');
+  b3.b.forEach(q=>{const x0=q.x-q.w/2,x1=q.x+q.w/2,y0=q.z-q.d/2,y1=q.z+q.d/2,z0=-(q.y+q.h/2),z1=-(q.y-q.h/2),v=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]];
+    [[[0,0,-1],0,2,1,0,3,2],[[0,0,1],4,5,6,4,6,7],[[0,-1,0],0,1,5,0,5,4],[[0,1,0],2,3,7,2,7,6],[[-1,0,0],0,4,7,0,7,3],[[1,0,0],1,2,6,1,6,5]].forEach(s=>{f(s[0],v[s[1]],v[s[2]],v[s[3]]);f(s[0],v[s[4]],v[s[5]],v[s[6]]);});});
+  out.push('endsolid qe_model');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out.join('\n')],{type:'model/stl'}));a.download='my-model.stl';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  const n=document.getElementById('prNote');if(n)n.textContent='Saved my-model.stl. Open it in the slicer program of a 3D printer.';
+}
+function prHTML(){
+  if(!b3.b.length)return '<div class="card rbx-pad"><div class="rb-msg">There is no model to print. Open <b>Build your own model</b> and add some shapes first.</div></div>';
+  setTimeout(prWire,0);const s=prStats(),seg=(f,list,cur,fmt)=>'<div class="rbx-seg" style="margin-top:6px">'+list.map(v=>'<button class="'+(cur===v?'on':'')+'" onclick="prSet(\''+f+'\',\''+v+'\')">'+fmt(v)+'</button>').join('')+'</div>';
+  const warn=(!s.fits?'<div class="rb-msg bad">The model is '+s.bx.w.toFixed(0)+' × '+s.bx.d.toFixed(0)+' × '+s.bx.h.toFixed(0)+' mm. It is too big for the 220 × 220 × 250 mm printer. Make it smaller in the builder.</div>':'')+
+    (s.float?'<div class="rb-msg">'+s.float+' shape'+(s.float===1?' has':'s have')+' nothing underneath. A real printer cannot print in the air, so these need support material.</div>':'');
+  return '<div class="rbx-two"><div class="card rbx-pad"><b style="display:block;margin-bottom:10px">3D printer</b>'+
+      '<div class="rbx-stage" id="prStage" style="height:470px" tabindex="0" aria-label="3D printer printing your model. Drag to turn the view."><div class="rbx-model" id="prWrap" style="top:80%;transform:scale(.7) rotateX('+b3.rx+'deg) rotateY('+b3.ry+'deg)"><div id="prModel" style="left:0;top:0"></div></div>'+
+        '<div class="pr-lcd" aria-live="polite"><b id="prLcdS">Ready</b><div><span>Nozzle</span><i id="prLcdN"></i></div><div><span>Bed</span><i id="prLcdB"></i></div><div><span>Done</span><i id="prLcdP"></i></div></div></div>'+
+      '<div class="gm-track" style="margin-top:12px"><i id="prBar" style="width:0%;transition:none"></i></div>'+
+      '<div class="rbx-read"><div><b id="prPc">0 %</b><span>Printed</span></div><div><b id="prLay"></b><span>Layer</span></div><div><b id="prLeft"></b><span>Real time left</span></div></div>'+
+      '<div class="rbx-ctl"><button class="btn teal" id="prGo" onclick="prGo()">▶ Start printing</button><button class="btn ghost" onclick="prReset()">Reset</button><button class="btn solid" onclick="prSTL()">⬇ Download STL file</button></div>'+
+      '<div class="rb-msg" id="prNote" aria-live="polite">To print on a real 3D printer, download the STL file and open it in the printer\'s slicer program.</div>'+warn+'</div>'+
+    '<div class="card rbx-pad"><b>Print settings</b>'+
+      '<div class="b3-h">Material</div>'+seg('mat',Object.keys(PR_MAT),pr.mat,v=>v)+'<div class="rbx-sub" style="margin-top:6px">'+PR_MAT[pr.mat][2]+' Nozzle temperature: '+PR_MAT[pr.mat][1]+'.</div>'+
+      '<div class="b3-h">Layer height</div>'+seg('layer',[0.1,0.2,0.3],pr.layer,v=>v+' mm')+'<div class="rbx-sub" style="margin-top:6px">Thin layers look smoother but take longer.</div>'+
+      '<div class="b3-h">Infill (how solid the inside is)</div>'+seg('infill',[10,20,50,100],pr.infill,v=>v+' %')+'<div class="rbx-sub" style="margin-top:6px">More infill is stronger, but uses more plastic and time.</div>'+
+      '<div class="b3-h">Estimate for a real print</div>'+sxRead([['Model size',s.bx.w.toFixed(0)+' × '+s.bx.d.toFixed(0)+' × '+s.bx.h.toFixed(0)+' mm'],['Layers',String(s.layers)],['Print time','About '+prTime(s.hours)]])+sxRead([['Plastic',s.g.toFixed(0)+' g'],['Filament length',s.m.toFixed(1)+' m'],['Plastic cost','About ₹'+Math.max(1,Math.round(s.g*1.2))]])+
+      '<div class="rbx-sub" style="margin-top:8px">Estimates assume a 0.4 mm nozzle, 1.75 mm filament and ₹1,200 for 1 kg of plastic. A real slicer gives exact numbers.</div></div></div>'+
+    '<div class="card rbx-pad" style="margin-top:12px"><b>How a 3D printer works</b><ol class="sx-steps" style="margin-bottom:0"><li>A slicer program cuts the model into thin flat layers.</li><li>The printer melts plastic thread (filament) in a hot nozzle.</li><li>The nozzle draws the first layer on the bed. The plastic cools and hardens.</li><li>The nozzle moves up by one layer and draws the next, until the model is complete.</li></ol><div class="rbap-safe" style="margin-bottom:0"><b>Safety:</b> The nozzle of a real printer is hotter than 200 °C. Never touch it, and use a printer only with a teacher.</div></div>';
+}
 function rb3dHTML(){
+  const v=b3.view,seg='<div class="rbx-seg" style="margin-bottom:12px"><button class="'+(v==='build'?'on':'')+'" onclick="prStop();b3.view=\'build\';render()">Build your own model</button><button class="'+(v==='print'?'on':'')+'" onclick="b3.view=\'print\';render()">3D printer</button><button class="'+(v==='robot'?'on':'')+'" onclick="prStop();b3.view=\'robot\';render()">Robot model (look inside)</button></div>';
+  return seg+(v==='build'?b3HTML():v==='print'?prHTML():rb3dOldHTML());
+}
+function rb3dOldHTML(){
   const model='<div class="rbx-model" id="rbModel">'+
     '<div class="rbx-grp" id="rbgBody">'+rbBox(150,34,110,0,0,0,'#0E7C6B')+'</div>'+
     '<div class="rbx-grp" id="rbgTop">'+rbBox(86,26,70,-12,-30,0,'#2F6FDB')+'</div>'+
@@ -3053,7 +3227,7 @@ function rbLiveDist(){const L=rb.live,r=L.a*Math.PI/180,dx=Math.cos(r),dy=Math.s
 function rbLinked(){return !!rb.live.link||rb.tab==='circuits';}
 function rbConnText(){
   if(rb.live.link)return 'A hardware car is connected over USB.';
-  return {circuits:'Circuit simulator connected. Build your circuit and press Start simulation.',model:'No 3D printer is connected. This is an on-screen model.',
+  return {circuits:'Circuit simulator connected. Build your circuit and press Start simulation.',model:'No 3D printer is connected. Print on screen, or download the STL file for a real printer.',
     code:'No robot is connected. Your program drives the on-screen robot.',live:'No hardware car is connected. Everything here runs on the on-screen car.'}[rb.tab]||'';
 }
 function rbLivePaint(){
@@ -3202,13 +3376,13 @@ function rbLiveHTML(){
     '<div class="rbx-seg" style="margin-bottom:12px">'+tabs.map(t=>'<button class="'+(v===t[0]?'on':'')+'" onclick="rbLiveView(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>'+body;
 }
 /* ─────────── Robotics Lab: Save and open named work on each station ─────────── */
-const RB_SV_TABS={circuits:'circuit',model:'3D model view',code:'program',music:'tune'};
+const RB_SV_TABS={circuits:'circuit',model:'3D model',code:'program',music:'tune'};
 function rbSvAll(){try{return JSON.parse(localStorage.getItem('qe_rb_saves')||'{}')||{};}catch(e){return {};}}
 function rbSvList(tab){const a=rbSvAll()[tab];return Array.isArray(a)?a:[];}
-function rbSvGet(tab){return tab==='circuits'?rbTkSnap():tab==='model'?JSON.stringify(rb.rot):tab==='code'?JSON.stringify({m:rb.m,prog:rb.prog}):JSON.stringify({g:sm.g,bpm:sm.bpm});}
+function rbSvGet(tab){return tab==='circuits'?rbTkSnap():tab==='model'?JSON.stringify({m3:b3.b}):tab==='code'?JSON.stringify({m:rb.m,prog:rb.prog}):JSON.stringify({g:sm.g,bpm:sm.bpm});}
 function rbSvPut(tab,js){const d=JSON.parse(js);
   if(tab==='circuits'){if(rb.tk.sim)rbTkSim();rbTkPush();rbTkRestore(js);rbTkFit();}
-  else if(tab==='model'){Object.assign(rb.rot,d);render();}
+  else if(tab==='model'){if(Array.isArray(d.m3)){b3Push();b3.b=d.m3.slice(0,60);b3.sel=0;b3.view='build';b3Done();}else{Object.assign(rb.rot,d);b3.view='robot';render();}}
   else if(tab==='code'){if(rb.running)return false;rb.m=d.m;rb.prog=d.prog;rb.msg='';rb.msgKind='';rb.bot=null;render();}
   else{smStop();sm.g=d.g||{};sm.bpm=d.bpm||120;render();}
   return true;}
@@ -3242,7 +3416,7 @@ function roboticsView(){
     '<div class="pagehead">'+eyebrow('Interactive Labs · Robotics')+'<h2 class="display">Robotics Lab</h2>'+
     '<p class="muted" style="margin-top:6px">Circuits, 3D modeling and block coding in one place.</p></div>'+
     '<div class="rbx-nav" role="tablist">'+tabs.map(t=>'<button role="tab" aria-selected="'+(rb.tab===t[0])+'" class="'+(rb.tab===t[0]?'on':'')+'" onclick="rbTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>'+
-    (rb.tab==='home'||rb.tab==='music'||rb.tab==='exp'?'':'<div class="rbx-conn"><span class="rbl-status'+(rbLinked()?' on':'')+'" id="rbTopSt"><i></i>'+(rbLinked()?'Connected':'Not connected')+'</span>'+
+    (rb.tab==='home'||rb.tab==='music'||rb.tab==='exp'||rb.tab==='model'?'':'<div class="rbx-conn"><span class="rbl-status'+(rbLinked()?' on':'')+'" id="rbTopSt"><i></i>'+(rbLinked()?'Connected':'Not connected')+'</span>'+
       '<span id="rbTopTx">'+rbConnText()+'</span></div>')+rbSaveBar(rb.tab)+body;
 }
 
